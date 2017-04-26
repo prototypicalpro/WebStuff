@@ -58,8 +58,8 @@ class T{
 }
 
 //period class
-//takes a start time and end time and is then passed to a schedule
-class Period{
+//takes a start time and end time and is then passed to a period for naming
+class TimeSlot{
     constructor(startTime, endTime){
         this.start = startTime;
         this.end = endTime;
@@ -78,32 +78,61 @@ class Period{
     }
 }
 
-//and now for a sample schedule
-var regSchedule = {
-    "1/5": new Period(new T(8, 15, false), new T(9, 47, false)), //starts at 8:15am, ends at 9:47am
-    "2/6": new Period(new T(9, 52, false), new T(11, 24, false)), //9:52am, 11:24am
-    "Lunch": new Period(new T(11, 24, false), new T(12, 1, false)), //and so on
-    "3/7": new Period(new T(12, 6, false), new T(1, 38, true)),
-    "4/8": new Period(new T(1, 43, true), new T(3, 15, true))
+//Named period class
+//adds names to timeslot, which makes a period object
+//$%&* Javascript
+class Period{
+    constructor(nameString, TimeSlotClass){
+        this.name = nameString;
+        this.time = TimeSlotClass;
+    }
+
+    getName(){
+        return this.name;
+    }
+
+    getTimeSlot(){
+        return this.time;
+    }
+}
+
+//And now for a sample schedule
+//Am I doing this right?
+var regScheduleTemplate = {
+    "1/5": new TimeSlot(new T(8, 15, false), new T(9, 47, false)), //starts at 8:15am, ends at 9:47am
+    "2/6": new TimeSlot(new T(9, 52, false), new T(11, 24, false)), //9:52am, 11:24am
+    "Lunch": new TimeSlot(new T(11, 24, false), new T(12, 1, false)), //and so on
+    "3/7": new TimeSlot(new T(12, 6, false), new T(1, 38, true)),
+    "4/8": new TimeSlot(new T(1, 43, true), new T(3, 15, true))
 };
 //ugly, but it works
 //next, we make vars to contain periods with thier appropriete names
 //these should be the ones referenced from the main code
 var ADay = {
     "name": "A",
-    "1": regSchedule["1/5"],
-    "2": regSchedule["2/6"],
-    "Lunch": regSchedule["Lunch"],
-    "3": regSchedule["3/7"],
-    "4": regSchedule["4/8"]
+    "schedule": [
+        new Period("1", regScheduleTemplate["1/5"]),
+        new Period("2", regScheduleTemplate["2/6"]),
+        new Period("Lunch", regScheduleTemplate["Lunch"]),
+        new Period("3", regScheduleTemplate["3/7"]),
+        new Period("4", regScheduleTemplate["4/8"])
+    ]
 }
 
-var BDay = ADay;
-BDay.name = "B";
+var BDay = {
+    "name": "B",
+    "schedule": [
+        new Period("5", regScheduleTemplate["1/5"]),
+        new Period("6", regScheduleTemplate["2/6"]),
+        new Period("Lunch", regScheduleTemplate["Lunch"]),
+        new Period("7", regScheduleTemplate["3/7"]),
+        new Period("8", regScheduleTemplate["4/8"])
+    ]
+}
 
 var text = "";
-for(var period in ADay){
-    text += period + "--" + ADay[period].toString() + "<br>";
+for(var period in ADay.schedule){
+    text += ADay.schedule[period].getName() + "--" + ADay.schedule[period].getTimeSlot() + "<br>";
 }
 
 document.getElementById("Text").innerHTML = text;
