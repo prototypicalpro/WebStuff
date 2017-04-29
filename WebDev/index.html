@@ -1,0 +1,21 @@
+<html>
+<head>
+   <script src="js/jquery-core.js"/>
+   <script src="js/jquery-mobile.js"/>
+   <script src="cordova.js"/>
+   <script>
+   $(document).ready(function() { 
+      // jQuery is properly loaded at this point
+      // so proceed to bind the Cordova's deviceready event
+      $(document).bind("deviceready", function() {
+         // Now Cordova is loaded
+         // its great JS API can be used to access low-level
+         // features as accelerometer, contacts and so on
+      }); 
+   });
+   </script>
+</head>
+<body>
+<!-- Body of your HTML -->
+</body>
+</html>
