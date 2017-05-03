@@ -1,5 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { NavController, Slides } from 'ionic-angular';
+import { WHSSched } from '../../lib/WHSUtil/WHSSched.ts';
+import { CalendarData } from '../../lib/WHSUtil/grabCal.service';
 
 @Component({
   selector: 'page-home',
@@ -9,11 +11,17 @@ export class HomePage {
   @ViewChild(Slides) slides: Slides;
 
   task: any;
+  s1: string;
+  s2: string;
 
-  constructor(public navCtrl: NavController) {
-      this.task = setInterval(() => {
-      this.goToSlide();
-      }, 500);
+  constructor(public navCtrl: NavController, public calData: CalendarData) {
+      //this.task = setInterval(() => {
+     // this.goToSlide();
+     // }, 500);
+     calData.logCalendar();
+
+      this.s1 = WHSSched.ADay.getPeriod(3).getName();
+      this.s2 = "Hello World!";
   }
 
   goToSlide(){
