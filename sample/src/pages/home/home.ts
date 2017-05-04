@@ -18,7 +18,8 @@ export class HomePage {
       //this.task = setInterval(() => {
      // this.goToSlide();
      // }, 500);
-     calData.logCalendar();
+      let promise = calData.logCalendar();
+      promise.subscribe((data) => calData.data = data);
 
       this.s1 = WHSSched.ADay.getPeriod(3).getName();
       this.s2 = "Hello World!";
