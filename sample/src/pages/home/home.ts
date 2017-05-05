@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { NavController, Slides } from 'ionic-angular';
 import { WHSSched } from '../../lib/WHSUtil/WHSSched.ts';
-import { CalendarData } from '../../lib/WHSUtil/grabCal.service';
+import { CalendarData } from '../../lib/WHSUtil/CalendarData.service';
 
 @Component({
   selector: 'page-home',
@@ -18,8 +18,7 @@ export class HomePage {
       //this.task = setInterval(() => {
      // this.goToSlide();
      // }, 500);
-      let promise = calData.logCalendar();
-      promise.subscribe((data) => calData.data = data);
+      calData.logCalendar();
 
       this.s1 = WHSSched.ADay.getPeriod(3).getName();
       this.s2 = "Hello World!";

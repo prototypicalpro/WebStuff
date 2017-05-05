@@ -5,7 +5,7 @@ import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { CacheService } from 'ionic-cache/ionic-cache';
 import { MyApp } from './app.component';
 
-import { CalendarData } from '../lib/WHSUtil/grabCal.service';
+import { CalendarData } from '../lib/WHSUtil/CalendarData.service';
 
 import { AboutPage } from '../pages/about/about';
 import { ContactPage } from '../pages/contact/contact';
