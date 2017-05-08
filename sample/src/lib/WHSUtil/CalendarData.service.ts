@@ -69,7 +69,6 @@ class Event {
             }) != undefined) schedInd = true;
             */ //TODO: Move code
             start = moment(gcalJSONEvent.start.date, "YYYY-MM-DD").toDate();
-
         }
         //else grab the stuff where it should be
         else start = new Date(gcalJSONEvent.start.dateTime);
@@ -109,11 +108,8 @@ export class CalendarData {
         this.cache.saveItem(LASTDAY_CACHE_KEY, sometime.toISOString());
         this.lastStored = sometime;
 
-        console.log(this.formatRequest(['timeMin', today.toISOString()], ['timeMax', sometime.toISOString()]));
-
         //grab stuff, split, parse, and save
         let request = this.http.get(this.formatRequest(['timeMin', today.toISOString()], ['timeMax', sometime.toISOString()])).map(res => res.json()).toPromise().then((data) => {
-            console.log(data);
             //and while were at it, store the lastUpdated value
             this.lastUpdated = new Date();
             //clear event cache
@@ -138,9 +134,6 @@ export class CalendarData {
             this.eventList = evList;
             //and finnally cache dat shizzle
             this.cache.saveItem(EVENT_CACHE_KEY, evList);
-
-            //but I almost forgot:
-            console.log(evList);
 
             //should I return things? naw
         });
@@ -218,13 +211,8 @@ export class CalendarData {
                 //refresh syncToken
                 this.nextSyncToken = syncData.nextSyncToken;
                 this.cache.saveItem(SYNC_CACHE_KEY, syncData.nextSyncToken);
-                //log sync data
-                console.log(syncData);
                 //check if anything to sync
-                if(syncData.items.length == 0) {
-                    console.log("Sync empty!");
-                    return;
-                }
+                if(syncData.items.length == 0) return;
                 //iterate through synced events, updating the cached events
                 let n = syncData.items.length;
                 for(let i = 0; i < n; i++){
@@ -234,17 +222,8 @@ export class CalendarData {
                     if(syncData.items[i].status != 'cancelled') {
                         let betterEvent = Event.fromGCAL(syncData.items[i]);
                         this.eventList[betterEvent.getID()] = betterEvent.returnCachable(); 
-                        console.log("Synced event: "); 
-                        console.log(betterEvent.returnCachable()); 
-                    }
-                    //log
-                    else {
-                        console.log("Deleted event:");
-                        console.log(syncData.items[i].id);
                     }
                 }
-                //loggy mclogface
-                console.log(this.eventList);
                 //and finnally cache dat shizzle
                 this.cache.saveItem(EVENT_CACHE_KEY, this.eventList);
                 return;
@@ -268,13 +247,11 @@ export class CalendarData {
         this.cachedTodayEvents = [];
 
         //iterate through event list, looking for events today
-        console.log(this.eventList);
         for(let event in this.eventList){
             //saftey check
             if(this.eventList.hasOwnProperty(event)){
                 //if the event is on the day we last checked the calendar, store it in the cache array thing
                 let betterEvent : Event = Event.fromCachable(this.eventList[event]);
-                console.log(betterEvent);
                 if(betterEvent.getTime().toDateString() == this.lastUpdated.toDateString()) this.cachedTodayEvents.push(betterEvent);
             }
         }
