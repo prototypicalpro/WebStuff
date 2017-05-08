@@ -11,6 +11,7 @@ import { Http } from '@angular/http'
 import { WHSSched } from '../../lib/WHSUtil/WHSSched.ts';
 
 import 'rxjs/add/operator/toPromise';
+import * as moment from 'moment';
 
 //because library is written for the Wilson Calender, calender credentials will be
 //static
@@ -49,7 +50,7 @@ class Event {
 
     //cachable, returns and/or parses an array so you don't have to store the entire object
     //idk why it's so important to me to save a few bytes, but whatever
-    returnCachable(): Array<any> { return [this.isAllDay, this.startTime, this.name, this.id]; }
+    returnCachable(): Array<any> { return [this.isAllDay, this.startTime.toISOString(), this.name, this.id]; }
     
     //alternate constructor from a cachable event object
     static fromCachable(cached: Array<any>): Event { return new Event(cached[0], new Date(cached[1]), cached[2], cached[3]); }
@@ -67,7 +68,8 @@ class Event {
                 return gcalJSONEvent.summary == element;
             }) != undefined) schedInd = true;
             */ //TODO: Move code
-            start = new Date(gcalJSONEvent.start.date);
+            start = moment(gcalJSONEvent.start.date, "YYYY-MM-DD").toDate();
+
         }
         //else grab the stuff where it should be
         else start = new Date(gcalJSONEvent.start.dateTime);
