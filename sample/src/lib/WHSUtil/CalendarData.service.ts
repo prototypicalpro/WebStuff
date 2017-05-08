@@ -15,8 +15,8 @@ import * as moment from 'moment';
 
 //because library is written for the Wilson Calender, calender credentials will be
 //static
-//const CAL_ID: string = 'o2tur235ud7inbdm3je330pl4c@group.calendar.google.com';
-const CAL_ID: string = 'anythingupgrade@gmail.com'
+const CAL_ID: string = 'o2tur235ud7inbdm3je330pl4c@group.calendar.google.com';
+//const CAL_ID: string = 'anythingupgrade@gmail.com'
 const API_KEY: string = 'AIzaSyB0FJRVrer63aO-U_4JFi-6XCo0bS6Y6yk';
 const URL: string = 'https://www.googleapis.com/calendar/v3/calendars/' + CAL_ID + '/events?singleEvents=true&key=' + API_KEY;
 
