@@ -11,17 +11,31 @@ export class HomePage {
   @ViewChild(Slides) slides: Slides;
 
   task: any;
+  calData: CalendarData;
   s1: string;
   s2: string;
+  events: Array<any>;
 
-  constructor(public navCtrl: NavController, public calData: CalendarData) {
+  constructor(public navCtrl: NavController, public calDataThing: CalendarData) {
       //this.task = setInterval(() => {
      // this.goToSlide();
      // }, 500);
-      calData.logCalendar();
+      this.calData = calDataThing;
+      //this.calData.logCalendar();
 
       this.s1 = WHSSched.ADay.getPeriod(3).getName();
       this.s2 = "Hello World!";
+  }
+
+  syncCal(){
+    this.calData.syncCalendar().then(() => {
+      this.events = this.calData.getCachedTodayEvents();
+      console.log(this.events);
+    });
+  }
+
+  clearCache(){
+    this.calData.clearCache();
   }
 
   goToSlide(){

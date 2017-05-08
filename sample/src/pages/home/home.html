@@ -18,12 +18,17 @@
   <ion-slides padding>
     <ion-slide>
       <h1>{{s1}}</h1>
+      <button ion-button block (click)='syncCal();'>Sync Calendar</button>
+      <button ion-button block (click)='clearCache();'>Clear Cache</button>
+      <li *ngFor='let event of events'>
+        {{ event.name }}
+      </li>
     </ion-slide>
     <ion-slide>
       <h1>{{s2}}</h1>
     </ion-slide>
     <ion-slide>
-      <h1>{{calData.data}}</h1>
+      
     </ion-slide>
 </ion-slides>
 
