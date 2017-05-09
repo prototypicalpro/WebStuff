@@ -2,7 +2,7 @@ import { NgModule, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpModule } from '@angular/http';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
-import { CacheModule } from 'ionic-cache';
+import { IonicStorageModule } from '@ionic/storage';
 import { MyApp } from './app.component';
 
 import { CalendarData } from '../lib/WHSUtil/CalendarData.service';
@@ -27,7 +27,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     BrowserModule,
     HttpModule,
     IonicModule.forRoot(MyApp),
-    CacheModule.forRoot()
+    IonicStorageModule.forRoot()
   ],
   bootstrap: [
     IonicApp
