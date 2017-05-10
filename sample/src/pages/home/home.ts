@@ -25,6 +25,14 @@ export class HomePage {
 
       this.s1 = WHSSched.ADay.getPeriod(3).getName();
       this.s2 = "Hello World!";
+      /*
+      this.calData.whenReady().then(() => {
+          return this.calData.syncCalendar().then(() => {
+            this.events = this.calData.getCachedTodayEvents();
+            console.log(this.events);
+          });
+      }).catch((err) => console.log(err));
+      */
   }
 
   syncCal(){

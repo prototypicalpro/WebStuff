@@ -11,6 +11,7 @@ import { Http } from '@angular/http'
 import { WHSSched } from '../../lib/WHSUtil/WHSSched.ts';
 
 import 'rxjs/add/operator/toPromise';
+import 'rxjs/add/operator/map';
 import * as moment from 'moment';
 
 //because library is written for the Wilson Calender, calender credentials will be
@@ -98,8 +99,14 @@ export class CalendarData {
         //init http
         this.http = http;
         //set cache ready to load up the calendar
-        let thing = this.cache.ready().then(() => {
-            return new Promise(this.dayCheckFunc).then(() => {
+        this.cache.ready().then(() => {
+            this.storageReady = true;  
+            return new Promise((resolve, reject) => {
+                while(this.isReady() == false);
+                return resolve();
+            }).then(() => {
+                return new Promise(this.dayCheckFunc);
+            }).then(() => {
                 return new Promise(this.dayCheckFunc);
             }).then(() => {
                 return new Promise(this.cacheLoadCheckFunc);  
@@ -110,8 +117,6 @@ export class CalendarData {
                 this.newCalNeeded = true;
                 return;
             });
-        }).then(() => {
-            this.storageReady = true;  
         });
     }
 
@@ -127,7 +132,7 @@ export class CalendarData {
         sometime.setDate(sometime.getDate() + CAL_CACHE_DAYS);
 
         //cache the forward date object so we can determine how far forward in the calendar we cached
-        this.cache.saveItem(LASTDAY_CACHE_KEY, sometime.toISOString());
+        this.cache.set(LASTDAY_CACHE_KEY, sometime.toISOString());
         this.lastStored = sometime;
 
         //grab stuff, split, parse, and save
@@ -139,7 +144,7 @@ export class CalendarData {
 
             //store sync token for later use
             this.nextSyncToken = data.nextSyncToken;
-            this.cache.saveItem(SYNC_CACHE_KEY, data.nextSyncToken);
+            this.cache.set(SYNC_CACHE_KEY, data.nextSyncToken);
             
             //sort events by ID
             //by sort I mean create a dict and let javascript do the heavy lifting
@@ -155,7 +160,7 @@ export class CalendarData {
             //pop data into class members
             this.eventList = evList;
             //and finnally cache dat shizzle
-            this.cache.saveItem(EVENT_CACHE_KEY, evList);
+            this.cache.set(EVENT_CACHE_KEY, JSON.stringify(evList));
 
             //should I return things? naw
         });
@@ -203,9 +208,9 @@ export class CalendarData {
             else return reject("Cache out of date");
         }
         //check if stored calendar has today
-        let checkSyncDate = this.cache.getItem(LASTDAY_CACHE_KEY).then((lastDate) => {
+        let checkSyncDate = this.cache.get(LASTDAY_CACHE_KEY).then((lastDate) => {
             //if last date retrieved is less than current date or lastDate retrieved is junk
-            if(typeof lastDate != "string" || new Date(lastDate).getTime() < new Date().setHours(0,0,0,0)) return reject("Cache out of date");
+            if(new Date(lastDate).getTime() < new Date().setHours(0,0,0,0)) return reject("Cache out of date");
             //else return true
             return resolve();
         }, () => { return reject("No last date stored"); });
@@ -217,8 +222,8 @@ export class CalendarData {
     private cacheLoadCheckFunc(resolve, reject) : any {
         if(this.eventList != undefined) return resolve();
         //load it from cache
-        let cacheLoad = this.cache.getItem(EVENT_CACHE_KEY).then((events) => {
-            this.eventList = events;
+        let cacheLoad = this.cache.get(EVENT_CACHE_KEY).then((events) => {
+            this.eventList = JSON.parse(events);
             return resolve();
         }, () => { return reject("No event cache"); });
         return cacheLoad;
@@ -229,14 +234,10 @@ export class CalendarData {
         //if we already have a sync token, get to syncing already
         if(this.nextSyncToken != undefined) return resolve();
         //load stored syncToken
-        let syncLoad = this.cache.getItem(SYNC_CACHE_KEY).then((token) => {
-            if(typeof token == "string") {
-                //sir, we got a token
-                this.nextSyncToken = token;
-                return resolve();
-            }
-            //please enjoy this staircase, brought to you by javascript
-            else return reject("No stored sync token");
+        let syncLoad = this.cache.get(SYNC_CACHE_KEY).then((token) => {
+            //sir, we got a token
+            this.nextSyncToken = token;
+            return resolve();
         }).catch(() => { return reject("No stored sync token "); });
         return syncLoad;
     }
@@ -247,7 +248,7 @@ export class CalendarData {
             this.cachedTodayEvents = undefined;
             //refresh syncToken
             this.nextSyncToken = syncData.nextSyncToken;
-            this.cache.saveItem(SYNC_CACHE_KEY, syncData.nextSyncToken);
+            this.cache.set(SYNC_CACHE_KEY, syncData.nextSyncToken);
             //check if anything to sync
             if(syncData.items.length == 0) return;
             //iterate through synced events, updating the cached events
@@ -262,7 +263,7 @@ export class CalendarData {
                 }
             }
             //and finnally cache dat shizzle
-            this.cache.saveItem(EVENT_CACHE_KEY, this.eventList);
+            this.cache.set(EVENT_CACHE_KEY, JSON.stringify(this.eventList));
             return;
         }).catch((err) => {
             //catch only error 410
@@ -280,13 +281,22 @@ export class CalendarData {
      * or at least I hope so, because this comment sure isn't helpful
      */
 
-    syncCalendar(): Promise<any> {
+    isReady() : boolean { return this.storageReady && this != undefined; }
+
+    whenReady() : Promise<any> {
+        return new Promise((resolve, reject) => {
+            while(this.isReady() == false);
+            resolve();
+        });
+    }
+
+    syncCalendar() : Promise<any> {
         //note: when using sync tokens, googles API docs specify that the API will sometimes refuse the token
         //in this case, the error will be 410 GONE
         //for now I'll just catch the error and request a new calendar
-
-        //error handler for the numerous faliure points
-        let cacheErrorHandler = () : Promise<any> => { return this.getNewCalender(); }
+        if(this.storageReady == false) throw("Storage not ready!");
+        //check if some background stuff is asking for a new calendar
+        if(this.newCalNeeded == true) return this.getNewCalender().then(() => this.newCalNeeded = false);
 
         //mega chaining ahead
 
@@ -295,10 +305,6 @@ export class CalendarData {
         //check day -> check cache -> check sync token -> sync
         let syncPromise = new Promise(this.dayCheckFunc).then(() => {
             return new Promise(this.dayCheckFunc);
-        }).then(() => {
-            return new Promise(this.cacheLoadCheckFunc);  
-        }).then(() => {
-            return new Promise(this.syncTokenCheckFunc);  
         }).then(this.syncFunc).catch(() => {
             return this.getNewCalender();  
         });
@@ -311,5 +317,5 @@ export class CalendarData {
         return this.cachedTodayEvents;
     }
 
-    clearCache() { return this.cache.clearAll(); }
+    clearCache() { return this.cache.clear(); }
 }
