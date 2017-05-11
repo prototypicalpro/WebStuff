@@ -28,10 +28,7 @@ export class HomePage {
   }
 
   syncCal(){
-    this.calData.syncCalendar().then(() => {
-      this.events = this.calData.getCachedTodayEvents();
-      console.log(this.events);
-    });
+    this.calData.syncCalendar();
   }
 
   clearCache(){

@@ -20,7 +20,7 @@
       <h1>{{s1}}</h1>
       <button ion-button block (click)='syncCal();'>Sync Calendar</button>
       <button ion-button block (click)='clearCache();'>Clear Cache</button>
-      <li *ngFor='let event of events'>
+      <li *ngFor='let event of calData.cachedTodayEvents'>
         {{ event.name }}
       </li>
     </ion-slide>

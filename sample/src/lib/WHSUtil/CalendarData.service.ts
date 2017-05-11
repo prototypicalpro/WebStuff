@@ -87,7 +87,7 @@ export class CalendarData {
     private nextSyncToken: string;
     private eventList: Object;
     private lastStored: Date;
-    private cachedTodayEvents: Array<any>;
+    cachedTodayEvents: Array<any>;
 
     private storageReady: boolean = false;
     private constructed: boolean = false;
@@ -192,13 +192,13 @@ export class CalendarData {
             if(this.lastStored != undefined){
                 //if the last date retrieved is greater than the current date
                 if(this.lastStored.getTime() > new Date().setHours(0,0,0,0)) return resolve();
-                else return reject("Cache out of date");
+                else return reject("Cached date out of date");
             }
             //check if stored calendar has today
             let checkSyncDate = this.cache.get(LASTDAY_CACHE_KEY).then((lastDate) => {
                 //if last date retrieved is less than current date or lastDate retrieved is junk
+                if(lastDate == null) return reject("No last date stored");
                 let date = new Date(lastDate);
-                if(lastDate == 0) return reject("No last date stored");
                 if(date.getTime() < new Date().setHours(0,0,0,0)) return reject("Cache out of date");
                 //else cache date and return true
                 this.lastStored = new Date(date);
@@ -215,6 +215,7 @@ export class CalendarData {
             if(this.eventList != undefined) return resolve();
             //load it from cache
             let cacheLoad = this.cache.get(EVENT_CACHE_KEY).then((events) => {
+                if(events == null) return reject("No event cache");
                 this.eventList = JSON.parse(events);
                 return resolve();
             }, () => { return reject("No event cache"); });
@@ -229,10 +230,11 @@ export class CalendarData {
             if(this.nextSyncToken != undefined) return resolve();
             //load stored syncToken
             let syncLoad = this.cache.get(SYNC_CACHE_KEY).then((token) => {
+                if(token == null) return reject("No stored sync token");
                 //sir, we got a token
                 this.nextSyncToken = token;
                 return resolve();
-            }).catch(() => { return reject("No stored sync token "); });
+            }).catch(() => { return reject("No stored sync token"); });
             return syncLoad;
         });
     }
