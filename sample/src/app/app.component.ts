@@ -21,8 +21,18 @@ export class MyApp {
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
+      let start, end;
       statusBar.styleDefault();
-      calData.initCalendar().then(() => splashScreen.hide());
+      let thing = new Promise((resolve) => {
+        start = performance.now();
+        resolve();
+      }).then(() => {
+        return calData.initCalendar();
+      }).then(() => {
+        end = performance.now();
+        console.log("Took: " + (end - start));
+        splashScreen.hide();
+      });
     });
   }
 }

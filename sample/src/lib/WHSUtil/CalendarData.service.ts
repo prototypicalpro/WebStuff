@@ -7,7 +7,7 @@
  */
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
-import { Http } from '@angular/http'
+import { HTTP } from '@ionic-native/http';
 import { WHSSched } from '../../lib/WHSUtil/WHSSched.ts';
 
 import 'rxjs/add/operator/toPromise';
@@ -82,7 +82,7 @@ class Event {
 @Injectable()
 export class CalendarData {
     private cache: Storage;
-    private http: Http;
+    private http: HTTP;
 
     private nextSyncToken: string;
     private eventList: Object;
@@ -90,15 +90,12 @@ export class CalendarData {
     cachedTodayEvents: Array<any>;
 
     private storageReady: boolean = false;
-    private constructed: boolean = false;
 
-    constructor(http: Http, cache: Storage) {
+    constructor(http: HTTP, cache: Storage) {
         //init cache service
         this.cache = cache;
         //init http
         this.http = http;
-        //trigger contructed flag
-        this.constructed = true;
     }
 
     /*
@@ -116,8 +113,8 @@ export class CalendarData {
         this.cache.set(LASTDAY_CACHE_KEY, sometime.toISOString());
         this.lastStored = sometime;
 
-        //grab stuff, split, parse, and save
-        let request = this.http.get(this.formatRequest(['timeMin', today.toISOString()], ['timeMax', sometime.toISOString()])).map(res => res.json()).toPromise().then((data) => {
+        let request = this.http.get(this.formatRequest(['timeMin', today.toISOString()], ['timeMax', sometime.toISOString()]),{}, {}).then((response) => {
+            let data = JSON.parse(response.data);
             //clear event cache
             this.cachedTodayEvents = undefined;
 
@@ -187,60 +184,54 @@ export class CalendarData {
 
     //function which checks the date stored in the calendar
     private dayCheckFunc() : Promise<any> {
-        return new Promise((resolve, reject) => {
-             //if we have the stored date, check it
-            if(this.lastStored != undefined){
-                //if the last date retrieved is greater than the current date
-                if(this.lastStored.getTime() > new Date().setHours(0,0,0,0)) return resolve();
-                else return reject("Cached date out of date");
-            }
-            //check if stored calendar has today
-            let checkSyncDate = this.cache.get(LASTDAY_CACHE_KEY).then((lastDate) => {
-                //if last date retrieved is less than current date or lastDate retrieved is junk
-                if(lastDate == null) return reject("No last date stored");
-                let date = new Date(lastDate);
-                if(date.getTime() < new Date().setHours(0,0,0,0)) return reject("Cache out of date");
-                //else cache date and return true
-                this.lastStored = new Date(date);
-                return resolve();
-            }, () => { return reject("No last date stored"); });
-            //guess we gotta wait on that one
-            return checkSyncDate;
-        });
+        //if we have the stored date, check it
+        if(this.lastStored != undefined){
+            //if the last date retrieved is greater than the current date
+            if(this.lastStored.getTime() > new Date().setHours(0,0,0,0)) return Promise.resolve();
+            else return Promise.reject("Cached date out of date");
+        }
+        //check if stored calendar has today
+        let checkSyncDate = this.cache.get(LASTDAY_CACHE_KEY).then((lastDate) => {
+            //if last date retrieved is less than current date or lastDate retrieved is junk
+            if(lastDate == null) return Promise.reject("No last date stored");
+            let date = new Date(lastDate);
+            if(date.getTime() < new Date().setHours(0,0,0,0)) return Promise.reject("Cache out of date");
+            //else cache date and return true
+            this.lastStored = new Date(date);
+            return Promise.resolve();
+        }, () => { return Promise.reject("No last date stored"); });
+        //guess we gotta wait on that one
+        return checkSyncDate;
     }
 
     //function which checks if calendar hasn't already been loaded into memory
     private cacheLoadCheckFunc() : Promise<any> {
-        return new Promise((resolve, reject) => {
-            if(this.eventList != undefined) return resolve();
-            //load it from cache
-            let cacheLoad = this.cache.get(EVENT_CACHE_KEY).then((events) => {
-                if(events == null) return reject("No event cache");
-                this.eventList = JSON.parse(events);
-                return resolve();
-            }, () => { return reject("No event cache"); });
-            return cacheLoad;
-        });
+        if(this.eventList != undefined) return Promise.resolve();
+        //load it from cache
+        let start = performance.now();
+        return this.cache.get(EVENT_CACHE_KEY).then((events) => {
+            if(events == null) return Promise.reject("No event cache");
+            this.eventList = JSON.parse(events);
+            return Promise.resolve();
+        }, () => { return Promise.reject("No event cache"); });
     }
 
     //function which checks the sync token
     private syncTokenCheckFunc() : Promise<any> {
-        return new Promise((resolve, reject) => {
-            //if we already have a sync token, get to syncing already
-            if(this.nextSyncToken != undefined) return resolve();
-            //load stored syncToken
-            let syncLoad = this.cache.get(SYNC_CACHE_KEY).then((token) => {
-                if(token == null) return reject("No stored sync token");
-                //sir, we got a token
-                this.nextSyncToken = token;
-                return resolve();
-            }).catch(() => { return reject("No stored sync token"); });
-            return syncLoad;
-        });
+        //if we already have a sync token, get to syncing already
+        if(this.nextSyncToken != undefined) return Promise.resolve();
+        //load stored syncToken
+        return this.cache.get(SYNC_CACHE_KEY).then((token) => {
+            if(token == null) return Promise.reject("No stored sync token");
+            //sir, we got a token
+            this.nextSyncToken = token;
+            return Promise.resolve();
+        }).catch(() => { return Promise.reject("No stored sync token"); });
     }
 
     private syncFunc() : Promise<any> {
-         let request = this.http.get(this.formatRequest(['syncToken', this.nextSyncToken])).map(res => res.json()).toPromise().then((syncData) => {
+        return this.http.get(this.formatRequest(['syncToken', this.nextSyncToken]), {}, {}).then((response) => {
+            let syncData = JSON.parse(response.data);
             //clear event cache
             this.cachedTodayEvents = undefined;
             //refresh syncToken
@@ -267,9 +258,6 @@ export class CalendarData {
             if(err.status == 410) return this.getNewCalendar();
             else return err;
         });
-
-        //errors will be handled in application so I can show toasts without including UI in service
-        return request;
     }
 
     /* 
@@ -278,32 +266,23 @@ export class CalendarData {
      * or at least I hope so, because this comment sure isn't helpful
      */
 
-    whenReady() : Promise<any> {
-        return new Promise((resolve, reject) => {
-            while(this.constructed == false);
-            console.log(this);
-            return resolve();
-        });
-    }
-
     initCalendar() : Promise<any> {
         //wooo javascript
         //alright, lets do this chaining
         //set cache ready and load up the calendar
+        //let start, dayCheck, cacheCheck, syncCheck, sync, newCal, cacheToday, errorTime;
         return this.cache.ready().then(() => {
-            return this.dayCheckFunc();
+            return Promise.all([this.dayCheckFunc(), this.cacheLoadCheckFunc(), this.syncTokenCheckFunc()]);
         }).then(() => {
-            return this.cacheLoadCheckFunc();  
-        }).then(() => {
-            return this.syncTokenCheckFunc();  
-        }).then(() => {
-            return this.syncFunc();
+            return this.syncFunc(); //125ish
         }).catch((error) => {
             console.log(error);
-            return this.getNewCalendar();
+            return this.getNewCalendar();  //170ish
         }).then(() => {
-            return this.cacheTodaysEventsPromise();
-        }).then(() => this.storageReady = true);
+            return this.cacheTodaysEventsPromise(); //too fast
+        }).then(() => {
+            this.storageReady = true;
+        });
     }
 
     syncCalendar() : Promise<any> {
