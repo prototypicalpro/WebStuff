@@ -1,5 +1,6 @@
 import { NgModule, ErrorHandler} from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { IonicStorageModule } from '@ionic/storage';
 import { HTTP } from '@ionic-native/http';
@@ -31,6 +32,7 @@ class notError {
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     //HttpModule,
     IonicModule.forRoot(MyApp),
     IonicStorageModule.forRoot()

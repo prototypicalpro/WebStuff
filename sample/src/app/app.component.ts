@@ -27,7 +27,8 @@ export class MyApp {
         start = performance.now();
         resolve();
       }).then(() => {
-        return calData.initCalendar();
+        //return calData.initCalendar();
+        return;
       }).then(() => {
         end = performance.now();
         console.log("Took: " + (end - start));

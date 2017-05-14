@@ -1,4 +1,4 @@
-import { Component, ViewChild, trigger, state, style, transition, animate, keyframes } from '@angular/core';
+import { Component, ViewChild, trigger, state, animate, transition, style  } from '@angular/core';
 import { NavController, Slides } from 'ionic-angular';
 import { WHSSched } from '../../lib/WHSUtil/WHSSched.ts';
 import { CalendarData } from '../../lib/WHSUtil/CalendarData.service';
@@ -6,15 +6,20 @@ import { CalendarData } from '../../lib/WHSUtil/CalendarData.service';
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html',
-  animations: [trigger('hidden', [
-       state('true', style({
-           opacity: 1
-       })),
-       state('false', style({
-           opacity: 0
-       })),
-       transition('* => *', animate('.5s'))
-   ])]
+  animations: [
+    trigger('hidden', [
+      transition(':enter', [
+        style({
+          position: 'absolute',
+          top: "-50%"
+        }),
+        animate('4000ms 5000ms ease-out', style({
+          position: 'relative',
+          top: '0'
+        }))
+      ])
+    ])
+  ]
 })
 export class HomePage {
   @ViewChild(Slides) slides: Slides;
@@ -25,7 +30,8 @@ export class HomePage {
   s2: string;
   events: Array<any>;
   imgURL: string;
-  hidden: boolean = true;
+  hidden: boolean = false;
+  hiddenCheck: string = "false";
 
   constructor(public navCtrl: NavController, public calDataThing: CalendarData) {
       //this.task = setInterval(() => {
@@ -42,12 +48,15 @@ export class HomePage {
   }
 
   ngAfterContentInit() {
-    this.hidden = false;
+    this.hidden = true;
+    this.hiddenCheck = this.hidden.toString();
   }
 
   syncCal(){
     this.hidden = !this.hidden;
-    this.calData.syncCalendar();
+    this.hiddenCheck = this.hidden.toString();
+    console.log(this.hiddenCheck);
+    //this.calData.syncCalendar();
   }
 
   clearCache(){
