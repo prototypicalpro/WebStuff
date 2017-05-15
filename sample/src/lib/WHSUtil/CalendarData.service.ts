@@ -7,8 +7,8 @@
  */
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
-import { HTTP } from '@ionic-native/http';
-import { WHSSched } from '../../lib/WHSUtil/WHSSched.ts';
+//import { HTTP } from '@ionic-native/http'; TODO: uncomment on release
+import { Http } from '@angular/http';
 
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/map';
@@ -82,7 +82,7 @@ class Event {
 @Injectable()
 export class CalendarData {
     private cache: Storage;
-    private http: HTTP;
+    private http: Http;
 
     private nextSyncToken: string;
     private eventList: Object;
@@ -90,8 +90,9 @@ export class CalendarData {
     cachedTodayEvents: Array<any>;
 
     private storageReady: boolean = false;
+    private initPromise: Promise<any>;
 
-    constructor(http: HTTP, cache: Storage) {
+    constructor(http: Http, cache: Storage) {
         //init cache service
         this.cache = cache;
         //init http
@@ -113,8 +114,7 @@ export class CalendarData {
         this.cache.set(LASTDAY_CACHE_KEY, sometime.toISOString());
         this.lastStored = sometime;
 
-        let request = this.http.get(this.formatRequest(['timeMin', today.toISOString()], ['timeMax', sometime.toISOString()]),{}, {}).then((response) => {
-            let data = JSON.parse(response.data);
+        let request = this.http.get(this.formatRequest(['timeMin', today.toISOString()], ['timeMax', sometime.toISOString()])).map(res => res.json()).toPromise().then((data) => {
             //clear event cache
             this.cachedTodayEvents = undefined;
 
@@ -230,8 +230,7 @@ export class CalendarData {
     }
 
     private syncFunc() : Promise<any> {
-        return this.http.get(this.formatRequest(['syncToken', this.nextSyncToken]), {}, {}).then((response) => {
-            let syncData = JSON.parse(response.data);
+        return this.http.get(this.formatRequest(['syncToken', this.nextSyncToken])).map(res => res.json()).toPromise().then((syncData) => {
             //clear event cache
             this.cachedTodayEvents = undefined;
             //refresh syncToken
@@ -271,7 +270,7 @@ export class CalendarData {
         //alright, lets do this chaining
         //set cache ready and load up the calendar
         //let start, dayCheck, cacheCheck, syncCheck, sync, newCal, cacheToday, errorTime;
-        return this.cache.ready().then(() => {
+        this.initPromise = this.cache.ready().then(() => {
             return Promise.all([this.dayCheckFunc(), this.cacheLoadCheckFunc(), this.syncTokenCheckFunc()]);
         }).then(() => {
             return this.syncFunc(); //125ish
@@ -283,6 +282,7 @@ export class CalendarData {
         }).then(() => {
             this.storageReady = true;
         });
+        return this.initPromise;
     }
 
     syncCalendar() : Promise<any> {
@@ -301,6 +301,8 @@ export class CalendarData {
             return this.cacheTodaysEventsPromise();
         });
     }
+
+    onInitFinish() { return this.initPromise; }
 
     getCachedTodayEvents() : Array<Event> { return this.cachedTodayEvents; }
 

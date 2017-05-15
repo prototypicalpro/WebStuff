@@ -1,4 +1,4 @@
-import { Component, ViewChild, trigger, state, animate, transition, style  } from '@angular/core';
+import { Component, ViewChild, OnInit, trigger, state, animate, transition, style  } from '@angular/core';
 import { NavController, Slides } from 'ionic-angular';
 import { WHSSched } from '../../lib/WHSUtil/WHSSched.ts';
 import { CalendarData } from '../../lib/WHSUtil/CalendarData.service';
@@ -8,21 +8,29 @@ import { CalendarData } from '../../lib/WHSUtil/CalendarData.service';
   templateUrl: 'home.html',
   animations: [
     trigger('hidden', [
-      transition(':enter', [
-        style({
-          position: 'absolute',
-          top: "-50%"
-        }),
-        animate('4000ms 5000ms ease-out', style({
-          position: 'relative',
-          top: '0'
-        }))
-      ])
-    ])
+      state('hidden', style({
+        transform: 'translateY(-100%)'
+      })),
+      state('shown',  style({
+        transform: 'translateY(0)'
+        //sir, I desire a staircase
+      })),
+      transition('hidden <=> shown', animate('300ms ease-out'))
+    ]),
+    trigger('fade', [
+      state('hidden', style({
+        opacity: 0
+      })),
+      state('shown',  style({
+        opacity: 1
+        //sir, I desire a staircase
+      })),
+      transition('hidden <=> shown', animate('300ms 300ms'))
+    ]),
   ]
 })
 export class HomePage {
-  @ViewChild(Slides) slides: Slides;
+  //@ViewChild(Slides) slides: Slides;
 
   task: any;
   calData: CalendarData;
@@ -30,8 +38,8 @@ export class HomePage {
   s2: string;
   events: Array<any>;
   imgURL: string;
-  hidden: boolean = false;
-  hiddenCheck: string = "false";
+  isHidden: string = 'hidden';
+  navHide: boolean = true;
 
   constructor(public navCtrl: NavController, public calDataThing: CalendarData) {
       //this.task = setInterval(() => {
@@ -47,25 +55,17 @@ export class HomePage {
       else this.imgURL = "http://media.oregonlive.com/trending/photo/2017/02/08/crater-lake-attendance-8622cbadf7945e4e.jpg";
   }
 
-  ngAfterContentInit() {
-    this.hidden = true;
-    this.hiddenCheck = this.hidden.toString();
+  ionViewDidEnter(){
+    this.isHidden = 'shown';
   }
 
   syncCal(){
-    this.hidden = !this.hidden;
-    this.hiddenCheck = this.hidden.toString();
-    console.log(this.hiddenCheck);
-    //this.calData.syncCalendar();
+    this.calData.syncCalendar();
+    this.navHide = !this.navHide;
   }
 
   clearCache(){
     this.calData.clearCache();
-  }
-
-  goToSlide(){
-    if(this.slides) this.slides.slideNext();
-    console.log("Slide Next!");
   }
 
 }

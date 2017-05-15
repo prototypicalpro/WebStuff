@@ -3,7 +3,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { IonicStorageModule } from '@ionic/storage';
-import { HTTP } from '@ionic-native/http';
+//import { HTTP } from '@ionic-native/http'; TODO: swap to native before release
+import { HttpModule } from '@angular/http';
 import { MyApp } from './app.component';
 
 import { CalendarData } from '../lib/WHSUtil/CalendarData.service';
@@ -33,7 +34,7 @@ class notError {
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    //HttpModule,
+    HttpModule,
     IonicModule.forRoot(MyApp),
     IonicStorageModule.forRoot()
   ],
@@ -50,8 +51,8 @@ class notError {
   providers: [
     StatusBar,
     SplashScreen,
-    HTTP,
-    {provide: ErrorHandler, useClass: notError}
+    CalendarData,
+    {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })
 export class AppModule {}
