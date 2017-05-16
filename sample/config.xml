@@ -78,6 +78,7 @@
         <splash height="480" src="resources/ios/splash/Default~iphone.png" width="320" />
     </platform>
     <plugin name="com.telerik.plugins.nativepagetransitions" spec="git+https://github.com/Telerik-Verified-Plugins/NativePageTransitions.git" />
+    <plugin name="cordova-plugin-browsertab" spec="^0.2.0" />
     <plugin name="cordova-plugin-console" spec="1.0.5" />
     <plugin name="cordova-plugin-device" spec="1.1.4" />
     <plugin name="cordova-plugin-http" spec="~1.2.0" />

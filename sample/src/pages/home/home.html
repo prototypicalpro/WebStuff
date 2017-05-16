@@ -1,5 +1,5 @@
 <!-- [@fade]='isHidden' -->
-<ion-header >
+<ion-header [@fade]='isHidden'>
   <ion-navbar>
     <ion-title>Home</ion-title>
   </ion-navbar>
@@ -8,7 +8,7 @@
 <!-- [style.background]="'url(' + imgURL + ')'" -->
 <ion-content padding>
   <!-- [@hidden]='isHidden' -->
-  <div >
+  <div [@hidden]='isHidden'>
     <h2>Welcome to Ionic!</h2>
     <p>
       This starter project comes with simple tabs-based layout for apps
