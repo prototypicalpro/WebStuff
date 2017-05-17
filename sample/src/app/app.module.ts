@@ -6,9 +6,11 @@ import { IonicStorageModule } from '@ionic/storage';
 //import { HTTP } from '@ionic-native/http'; TODO: swap to native before release
 import { HttpModule } from '@angular/http';
 import { BrowserTab } from '@ionic-native/browser-tab';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { MyApp } from './app.component';
 
 import { CalendarData } from '../lib/WHSUtil/CalendarData.service';
+import { URLUtil } from '../lib/URLUtil.service';
 
 import { AboutPage } from '../pages/about/about';
 import { ContactPage } from '../pages/contact/contact';
@@ -54,6 +56,8 @@ class notError {
     SplashScreen,
     CalendarData,
     BrowserTab,
+    InAppBrowser,
+    URLUtil,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })

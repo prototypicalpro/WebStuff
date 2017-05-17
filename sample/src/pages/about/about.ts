@@ -1,19 +1,15 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { BrowserTab } from '@ionic-native/browser-tab';
+import { URLUtil } from '../../lib/URLUtil.service';
 
 @Component({
   selector: 'page-about',
   templateUrl: 'about.html'
 })
 export class AboutPage {
-  tab: BrowserTab;
+  tab: URLUtil;
 
-  constructor(public navCtrl: NavController, private browserTab: BrowserTab) {
-    this.tab = browserTab;
-  }
-
-  openURL(){
-    this.tab.openUrl("https://developers.google.com/google-apps/calendar/v3/reference/events/list");
+  constructor(public navCtrl: NavController, private opener: URLUtil) {
+    this.tab = opener;
   }
 }

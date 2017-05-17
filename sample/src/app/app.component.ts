@@ -35,6 +35,7 @@ export class MyApp implements OnInit {
     this.calData.initCalendar().then(() => {
       end = performance.now();
       console.log("Took: " + (end - start));
+      return this.calData.syncCalendar();
     });
   }
 }

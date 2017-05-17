@@ -114,7 +114,7 @@ export class CalendarData {
         this.cache.set(LASTDAY_CACHE_KEY, sometime.toISOString());
         this.lastStored = sometime;
 
-        let request = this.http.get(this.formatRequest(['timeMin', today.toISOString()], ['timeMax', sometime.toISOString()])).map(res => res.json()).toPromise().then((data) => {
+        return this.http.get(this.formatRequest(['timeMin', today.toISOString()], ['timeMax', sometime.toISOString()])).map(res => res.json()).toPromise().then((data) => {
             //clear event cache
             this.cachedTodayEvents = undefined;
 
@@ -140,9 +140,6 @@ export class CalendarData {
 
             //should I return things? naw
         });
-
-        //errors will be handled in application so I can show toasts without including UI in service
-        return request;
     }
 
     private formatRequest(...args): string{
@@ -272,9 +269,11 @@ export class CalendarData {
         //let start, dayCheck, cacheCheck, syncCheck, sync, newCal, cacheToday, errorTime;
         this.initPromise = this.cache.ready().then(() => {
             return Promise.all([this.dayCheckFunc(), this.cacheLoadCheckFunc(), this.syncTokenCheckFunc()]);
-        }).then(() => {
-            return this.syncFunc(); //125ish
-        }).catch((error) => {
+        })
+        //.then(() => { removed to reduce lag
+        //    return this.syncFunc(); //125ish
+        //})
+        .catch((error) => {
             console.log(error);
             return this.getNewCalendar();  //170ish
         }).then(() => {
