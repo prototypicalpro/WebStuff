@@ -10,6 +10,7 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { MyApp } from './app.component';
 
 import { CalendarData } from '../lib/WHSUtil/CalendarData.service';
+import { WHSEventParse } from '../lib/WHSUtil/WHSSched';
 import { URLUtil } from '../lib/URLUtil.service';
 
 import { AboutPage } from '../pages/about/about';
@@ -57,6 +58,7 @@ class notError {
     CalendarData,
     BrowserTab,
     InAppBrowser,
+    WHSEventParse,
     URLUtil,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]

@@ -18,7 +18,7 @@
       Take a look at the <code>src/pages/</code> directory to add or change tabs,
       update any existing page or create new pages.
     </p>
-    <li *ngFor='let event of calData.cachedTodayEvents'>
+    <li *ngFor='let event of eventThingy.getFilteredEvents()'>
       {{ event.name }}
     </li>
     <ion-slides padding>
@@ -26,8 +26,8 @@
         <h1>{{s1}}</h1>
         <button ion-button block (click)='syncCal();'>Sync Calendar</button>
         <button ion-button block (click)='clearCache();'>Clear Cache</button>
-        <li *ngFor='let event of calData.cachedTodayEvents'>
-          {{ event.name }}
+        <li *ngFor='let event of eventThingy.getFilteredEvents()'>
+          {{ event.getName() }}
         </li>
       </ion-slide>
       <ion-slide>

@@ -9,16 +9,16 @@ import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 //import { HTTP } from '@ionic-native/http'; TODO: uncomment on release
 import { Http } from '@angular/http';
+import { Event } from './Event';
 
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/map';
-import * as moment from 'moment';
 
 //because library is written for the Wilson Calender, calender credentials will be
 //static
-const CAL_ID: string = 'q0q3k1l212j63ll589gckte05ebgqfe4@import.calendar.google.com';
+//const CAL_ID: string = 'q0q3k1l212j63ll589gckte05ebgqfe4@import.calendar.google.com';
 //const CAL_ID: string = 'o2tur235ud7inbdm3je330pl4c@group.calendar.google.com'; old google calendar
-//const CAL_ID: string = 'anythingupgrade@gmail.com' my calendar
+const CAL_ID: string = 'anythingupgrade@gmail.com' //my calendar
 const API_KEY: string = 'AIzaSyB0FJRVrer63aO-U_4JFi-6XCo0bS6Y6yk';
 const URL: string = 'https://www.googleapis.com/calendar/v3/calendars/' + CAL_ID + '/events?singleEvents=true&key=' + API_KEY;
 
@@ -28,58 +28,6 @@ const EVENT_CACHE_KEY: string = '0'; //arbitrary cache keys, b/c I made my own k
 const SYNC_CACHE_KEY: string = '1'; //this key is for a sync token from the calendar API 
 const LASTDAY_CACHE_KEY: string = '2'; //this key stores the last day the API cached, so as to know when to refresh it's sync and cache stuff
 
-//event class, designed to make parsing and storing a google calender JSON event list easier
-class Event {
-    isAllDay: boolean;
-    startTime: Date;
-    name: string;
-    id: string;
-
-    constructor(isAllDay: boolean, startTime: Date, name: string, id: string) {
-        this.isAllDay = isAllDay;
-        this.startTime = startTime;
-        this.name = name;
-        this.id = id;
-    }
-
-    getName(): string { return this.name; }
-
-    getIsAllDay(): boolean { return this.isAllDay; }
-
-    getTime(): Date { return this.startTime; }
-
-    getID(): string { return this.id; }
-
-    //cachable, returns and/or parses an array so you don't have to store the entire object
-    //idk why it's so important to me to save a few bytes, but whatever
-    returnCachable(): Array<any> { return [this.isAllDay, this.startTime.toISOString(), this.name, this.id]; }
-    
-    //alternate constructor from a cachable event object
-    static fromCachable(cached: Array<any>): Event { return new Event(cached[0], new Date(cached[1]), cached[2], cached[3]); }
-
-    //alternate constructor from a google calender JSON event
-    static fromGCAL(gcalJSONEvent: any): Event {
-        let allDay: boolean = false;
-        let start: Date;
-        //check for all day events
-        if(gcalJSONEvent.start.hasOwnProperty('date')){
-            allDay = true;
-            /* I decided I want to move this to a different file
-            //check for schedule key
-            if(WHSSched.CAL_KEYS.findIndex(element => {
-                return gcalJSONEvent.summary == element;
-            }) != undefined) schedInd = true;
-            */ //TODO: Move code
-            start = moment(gcalJSONEvent.start.date, "YYYY-MM-DD").toDate();
-        }
-        //else grab the stuff where it should be
-        else start = new Date(gcalJSONEvent.start.dateTime);
-
-        //and throw everything else into the contructor
-        return new Event(allDay, start, gcalJSONEvent.summary, gcalJSONEvent.id);
-    }
-}
-
 @Injectable()
 export class CalendarData {
     private cache: Storage;
@@ -88,7 +36,6 @@ export class CalendarData {
     private nextSyncToken: string;
     private eventList: Object;
     private lastStored: Date;
-    cachedTodayEvents: Array<any>;
 
     private storageReady: boolean = false;
     private initPromise: Promise<any>;
@@ -116,9 +63,6 @@ export class CalendarData {
         this.lastStored = sometime;
 
         return this.http.get(this.formatRequest(['timeMin', today.toISOString()], ['timeMax', sometime.toISOString()])).map(res => res.json()).toPromise().then((data) => {
-            //clear event cache
-            this.cachedTodayEvents = undefined;
-
             //store sync token for later use
             this.nextSyncToken = data.nextSyncToken;
             this.cache.set(SYNC_CACHE_KEY, data.nextSyncToken);
@@ -151,29 +95,6 @@ export class CalendarData {
             ret += args[i][1];
         }
         return ret;
-    }
-
-    private cacheTodaysEvents() : void {
-        //please call syncCalender() before calling this function, I would rather not have it automatically call it b/c its kinda inconsistent for this API
-        //init array
-        this.cachedTodayEvents = [];
-
-        //iterate through event list, looking for events today
-        for(let event in this.eventList){
-            //saftey check
-            if(this.eventList.hasOwnProperty(event)){
-                //if the event is on the day we last checked the calendar, store it in the cache array thing
-                let betterEvent : Event = Event.fromCachable(this.eventList[event]);
-                if(betterEvent.getTime().toDateString() == new Date().toDateString()) this.cachedTodayEvents.push(betterEvent);
-            }
-        }
-    }
-
-    private cacheTodaysEventsPromise() : Promise<any> {
-        return new Promise((resolve) => {
-            this.cacheTodaysEvents();
-            return resolve();
-        })
     }
 
     /*
@@ -229,8 +150,6 @@ export class CalendarData {
 
     private syncFunc() : Promise<any> {
         return this.http.get(this.formatRequest(['syncToken', this.nextSyncToken])).map(res => res.json()).toPromise().then((syncData) => {
-            //clear event cache
-            this.cachedTodayEvents = undefined;
             //refresh syncToken
             this.nextSyncToken = syncData.nextSyncToken;
             this.cache.set(SYNC_CACHE_KEY, syncData.nextSyncToken);
@@ -278,8 +197,6 @@ export class CalendarData {
             console.log(error);
             return this.getNewCalendar();  //170ish
         }).then(() => {
-            return this.cacheTodaysEventsPromise(); //too fast
-        }).then(() => {
             this.storageReady = true;
         });
         return this.initPromise;
@@ -291,20 +208,28 @@ export class CalendarData {
         //for now I'll just catch the error and request a new calendar
         if(this.storageReady == false) throw("Storage not ready!");
 
-        //mega chaining ahead
-        //check day -> check cache -> check sync token -> sync -> cache events
         return this.dayCheckFunc().then(() => {
             return this.syncFunc();
         }).catch(() => {
             return this.getNewCalendar();  
-        }).then(() => {
-            return this.cacheTodaysEventsPromise();
         });
     }
 
-    onInitFinish() { return this.initPromise; }
+    onInitFinish() : Promise<any> { return this.initPromise; }
 
-    getCachedTodayEvents() : Array<Event> { return this.cachedTodayEvents; }
+    getTodaysEvents() : Array<Event> {
+        let retEvent: Array<Event> = [];
+        //iterate through event list, looking for events today
+        for(let event in this.eventList){
+            //saftey check
+            if(this.eventList.hasOwnProperty(event)){
+                //if the event is on the day we last checked the calendar, store it in the cache array thing
+                let betterEvent : Event = Event.fromCachable(this.eventList[event]);
+                if(betterEvent.getTime().toDateString() == new Date().toDateString()) retEvent.push(betterEvent);
+            }
+        }
+        return retEvent;
+    }
 
-    clearCache() { return this.cache.clear(); }
+    clearCache() : any { return this.cache.clear(); }
 }

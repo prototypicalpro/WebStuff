@@ -9,6 +9,8 @@
 
 // moment.js to simplify formatting crap
 import * as moment from 'moment';
+import { Injectable } from '@angular/core';
+import { Event } from './Event';
 
 //classes to simplify information acess
 class Period {
@@ -44,17 +46,17 @@ class Schedule {
 
     getNumPeriods() : number {return this.periods.length; }
 
-    getCalenderName() : string { return this.name; }
+    getCalendarName() : string { return this.name; }
 
     getShowName() : string { return this.prettyName; }
 }
 
 // all times in his file will read like a clock
 // for more info read "string + format" in moment.js docs
-let fmt = "h:mma";
+const fmt = "h:mma";
 
 // common a/b schedule
-let times = {
+const times = {
     "1/5": [moment("8:15am", fmt), moment("9:47am", fmt)],
     "2/6": [moment("9:52am", fmt), moment("11:24am", fmt)],
     "Lunch": [moment("11:24am", fmt), moment("12:01am", fmt)],
@@ -63,6 +65,7 @@ let times = {
 };
 
 export namespace WHSSched{
+    //schedule constants
     export const ADay = new Schedule([
         new Period(times["1/5"], "1"),
         new Period(times["2/6"], "2"),
@@ -79,6 +82,48 @@ export namespace WHSSched{
         new Period(times["4/8"], "8")
     ], "B", "B Day");
 
-    export const CAL_KEYS = [ADay.getCalenderName(), BDay.getCalenderName()];
+    //list of keys to seach for in arrays
+    export const CAL_KEYS = {'A' : ADay, 'B' : BDay};
+
+    //function which checks event to see if it's a schedule event or not
+    export const isScheduleIndicator = (eventName : string) : boolean => {
+        return CAL_KEYS[eventName] != undefined;
+    }
+
+    //function to parse calendar and return the current schedule
+    //basically searches through event names for one that matches the names of one of the keys
+    //you should make sure that the events passed to this function are today's event for program sucsess
+    export const getScheduleEventIndex = (eventList : Array<Event>) : number => {
+        let x = eventList.length;
+        for (let i = 0; i < x; i++) if(isScheduleIndicator(eventList[i].getName())) return i;
+        return undefined;
+        //hot
+    }
+
+    export const getScheduleFromEvent = (event : Event) : Schedule => {
+        return CAL_KEYS[event.getName()];
+    }
+}
+
+@Injectable()
+export class WHSEventParse {
+    private eventCache : Array<Event>;
+    private scheduleCache : string;
+
+    filterEvents(eventList : Array<Event>) : void{
+        this.eventCache = [];
+        this.scheduleCache = undefined;
+
+        let x = eventList.length;
+        for(let i = 0; i < x; i++){
+                if(!WHSSched.isScheduleIndicator(eventList[i].getName())) this.eventCache.push(eventList[i]);
+                else if(this.scheduleCache == undefined) this.scheduleCache = eventList[i].getName();
+                else console.log("Two schedule indicators found, taking the first one");
+        }
+    }
+
+    getFilteredEvents() : Array<Event> { return this.eventCache; }
+
+    getSchedule() : Schedule { return WHSSched.CAL_KEYS[this.scheduleCache]; }
 }
 

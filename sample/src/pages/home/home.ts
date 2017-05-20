@@ -1,6 +1,6 @@
 import { Component, ViewChild, OnInit, trigger, state, animate, transition, style  } from '@angular/core';
 import { NavController, Slides } from 'ionic-angular';
-import { WHSSched } from '../../lib/WHSUtil/WHSSched.ts';
+import { WHSSched, WHSEventParse } from '../../lib/WHSUtil/WHSSched';
 import { CalendarData } from '../../lib/WHSUtil/CalendarData.service';
 
 @Component({
@@ -32,8 +32,8 @@ import { CalendarData } from '../../lib/WHSUtil/CalendarData.service';
 export class HomePage {
   //@ViewChild(Slides) slides: Slides;
 
-  task: any;
   calData: CalendarData;
+  eventThingy: WHSEventParse;
   s1: string;
   s2: string;
   events: Array<any>;
@@ -41,14 +41,10 @@ export class HomePage {
   isHidden: string = 'hidden';
   navHide: boolean = true;
 
-  constructor(public navCtrl: NavController, public calDataThing: CalendarData) {
-      //this.task = setInterval(() => {
-     // this.goToSlide();
-     // }, 500);
+  constructor(public navCtrl: NavController, public calDataThing: CalendarData, eventList: WHSEventParse) {
       this.calData = calDataThing;
-      //this.calData.logCalendar();
+      this.eventThingy = eventList;
 
-      this.s1 = WHSSched.ADay.getPeriod(3).getName();
       this.s2 = "Hello World!";
 
       if(Math.random() > 0.5) this.imgURL = "https://upload.wikimedia.org/wikipedia/commons/0/01/Crater_Lake_winter_pano2.jpg";
@@ -60,12 +56,14 @@ export class HomePage {
   }
 
   syncCal(){
-    this.calData.syncCalendar();
+    this.calData.syncCalendar().then(() => this.eventThingy.filterEvents(this.calData.getTodaysEvents()));
     this.navHide = !this.navHide;
+    this.s1 = this.eventThingy.getSchedule().getShowName();
   }
 
   clearCache(){
     this.calData.clearCache();
+    console.log(this.eventThingy.getSchedule().getCalendarName());
   }
 
 }
