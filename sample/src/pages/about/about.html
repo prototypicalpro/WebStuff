@@ -14,18 +14,18 @@
   </ion-card-header>
 
   <ion-card-content>
-    card stuff
+    <button ion-button block (click)='toggleTheme();'>Toggle Theme</button>
   </ion-card-content>
 
 </ion-card>
 
-<ion-card>
+<ion-card [class]="themePick">
 
   <ion-card-header>
     Card Header
   </ion-card-header>
 
-  <ion-card-content>
+  <ion-card-content >
     <button ion-button block (click)='tab.openURL("https://xkcd.com/");'>Open Web Link</button>
   </ion-card-content>
 
