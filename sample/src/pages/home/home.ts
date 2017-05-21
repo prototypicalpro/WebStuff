@@ -45,6 +45,12 @@ export class HomePage {
       this.calData = calDataThing;
       this.eventThingy = eventList;
 
+      this.calData.onInitFinish().then(() => {
+        let sched = this.eventThingy.getSchedule();
+        if(sched != undefined) this.s1 = sched.getShowName();
+        else this.s1 = 'No School Today';
+      });
+
       this.s2 = "Hello World!";
 
       if(Math.random() > 0.5) this.imgURL = "https://upload.wikimedia.org/wikipedia/commons/0/01/Crater_Lake_winter_pano2.jpg";
@@ -53,17 +59,20 @@ export class HomePage {
 
   ionViewDidEnter(){
     this.isHidden = 'shown';
+    
   }
 
   syncCal(){
-    this.calData.syncCalendar().then(() => this.eventThingy.filterEvents(this.calData.getTodaysEvents()));
+    this.calData.syncCalendar().then(() => this.eventThingy.filterEvents(this.calData.getTodaysEvents())).then(() => {
+      let sched = this.eventThingy.getSchedule();
+      if(sched != undefined) this.s1 = sched.getShowName();
+      else this.s1 = 'No School Today';
+    });
     this.navHide = !this.navHide;
-    this.s1 = this.eventThingy.getSchedule().getShowName();
   }
 
   clearCache(){
     this.calData.clearCache();
-    console.log(this.eventThingy.getSchedule().getCalendarName());
   }
 
 }
