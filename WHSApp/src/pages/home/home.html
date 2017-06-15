@@ -1,0 +1,22 @@
+
+<ion-content>
+  <!--background image object-->
+  <div id="background" [style.background-image]="backgroundSrc"> </div>
+
+   <!--top section text-->
+  <div id="topText">
+    <div id="topTextAlign">
+      <h2 id="dayText">{{dayName}}</h2>
+      <h1 id="periodText">{{periodName}}</h1>
+    </div>
+  </div>
+  <!--everything else-->
+  <div id="bottomContent"> 
+    <button ion-fab color="secondary" large="true" id="buttonThing"><ion-icon name="star"></ion-icon></button>
+    <div id="timeLeftBar">
+      <p id="timeText">{{timeLeft}}</p>
+    </div>
+
+  </div>
+
+</ion-content>
