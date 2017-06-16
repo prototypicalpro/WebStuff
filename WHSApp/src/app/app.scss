@@ -14,3 +14,14 @@
 // To declare rules for a specific mode, create a child rule
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
+
+$special-font-path: $font-path !default;
+
+@font-face {
+    font-family: 'GeometricSlabSerif703Bold';
+    src: url('#{$special-font-path}/geometricslabserif703boldbt.eot');
+    src: url('#{$special-font-path}/geometricslabserif703boldbt.eot') format('embedded-opentype'),
+         url('#{$special-font-path}/geometricslabserif703boldbt.woff') format('woff'),
+         url('#{$special-font-path}/geometricslabserif703boldbt.ttf') format('truetype'),
+         url('#{$special-font-path}/geometricslabserif703boldbt.svg#geometricslabserif703boldbt5942f8f8b47f4') format('svg');
+}

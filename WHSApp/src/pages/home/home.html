@@ -1,20 +1,34 @@
 
 <ion-content>
   <!--background image object-->
-  <div id="background" [style.background-image]="backgroundSrc"> </div>
+  <div id="background-pic" class="background" [style.background-image]="backgroundSrc">
+    <div id="shader" class="background"> </div>   
+  </div>
 
    <!--top section text-->
   <div id="topText">
     <div id="topTextAlign">
-      <h2 id="dayText">{{dayName}}</h2>
-      <h1 id="periodText">{{periodName}}</h1>
+      <h2 id="dayText" class="WHSFont">{{dayName}}</h2>
+      <h1 id="periodText" class="WHSFont">{{periodName}}</h1>
     </div>
   </div>
   <!--everything else-->
   <div id="bottomContent"> 
-    <button ion-fab color="secondary" large="true" id="buttonThing"><ion-icon name="star"></ion-icon></button>
+    <button ion-fab color="secondary" large="true" id="buttonThing"><ion-icon name="settings"></ion-icon></button>
     <div id="timeLeftBar">
-      <p id="timeText">{{timeLeft}}</p>
+      <p id="timeText" class="WHSFont">{{timeLeft}}</p>
+    </div>
+    <div id="cards">
+     <ion-card *ngFor="let number of [0,17,2,42,32,7]">
+      <button ion-item detail-none>
+        <ion-card-header>
+            huh
+        </ion-card-header>
+        <ion-card-content>
+          <p>{{number}}</p>
+        </ion-card-content>
+       </button>
+      </ion-card>
     </div>
 
   </div>

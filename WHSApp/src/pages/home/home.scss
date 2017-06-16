@@ -1,19 +1,40 @@
 page-home {
-    //background stretching
-    #background{
-        height: 40%;
+    .WHSFont{
+        font-family: "GeometricSlabSerif703Bold";
+    }
+
+    //background positioning
+    .background{
+        height: 45%;
         width: 104%;
         position: fixed;
         left: -2%;
         top: -5px;
+    }
+
+    //background picture stuff
+    #background-pic{
         z-index: -1;
 
         background-size: cover;
         background-repeat: no-repeat;
     }
 
+    //background shading
+    #shader{
+        //background-color: black;
+        //opacity: 0.5;
+        $start-opacity: 0.0;
+        $end-opacity: 0.5;
+
+        background: -webkit-linear-gradient(rgba(0,0,0,$start-opacity), rgba(0,0,0,$end-opacity)); /* For Safari 5.1 to 6.0 */
+        background: -o-linear-gradient(rgba(0,0,0,$start-opacity), rgba(0,0,0,$end-opacity)); /* For Opera 11.1 to 12.0 */
+        background: -moz-linear-gradient(rgba(0,0,0,$start-opacity), rgba(0,0,0,$end-opacity)); /* For Firefox 3.6 to 15 */
+        background: linear-gradient(rgba(0,0,0,$start-opacity), rgba(0,0,0,$end-opacity)); /* Standard syntax */
+    }
+
     #topText{
-        height: 34%;
+        height: 38%;
         width: 100%;
     }
 
@@ -41,28 +62,28 @@ page-home {
     }
 
     #bottomContent{
-        width: 100%;
-        height: 100%;
-        background-color: lightgray;
-        background: -webkit-linear-gradient(lightgray , gray); /* For Safari 5.1 to 6.0 */
-        background: -o-linear-gradient(lightgray , gray); /* For Opera 11.1 to 12.0 */
-        background: -moz-linear-gradient(lightgray , gray); /* For Firefox 3.6 to 15 */
-        background: linear-gradient(lightgray , gray); /* Standard syntax */
-        box-shadow: 0 -1px 10px black;
+        //width: 100%;
+        //background-color: lightgray;
+        
+        //background: -webkit-linear-gradient(lightgray , gray); /* For Safari 5.1 to 6.0 */
+        //background: -o-linear-gradient(lightgray , gray); /* For Opera 11.1 to 12.0 */
+        //background: -moz-linear-gradient(lightgray , gray); /* For Firefox 3.6 to 15 */
+        //background: linear-gradient(lightgray , gray); /* Standard syntax */
+        //box-shadow: 0 -1px 10px black;
     }
 
     #timeLeftBar{
         width: 100%;
         height: 40px;
-        position: relative;
-        top: 10px;
+        //position: relative;
+        //top: 10px;
         background-color: #636363;
     }
 
     #timeText{
         margin: 0 0 0 10%;
         color: white;
-        font-size: 100%;
+        font-size: 125%;
         //vertical center hack?
         position: relative;
         top: 50%;
@@ -74,12 +95,14 @@ page-home {
         float: right;
         margin-right: 10%;
         z-index: 99;
-        transform: translateY(-20px);
+        transform: translateY(-15px);
     }
 
-    //start with a transparent toolbar to show off image
-    ion-toolbar{
-        opacity: 0.0;
+    #cards{
+        background-color: lightgray;
+        padding-bottom: 10px;
+        height: auto;
+        width: auto;
     }
 
 }
