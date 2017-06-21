@@ -61,17 +61,6 @@ page-home {
         margin: 0 0 0 10%;
     }
 
-    #bottomContent{
-        //width: 100%;
-        //background-color: lightgray;
-        
-        //background: -webkit-linear-gradient(lightgray , gray); /* For Safari 5.1 to 6.0 */
-        //background: -o-linear-gradient(lightgray , gray); /* For Opera 11.1 to 12.0 */
-        //background: -moz-linear-gradient(lightgray , gray); /* For Firefox 3.6 to 15 */
-        //background: linear-gradient(lightgray , gray); /* Standard syntax */
-        //box-shadow: 0 -1px 10px black;
-    }
-
     #timeLeftBar{
         width: 100%;
         height: 40px;
@@ -103,6 +92,42 @@ page-home {
         padding-bottom: 10px;
         height: auto;
         width: auto;
+    }
+
+    //custom schedule card css, shouldn't be here for long
+
+    .timeTable{
+        float: left;
+        //margin-bottom: 10px;
+        //margin-top: 10px;
+
+        //margin-left: 5%;
+        font-size: 125%;
+
+    }
+
+    .periodNum{        
+        font-size: 150%;
+        float: left;
+        margin-left: 10.6%;
+        position: relative;
+
+        left: -26px;
+    }
+
+    .periodTime{
+        font-size: 100%;
+        position: relative;
+        margin-top: 2.7%;
+        //left: 20%;
+    }
+
+    .periodRoom{
+        font-size: 100%;
+    }
+
+    .even{
+        background-color: lightgray;
     }
 
 }

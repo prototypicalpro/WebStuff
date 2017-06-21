@@ -11,6 +11,9 @@ export class HomePage {
   periodName: String = '3rd Period';
   timeLeft: String = '45 Minutes Left';
 
+  time: String = '1:45pm-3:15pm';
+  room: String = 'Room 15';
+
   constructor(public navCtrl: NavController) {
 
   }

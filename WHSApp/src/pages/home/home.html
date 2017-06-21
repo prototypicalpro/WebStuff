@@ -1,5 +1,5 @@
 
-<ion-content>
+<ion-content overflow-scroll="true">
   <!--background image object-->
   <div id="background-pic" class="background" [style.background-image]="backgroundSrc">
     <div id="shader" class="background"> </div>   
@@ -19,14 +19,30 @@
       <p id="timeText" class="WHSFont">{{timeLeft}}</p>
     </div>
     <div id="cards">
-     <ion-card *ngFor="let number of [0,17,2,42,32,7]">
+      <div> 
+      
+      </div>
+      
+      <ion-card>
+        <ion-grid class="timeTable">
+          <ion-row *ngFor="let number of [1,2,2.5,3,4]; let odd=odd; let even=even;">
+            <ion-col [ngClass]="{ odd: odd, even: even }">
+              <p class="timeTable">Period {{number}}:</p>
+            </ion-col>
+            <ion-col [ngClass]="{ odd: odd, even: even }">
+              <p class="timeTable">1:45-3:15</p>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card>
+
+     <ion-card *ngFor="let number of [0,1,2,4,3,7]">
       <button ion-item detail-none>
-        <ion-card-header>
-            huh
-        </ion-card-header>
-        <ion-card-content>
-          <p>{{number}}</p>
-        </ion-card-content>
+
+          <h1 class="periodNum WHSFont">Period {{number}}</h1>
+          <p class="periodTime">{{time}}</p>
+          <p class="periodRoom">{{room}}</p>
+
        </button>
       </ion-card>
     </div>
