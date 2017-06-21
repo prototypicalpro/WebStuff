@@ -23,7 +23,7 @@
       
       </div>
       
-      <ion-card>
+      <ion-card *ngIf="false">
         <ion-grid class="timeTable">
           <ion-row *ngFor="let number of [1,2,2.5,3,4]; let odd=odd; let even=even;">
             <ion-col [ngClass]="{ odd: odd, even: even }">
@@ -31,6 +31,57 @@
             </ion-col>
             <ion-col [ngClass]="{ odd: odd, even: even }">
               <p class="timeTable">1:45-3:15</p>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card>
+
+      <ion-card class="alternateCard">
+        <ion-grid no-padding>
+          <ion-row>
+            <ion-col col-auto align-self-center class="times">
+              <p>09:15</p>
+              <p>03:15</p>
+            </ion-col>
+            <ion-col col-auto>
+              <div class="line blue"> </div>
+            </ion-col>
+            <ion-col align-self-center>
+              <p class="num">Period 3</p>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card>
+
+      <ion-card class="alternateCard green">
+        <ion-grid no-padding>
+          <ion-row>
+            <ion-col col-auto align-self-center class="times">
+              <p>09:15</p>
+              <p>03:15</p>
+            </ion-col>
+            <ion-col col-auto>
+              <div class="line darkgreen"> </div>
+            </ion-col>
+            <ion-col align-self-center>
+              <p class="num">Period 4</p>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card>
+
+      <ion-card class="alternateCard white" *ngFor="let number of [6,7,8]">
+        <ion-grid no-padding>
+          <ion-row>
+            <ion-col col-auto align-self-center class="times">
+              <p>09:15</p>
+              <p>03:15</p>
+            </ion-col>
+            <ion-col col-auto>
+              <div class="line red"> </div>
+            </ion-col>
+            <ion-col align-self-center>
+              <p class="num">Period {{number}}</p>
             </ion-col>
           </ion-row>
         </ion-grid>

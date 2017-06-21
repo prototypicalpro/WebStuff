@@ -88,7 +88,7 @@ page-home {
     }
 
     #cards{
-        background-color: lightgray;
+        background-color: #EFEFEF;
         padding-bottom: 10px;
         height: auto;
         width: auto;
@@ -106,8 +106,55 @@ page-home {
 
     }
 
+    //2cheap4me
+    .alternateCard{
+        background-color: lightgray;
+    }
+
+    .green{
+        background-color: lightgreen;
+    }
+
+    .white{
+        background-color: white;
+    }
+
+    .darkgreen{
+        background-color: green;
+    }
+
+    .red{
+        background-color: red;
+    }
+    
+    .blue{
+        background-color: blue;
+    }
+
+    .times{
+        margin-left: 5%;
+        margin-right: 5%;
+    }
+
+    .line{
+        height: 100%;
+        width: 1px;
+        //background-color: blue;
+    }
+
+    .num{        
+        font-size: 120%;
+        color: black;
+        float: left;
+        margin-left: 2%;
+        position: relative;
+
+        //left: -26px;
+    }
+
     .periodNum{        
         font-size: 150%;
+        color: black;
         float: left;
         margin-left: 10.6%;
         position: relative;
