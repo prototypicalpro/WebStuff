@@ -27,6 +27,6 @@ export const HTMLMap = {
         gradient: "shader"
     },
     font: {
-        WHSFont: "GeometricSlabSerif703Bold"
+        WHSFont: "BenjaminFont"
     }
 }

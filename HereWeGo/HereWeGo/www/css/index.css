@@ -1,19 +1,31 @@
-﻿* {
+﻿/*
+ * Jesus Fonts!
+ */
+
+@font-face {
+    font-family: 'BenjaminFont';
+    src: url('../fonts/geometricslabserif703boldbt.eot') format('embedded-opentype'), 
+         url('../fonts/geometricslabserif703boldbt.woff') format('woff'), 
+         url('../fonts/geometricslabserif703boldbt.ttf') format('truetype'), 
+         url('../fonts/geometricslabserif703boldbt.svg#geometricslabserif703boldbt5942f8f8b47f4') format('svg');
+}
+
+* {
     -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+html, body {
+    margin: 0;
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 
 body {
     -webkit-touch-callout: none;
     -webkit-text-size-adjust: none;
     -webkit-user-select: none;
-    font-family:'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, sans-serif;
-	
-    background-color: white;
+    font-family: 'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, sans-serif;
     font-family: 'RobotoRegular', 'Droid Sans', 'Segoe UI', Segoe, 'San Francisco', 'Helvetica Neue', Helvetica, Arial, Geneva, sans-serif;
-
-    margin: 0;
-
-    overflow: scroll;
 }
 
 /*
@@ -36,7 +48,6 @@ body {
     background-image: url("../images/background.jpg");
     position: fixed;
     z-index: -1;
-    top: 0;
 }
 
 /* Background Trancperency Gradient */
@@ -60,7 +71,7 @@ body {
 
 /* Global Top Section Text CSS */
 .top.text {
-    font-family: "GeometricSlabSerif703Bold", "Tekton Pro"; /* Benjamin, this is for you */
+    font-family: "BenjaminFont"; /* Benjamin, this is for you */
     color: white;
     margin: 0;
 }
@@ -114,32 +125,43 @@ body {
     position: relative;
     top: 50%;
     transform: translateY(-50%);
-
 }
 
 /* Button Thingy */
-    .bottom.fab {
-        box-shadow: 0 4px 6px 0 rgba(0, 0, 0, .14), 0 4px 5px rgba(0, 0, 0, .1);
-        transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1), background-color 300ms cubic-bezier(0.4, 0, 0.2, 1), color 300ms cubic-bezier(0.4, 0, 0.2, 1);
-        background-color: #D0C6F8;
-        border-radius: 50%;
-        display: block;
-        height: 64px;
-        width: 64px;
-        float: right;
-        left: -10vw;
-        z-index: 99;
-    }
-
+.bottom.fab {
+    box-shadow: 0 4px 6px 0 rgba(0, 0, 0, .14), 0 4px 5px rgba(0, 0, 0, .1);
+    transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1), background-color 300ms cubic-bezier(0.4, 0, 0.2, 1), color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    background-color: #D0C6F8;
+    border-radius: 50%;
+    display: block;
+    height: 64px;
+    width: 64px;
+    float: right;
+    left: -10vw;
+    z-index: 99;
+}
 .bottom.fab:active {
     box-shadow: 0 5px 15px 0 rgba(0, 0, 0, .4), 0 4px 7px 0 rgba(0, 0, 0, .1);
+    background-color: #bfb6e4;
 }
 
 /* Time Left Text */
 .bottom.timeText {
-    font-family: "GeometricSlabSerif703Bold", "Tekton Pro"; /* Benjamin, this is also for you */
+    font-family: "BenjaminFont"; /* Benjamin, this is also for you */
     font-size: 125%;
     color: white;
+    display: inline-block;
     margin: 0;
     left: 10vw;
+}
+
+/* Schedule Graphic */
+.bottom.table {
+    padding-left: 5vw;
+    padding-right: 5vw;
+    width: 100vw;
+    height: 46px;
+}
+.bottom.row{
+    height: inherit;
 }
