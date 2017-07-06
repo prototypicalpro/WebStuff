@@ -3,5 +3,13 @@
     "version": "1.0.0",
     "private": true,
     "dependencies": {
+        "cordova-plugin-compat": "^1.0.0",
+        "cordova-plugin-file": "^4.3.3",
+        "cordova-plugin-http": "^1.2.0"
+    },
+    "cordova": {
+        "plugins": {
+            "cordova-plugin-http": {}
+        }
     }
 }
