@@ -156,6 +156,7 @@ body {
 
 /* Time Left Text */
 .bottom.timeText {
+    text-transform: capitalize;
     font-family: "BenjaminFont"; /* Benjamin, this is also for you */
     font-size: 125%;
     color: white;
@@ -166,13 +167,31 @@ body {
 
 /* Schedule Graphic */
 .bottom.table {
-    padding-left: 5vw;
-    padding-right: 5vw;
-    width: 100vw;
+    margin-left: 5vw;
+    width: 90vw;
     height: 46px;
+    background-color: lightgray;
+    border-collapse: collapse;
 }
 .bottom.row {
-    height: inherit;
+
+}
+
+.bottom.row.leftCell{
+    border-right: 1px solid red;
+    width: 25vw;
+    text-align: center;
+}
+
+.bottom.text {
+    margin: 0;
+    border: 0;
+}
+
+.bottom.rightCell.text{
+    margin-left: 4vw;
+    font-weight: 500;
+    font-size: 150%;
 }
 
 /* Bottom Pullup Animation */
