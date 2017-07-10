@@ -31,6 +31,10 @@ body {
     font-family: 'RobotoRegular', 'Droid Sans', 'Segoe UI', Segoe, 'San Francisco', 'Helvetica Neue', Helvetica, Arial, Geneva, sans-serif;
 }
 
+.hidden {
+    display: none;
+}
+
 /*
  * Background CSS
  * Displays the image and fancy gradient thingy
@@ -167,14 +171,10 @@ body {
 
 /* Schedule Graphic */
 .bottom.table {
-    margin-left: 5vw;
-    width: 90vw;
-    height: 46px;
-    background-color: lightgray;
+    width: 100vw;
+    height: 38vh;
     border-collapse: collapse;
-}
-.bottom.row {
-
+    position: absolute;
 }
 
 .bottom.row.leftCell{
@@ -184,7 +184,7 @@ body {
 }
 
 .bottom.text {
-    margin: 0;
+    margin: 2px 0 2px 0;
     border: 0;
 }
 

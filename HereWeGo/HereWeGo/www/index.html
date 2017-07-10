@@ -35,19 +35,21 @@
                 <p class="bottom bar timeText"></p>
             </div>
             <!-- Schedule Table -->
-            <table class="bottom table">
-                <tr class="bottom row" id="periodRow">
-                    <td class="bottom row leftCell">
-                        <p class="bottom leftCell text upText">9:15am</p>
-                        <p class="bottom leftCell text lowText">10:25am</p>
-                    </td>
-                    <td class="bottom row rightCell">
-                        <p class="bottom rightCell text">Period 1</p> 
-                    </td>
-                </tr>
-            </table>
+            <table class="bottom table"> <tbody></tbody> </table>
         </div>
         
+        <table class="hidden">
+            <tr class="bottom row justRow" id="periodRow">
+                <td class="bottom row leftCell">
+                    <p class="bottom leftCell text upText">9:15am</p>
+                    <p class="bottom leftCell text lowText">10:25am</p>
+                </td>
+                <td class="bottom row rightCell">
+                    <p class="bottom rightCell text">Period 1</p>
+                </td>
+            </tr>
+        </table>
+
         <!-- Gotta have that hawt formatting -->
         <script type="text/javascript" src="scripts/moment.js"></script>
         <!-- Storage -->
@@ -58,3 +60,4 @@
         <script type="text/javascript" data-main="scripts/startup" src="lib/require.2.1.8.js" async></script>
     </body>
 </html>
+
