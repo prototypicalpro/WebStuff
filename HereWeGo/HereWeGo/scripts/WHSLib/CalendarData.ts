@@ -181,7 +181,7 @@ class CalendarData {
             if(this.eventList.hasOwnProperty(event)){
                 //if the event is on the day we last checked the calendar, store it in the cache array thing
                 let betterEvent : Event = Event.fromCachable(this.eventList[event]);
-                if(betterEvent.getTime().toDateString() == new Date().toDateString()) retEvent.push(betterEvent);
+                if(betterEvent.getTime().toDateString() === new Date().toDateString()) retEvent.push(betterEvent);
             }
         }
         return retEvent;
