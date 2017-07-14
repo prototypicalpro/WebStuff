@@ -1,6 +1,5 @@
 ﻿/*
- * Library which parses schedule data recieved from the cloud,
- * and makes it semi-acessible
+ * Library which makes schedule data semi-accesible
  */
 
 import * as moment from 'moment';
@@ -15,24 +14,6 @@ namespace ScheduleUtil {
         AFTER_END = -1
     }
 
-    //utility interface to mrepresent the data retrieved from the cloud
-    export interface StoreSchedule {
-        periods: Array<Array<string>>;
-        key: string;
-        name: string;
-    }
-    //utility enum to represent the array locations of data items in the period string array from the cloud
-    enum IndexName {
-        START_TIME = 0,
-        END_TIME = 1,
-        PERIOD_TYPE = 2,
-        NAME = 3
-    }
-
-    // all times from the cloud will read like a clock
-    // for more info read "string + format" in moment.js docs
-    const fmt = "hh:mma";
-
     //classes to simplify information acess
     export class Period {
         private startTime: any; //moment
@@ -45,17 +26,6 @@ namespace ScheduleUtil {
             this.endTime = endTime;
             this.type = type;
             this.name = name;
-        }
-
-        static fromCloudData(data: Array<string>): Period {
-            let type;
-            switch (data[IndexName.PERIOD_TYPE]) {
-                case 'class': type = PeriodType.CLASS; break;
-                case 'lunch': type = PeriodType.LUNCH; break;
-                case 'tutor': type = PeriodType.TUTOR_TIME; break;
-                default: throw Error("Unknown period type!");
-            }
-            return new Period(moment(data[IndexName.START_TIME], fmt), moment(data[IndexName.END_TIME], fmt), type, data[IndexName.NAME]);
         }
 
         getName(): string { return this.name; }
@@ -78,27 +48,6 @@ namespace ScheduleUtil {
         constructor(periods: Period[], name: string) {
             this.periods = periods;
             this.prettyName = name;
-        }
-
-        static fromCloudData(data: StoreSchedule): Schedule {
-            //construct period array from recieved data
-            let schedule: Array<Period> = [];
-            for (let i = 0, len = data.periods.length; i < len; i++) {
-                schedule.push(Period.fromCloudData(data.periods[i]));
-            }
-            //fill in the gaps of the passed array
-            let o = 0;
-            for (let i = 0, len = schedule.length; i < len - 1; i++ , o++) {
-                //if the end time for the first is not equal to the start time for the last
-                //eg there is a time gap
-                if (!schedule[o].getEnd().isSame(schedule[o + 1].getStart())) {
-                    //fill the gap with a passing time
-                    schedule.splice(o + 1, 0, new Period(schedule[o].getEnd(), schedule[o + 1].getStart(), PeriodType.PASSING, ""));
-                    //increment index so we skip over the element we just made
-                    o++;
-                }
-            }
-            return new Schedule(schedule, data.name);
         }
 
         getPeriod(index: number): Period { return this.periods[index]; }
@@ -127,17 +76,8 @@ namespace ScheduleUtil {
         }
     }
 
-    //schedule constants
-    const NoSchool = new Schedule([], "No School");
-
-    //finally, the magic function
-    export const getSchedule = (schedData: Array<StoreSchedule>, schedKey: string): Schedule => {
-        if (typeof schedKey === 'undefined' || schedKey == null || schedKey === "") return NoSchool;
-        for (let i = 0, len = schedData.length; i < len; i++) {
-            if (schedData[i].key === schedKey) return Schedule.fromCloudData(schedData[i]);
-        }
-        return NoSchool;
-    };
+    //schedule constant
+    export const NoSchool = new Schedule([], "No School");
 }
 
 export = ScheduleUtil;

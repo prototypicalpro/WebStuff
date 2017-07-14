@@ -4,6 +4,7 @@
 // and then run "window.location.reload()" in the JavaScript Console.
 import localForage = require("localforage");
 import * as moment from 'moment';
+import { LOCALFORAGE_NAME } from './WHSLib/CacheKeys'
 import GetLib = require('./GetLib/GetLib');
 import DataManage = require('./WHSLib/DataManage');
 import ScheduleUtil = require('./WHSLib/ScheduleUtil');
@@ -17,7 +18,7 @@ var get: GetLib;
 export function initialize(): void {
     document.addEventListener('deviceready', onDeviceReady, false);
     //configure localforage
-    localForage.config({ name: 'CalendarCache' });
+    localForage.config({ name: LOCALFORAGE_NAME });
 }
 
 function updateTime(schedule: ScheduleUtil.Schedule): void {

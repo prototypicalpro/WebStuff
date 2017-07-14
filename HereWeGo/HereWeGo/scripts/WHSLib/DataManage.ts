@@ -11,12 +11,8 @@
 import localForage = require("localforage");
 import GetLib = require('../GetLib/GetLib');
 import ScheduleUtil = require('./ScheduleUtil');
+import { TIME_CACHE_KEY, SCHED_CACHE_KEY, CAL_CACHE_KEY } from './CacheKeys';
 
-
-//some settings, which I will put somewhere sometime
-const TIME_CACHE_KEY: string = '1';
-const SCHED_CACHE_KEY: string = '2';
-const CAL_CACHE_KEY: string = '3';
 
 const URL: string = 'https://script.google.com/macros/s/AKfycbxyS4utDJEJ3bE2spSE4SIRlwj10M2Owbe7_XWrOFSobfniQjve/exec';
 
@@ -58,10 +54,9 @@ class DataManage {
 
     //parsing function, takes stored data and refreshes it with the sync data
     private parseCalendarData(data: Object, syncData: Object): Object {
-        let start = performance.now();
-
         console.log(JSON.stringify(data));
         console.log(JSON.stringify(syncData))
+        let start = performance.now();
 
         let keys = Object.keys(syncData);
         for (let i = 0, len = keys.length; i < len; i++) {
