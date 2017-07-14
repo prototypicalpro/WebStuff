@@ -4,8 +4,10 @@
  * Also abstracts all the http crap
  */
 
-interface CalendarInterface {
-    getCalendar(extraParams: Object): Promise<Object>;
+//interface drivers for get ar built on
+interface GetInterface {
+    get(URL: string): Promise<Object>;
 }
 
-export = CalendarInterface;
+
+export = GetInterface;

@@ -1,9 +1,9 @@
 ﻿/*
  * I don't remember what this code does
  */
-
+/*
 import Event = require('./Event');
-import WHSSched = require('./WHSSched');
+import ScheduleUtil = require('./ScheduleUtil');
 
 class WHSEventParse {
     private eventCache: Array<Event>;
@@ -15,7 +15,7 @@ class WHSEventParse {
 
         let x = eventList.length;
         for (let i = 0; i < x; i++) {
-            if (!WHSSched.isScheduleIndicator(eventList[i].getName())) this.eventCache.push(eventList[i]);
+            if (!ScheduleUtil.isScheduleIndicator(eventList[i].getName())) this.eventCache.push(eventList[i]);
             else if (this.scheduleCache == undefined) this.scheduleCache = eventList[i].getName();
             else console.log("Two schedule indicators found, taking the first one");
         }
@@ -32,3 +32,6 @@ class WHSEventParse {
 }
 
 export = WHSEventParse;
+*/
+
+//needs to be rewritten

@@ -3,19 +3,16 @@
 // To debug code on page load in cordova-simulate or on Android devices/emulators: launch your app, set breakpoints, 
 // and then run "window.location.reload()" in the JavaScript Console.
 import localForage = require("localforage");
-import Calendar = require('./WHSLib/CalendarData');
-import WHSSched = require('./WHSLib/WHSSched');
 import * as moment from 'moment';
-import WHSEventParse = require('./WHSLib/WHSEventParse');
-import Storage = require('./CalGetLib/CalendarInterface');
-import Fetch = require('./CalGetLib/FetchCalendarGet');
-import Native = require('./CalGetLib/NativeCalendarGet');
+import GetLib = require('./GetLib/GetLib');
+import DataManage = require('./WHSLib/DataManage');
+import ScheduleUtil = require('./WHSLib/ScheduleUtil');
 import HTMLMap = require('./HTMLMap');
 
 "use strict";
 
-var calendar: Calendar;
-var eventList: WHSEventParse;
+var data: DataManage;
+var get: GetLib;
 
 export function initialize(): void {
     document.addEventListener('deviceready', onDeviceReady, false);
@@ -23,14 +20,14 @@ export function initialize(): void {
     localForage.config({ name: 'CalendarCache' });
 }
 
-function updateTime(schedule: WHSSched.Schedule): void {
+function updateTime(schedule: ScheduleUtil.Schedule): void {
     const index = schedule.getCurrentPeriodIndex();
-    if (index === WHSSched.PeriodType.BEFORE_START) {
+    if (index === ScheduleUtil.PeriodType.BEFORE_START) {
         //before start code
         HTMLMap.bottomBarText.innerHTML = "School starts " + moment().to(schedule.getPeriod(0).getStart());
         HTMLMap.topLowText.innerHTML = "";
     }
-    if (index === WHSSched.PeriodType.AFTER_END) {
+    if (index === ScheduleUtil.PeriodType.AFTER_END) {
         //after end code
         HTMLMap.bottomBarText.innerHTML = moment().format('LT');
         HTMLMap.topLowText.innerHTML = "";
@@ -51,37 +48,23 @@ function onDeviceReady(): void {
 
     // TODO: Cordova has been loaded. Perform any initialization that requires Cordova here.
 
-    // Startup Storage and calendar
-    // Check if native storage works
-    //if (Native.checkAPI()) {
-    //    console.log("Using native http!")
-    //    calendar = new Calendar(new Native());
-   // }
-    //else {
-        calendar = new Calendar(new Fetch());
-    //}
+    get = new GetLib();
+    if (!get.initAPI()) console.log("HTTP failed!");
+    data = new DataManage(get);
     // Register button
     document.querySelector('.bottom.fab').addEventListener('click', () => {
         console.log("click!");
         HTMLMap.deleteScheduleRows();
-        calendar.clearCache().then(calendar.syncCalendar.bind(calendar)).then(() => console.table(calendar.getTodaysEvents()));
+        data.refreshData().then(() => {
+            console.log(data.getSchedule(new Date()));
+        });
     });
 
     //grabby grabby
-    calendar.initCalendar().then(() => {
-        //construct event list
-        eventList = new WHSEventParse();
-        eventList.filterEvents(calendar.getTodaysEvents());
-
-        if (eventList.getSchoolToday()) {
-            //there's school today!
-            //do the thing! but, like, a whole bunch
-            updateTime(eventList.getSchedule());
-            setInterval(updateTime, 60000, eventList.getSchedule());
-        }
-        else {
-            HTMLMap.topLowText.innerHTML = 'No School';
-        }
+    data.initData().then(() => {
+        //loggy loggy
+        console.log(data.getSchedule(new Date()));
+        
 
         //testing stuff
         HTMLMap.pushBackScheduleRow({ leftText: ['9:15am', '10:45am'], lineColor: 'red', rightText: 'Period 1', backgroundColor: 'lightgray' });
