@@ -59,18 +59,25 @@ class SchedDataManage implements DataInterface {
 
     loadData(): Promise<any> {
         return localforage.getItem(SCHED_CACHE_KEY).then((data: Array<StoreSchedule>) => {
-            if (data == null) return Promise.reject("No stored schedule!");
-            else this.storedData = data;
+            if (data === null) return Promise.reject("No stored schedule!");
+            else {
+                this.storedData = data;
+                localforage.setItem(SCHED_CACHE_KEY, this.storedData);
+            }
         });
     }
 
     //this update function is simple: if we got data, overwrite
     updataData(data: any): void {
-        if (data.length > 0) this.storedData = data;
+        if (data.length > 0) {
+            this.storedData = data;
+            localforage.setItem(SCHED_CACHE_KEY, this.storedData);
+        }
     }
 
     overwriteData(data: any): void {
         this.storedData = data;
+        localforage.setItem(SCHED_CACHE_KEY, this.storedData);
     }
 
     //proprietary functions for frontend use

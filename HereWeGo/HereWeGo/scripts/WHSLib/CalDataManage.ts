@@ -77,28 +77,135 @@ class CalDataManage implements DataInterface {
         data = data as Array<EventInterface>;
         if (this.usingDB) {
             let objectStore = this.db.transaction([CAL_DB_NAME], "readwrite").objectStore(CAL_DB_NAME);
-            //iterate through all elements, removing the ones before today
+            //moar promises!
+            let thing: Promise<any> = new Promise((resolve, reject) => {
+                //iterate through all elements, removing the ones before today
+                let nowDay: Date = new Date();
+                nowDay.setHours(0, 0, 0, 0);
+                let nowTime: number = nowDay.getTime();
+
+                objectStore.openCursor().onsuccess = (event: any) => {
+                    let cursor = event.target.result as IDBCursorWithValue;
+                    if (cursor) {
+                        //remove if old
+                        if (cursor.value.startTime.getTime() < nowTime) cursor.delete();
+                        cursor.continue();
+                    }
+                    else resolve();
+                };
+            }).then(() => {
+                //then do a buncha quuuueirereis to update the database entries
+                //but put it all in promises just to be sure
+                let ray: Array<Promise<any>> = [];
+                for (let i = 0, len = data.length; i < len; i++) {
+                    if ('cancelled' in data[i]) ray.push(new Promise((resolve, reject) => {
+                        let req = objectStore.delete(data[i].id);
+                        req.onsuccess = resolve;
+                        req.onerror = reject;
+                    }));
+                    
+                    else ray.push(new Promise((resolve, reject) => {
+                        let req = objectStore.put(data[i].id);
+                        req.onsuccess = resolve;
+                        req.onerror = reject;
+                    }));;
+                }
+                return Promise.all(ray);
+            }); 
+        }
+        //the crappy workaround part
+        else {
+            //we just put everything in memory, and for loop the crap out of it
+            //iterate through all elements, removing ones before today
             let nowDay: Date = new Date();
             nowDay.setHours(0, 0, 0, 0);
             let nowTime: number = nowDay.getTime();
-            objectStore.openCursor().onsuccess = (event: any) => {
-                let cursor = event.target.result as IDBCursorWithValue;
-                if (cursor) {
-                    //remove if old
-                    if (cursor.value.startTime.getTime() < nowTime) cursor.delete();
-                    cursor.continue();
+            for (let i = 0, len = this.crappyEvents.length; i < len; i++) {
+                if (this.crappyEvents[i].startTime.getTime() < nowTime) {
+                    delete this.crappyEvents[i];
+                    //gawd this is terrible
+                    //we remove a spot from the array, so we have to do this as well
+                    i--;
+                    len--;
                 }
             }
-            //then do a buncha quuuueirereis to update the database entries
+            //then nest a bunch of for loops to update every event
+            //for every updated event
             for (let i = 0, len = data.length; i < len; i++) {
-                if ('cancelled' in data[i]) objectStore.delete(data[i].id);
-                else objectStore.put(data[i]);
+                //check against every stored event for an id match
+                for (let j = 0, len2 = this.crappyEvents.length; j < len2; j++) {
+                    if (data[i].id === this.crappyEvents[j].id) {
+                        //if cancelled, delete, else update
+                        if ('cancelled' in data[i]) delete this.crappyEvents[j];
+                        else this.crappyEvents[j] = data[i];
+                        break;
+                    }
+                }
             }
+            //store everything we just did
+            localforage.setItem(CAL_CACHE_KEY, this.crappyEvents);
         }
     }
 
     overwriteData(data: any): void {
-        throw new Error('Method not implemented.');
+        //cast
+        data = data as Array<EventInterface>;
+        //check the storage mediums
+        if (this.usingDB) {
+            let objectStore: IDBObjectStore = this.db.transaction([CAL_DB_NAME], "readwrite").objectStore(CAL_DB_NAME);
+            //promises! yay!
+            let thing: Promise<any> = new Promise((resolve, reject) => {
+                //clear object store
+                let req: IDBRequest = objectStore.clear();
+                req.onsuccess = resolve;
+                req.onerror = reject;
+            }).then(() => {
+                //fill it with the new datums
+                let ray: Array<Promise<any>> = [];
+                for (let i = 0, len = data.length; i < len; i++) {
+                    ray.push(new Promise((resolve, reject) => {
+                        let req = objectStore.add(data[i]);
+                        req.onsuccess = resolve;
+                        req.onerror = reject;
+                    }));
+                }
+                //and run them all
+                return Promise.all(ray);
+            });
+        }
+        //else memory it again
+        else {
+            this.crappyEvents = data;
+            localforage.setItem(CAL_CACHE_KEY, this.crappyEvents);
+        }
+    }
+
+    //other more interesting functions
+    getEvents(day: Date, cursorFunc: (event: EventInterface) => void): void{
+        //this is where the db should pay off
+        if (this.usingDB) {
+            let thing: Promise<any> = new Promise((resolve, reject) => {
+                //only cursor through items with correct day
+                let req: IDBRequest = this.db.transaction([CAL_DB_NAME], "readonly").objectStore(CAL_DB_NAME).index('startTime').openCursor(IDBKeyRange.only(day.toDateString()));
+                req.onsuccess = (event: any) => {
+                    let cursor: IDBCursorWithValue = event.target.result;
+                    if (cursor) {
+                        cursorFunc(cursor.value);
+                        cursor.continue();
+                    }
+                    else resolve();
+                }
+                req.onerror = reject;
+            });
+        }
+        //or maybe not, that's kinda complicated
+        else {
+            let thing: Promise<any> = new Promise(() => {
+                let dateString: string = day.toDateString();
+                for (let i = 0, len = this.crappyEvents.length; i < len; i++) 
+                    if (this.crappyEvents[i].startTime.toDateString() === dateString) cursorFunc(this.crappyEvents[i]);
+            });
+        }
     }
 }
 

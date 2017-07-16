@@ -7,13 +7,17 @@ import * as moment from 'moment';
 import { LOCALFORAGE_NAME } from './WHSLib/CacheKeys'
 import GetLib = require('./GetLib/GetLib');
 import DataManage = require('./WHSLib/DataManage');
+import SchedDataManage = require('./WHSLib/SchedDataManage');
 import ScheduleUtil = require('./WHSLib/ScheduleUtil');
+import CalDataManage = require('./WHSLib/CalDataManage');
 import HTMLMap = require('./HTMLMap');
 
 "use strict";
 
 var data: DataManage;
-var get: GetLib;
+var sched: SchedDataManage = new SchedDataManage();
+var cal: CalDataManage = new CalDataManage();
+var get: GetLib = new GetLib();
 
 export function initialize(): void {
     document.addEventListener('deviceready', onDeviceReady, false);
@@ -49,24 +53,22 @@ function onDeviceReady(): void {
 
     // TODO: Cordova has been loaded. Perform any initialization that requires Cordova here.
 
-    get = new GetLib();
     if (!get.initAPI()) console.log("HTTP failed!");
-    data = new DataManage(get);
+    data = new DataManage(get, [sched]);
     // Register button
     document.querySelector('.bottom.fab').addEventListener('click', () => {
         console.log("click!");
         HTMLMap.deleteScheduleRows();
         data.refreshData().then(() => {
-            console.log(data.getSchedule(new Date()));
+            console.log(sched.getScheduleFromKey('C'));
         });
     });
 
     //grabby grabby
     data.initData().then(() => {
         //loggy loggy
-        console.log(data.getSchedule(new Date()));
+        console.log(sched.getScheduleFromKey('C'));
         
-
         //testing stuff
         HTMLMap.pushBackScheduleRow({ leftText: ['9:15am', '10:45am'], lineColor: 'red', rightText: 'Period 1', backgroundColor: 'lightgray' });
         HTMLMap.pushBackScheduleRow({ leftText: ['9:15am', '10:45am'], lineColor: 'orange', rightText: 'Period 2', backgroundColor: 'lightgreen' });
@@ -76,8 +78,6 @@ function onDeviceReady(): void {
 
         HTMLMap.startAnimation();
     }, (err) => console.log(err));
-
-    
 }
 
 function onPause(): void {

@@ -10,18 +10,17 @@
 
 import localForage = require("localforage");
 import GetLib = require('../GetLib/GetLib');
+import DataInterface = require('./DataInterface');
 import ScheduleUtil = require('./ScheduleUtil');
 import { TIME_CACHE_KEY, SCHED_CACHE_KEY, CAL_CACHE_KEY } from './CacheKeys';
-
 
 const URL: string = 'https://script.google.com/macros/s/AKfycbxyS4utDJEJ3bE2spSE4SIRlwj10M2Owbe7_XWrOFSobfniQjve/exec';
 
 class DataManage {
     private http: GetLib;
-    private lastSyncTime: Date;
+    private dataObj: Array<DataInterface>;
 
-    private rawCalData: Object;
-    private rawSchedData: Array<Object>;
+    private lastSyncTime: Date;
 
     /*
      * Stupid promise chaining functions
@@ -52,108 +51,44 @@ class DataManage {
         });
     }
 
-    //parsing function, takes stored data and refreshes it with the sync data
-    private parseCalendarData(data: Object, syncData: Object): Object {
-        console.log(JSON.stringify(data));
-        console.log(JSON.stringify(syncData))
-        let start = performance.now();
-
-        let keys = Object.keys(syncData);
-        for (let i = 0, len = keys.length; i < len; i++) {
-            //if the day doesn't exist, copy it and be done
-            if (!(keys[i] in data)) data[keys[i]] = syncData[keys[i]];
-            //if it does, prune each element for changed data
-            if ('schedule' in syncData[keys[i]]) data[keys[i]].schedule = syncData[keys[i]].schedule;
-            if ('events' in syncData[keys[i]]) {
-                //ho boy
-                //TODO: Make more efficient
-                for (let o = 0, len2 = syncData[keys[i]].events.length; o < len2; o++) {
-                    for (let p = 0, len3 = data[keys[i]].events.length; p < len3; p++) {
-                        //compare ids, if match then swap
-                        if (syncData[keys[i]].events[o].id === data[keys[i]].events[p].id) data[keys[i]].events[p] = syncData[keys[i]].events[o];
-                        break;
-                    }
-                    
-                }
-            }
-        }
-        let end = performance.now();
-        console.log("Stupid for loops took: " + (end - start));
-        return data;
+    private updateData(data: Object): void {
+        for (let i = 0, len = this.dataObj.length; i < len; i++) 
+            if (this.dataObj[i].dataKey in data) this.dataObj[i].updataData(data[this.dataObj[i].dataKey]);
     }
 
-    private parseScheduleData(data: Array<Object>, syncData: Array<Object>) {
-        if (syncData.length > 0) {
-            console.log("Took synced schedule data");
-            return syncData;
-        }
-        else {
-            console.log("Took stored schedule data");
-            return data;
-        }
-    }
-
-    //remove any events that are before the date passed
-    private pruneCalendarData(data: Object, date: Date): Object {
-        let keys: Array<string> = Object.keys(data);
-        let time: number = date.getTime();
-        for (let i = 0, len = keys.length; i < len; i++) {
-            if (new Date(keys[i]).getTime() < time) delete data[keys[i]];
-        }
-        return data;
+    private overwriteData(data: Object): void {
+        for (let i = 0, len = this.dataObj.length; i < len; i++)
+            if (this.dataObj[i].dataKey in data) this.dataObj[i].overwriteData(data[this.dataObj[i].dataKey]);
     }
 
     /*
      * Actual exposed functions
      */
 
-    constructor(http: GetLib) {
+    constructor(http: GetLib, dataThings: Array<DataInterface>) {
         this.http = http;
+        this.dataObj = dataThings
     }
 
-    initData(): Promise<void> {
+    initData(): Promise<any> {
         //load lastSyncTime from storage
         return this.getStored(TIME_CACHE_KEY, "No stored sync time!").then((token: Date) => {
             //cache sync token
             this.lastSyncTime = token;
-            //fetch, load calendar, and load schedule
-            return Promise.all([this.getData(), this.getStored(CAL_CACHE_KEY, "No stored calendar").then((calData) => {
-                //also prune the calendar
-                let nowDay = new Date();
-                nowDay.setHours(0, 0, 0, 0);
-                return this.pruneCalendarData(calData, nowDay);
-            }), this.getStored(SCHED_CACHE_KEY, "No stored schedule")]).then((data: Array<any>) => {
-                //parse, store, call it good
-                this.rawCalData = this.parseCalendarData(data[1], data[0].calSyncData);
-                this.rawSchedData = this.parseScheduleData(data[2], data[0].schedSyncData);
-                localForage.setItem(CAL_CACHE_KEY, this.rawCalData);
-                localForage.setItem(SCHED_CACHE_KEY, this.rawSchedData);
+            //fetch and load all the things
+            let ray: Array<Promise<any>> = [this.getData()];
+            for (let i = 0, len = this.dataObj.length; i < len; i++) ray.push(this.dataObj[i].loadData());
+            return Promise.all(ray).then((data) => {
+                this.updateData(data[0]);
             });
         }, (err) => {
             console.log(err);
-            return this.getNewData().then((data: any) => {
-                this.rawCalData = data.calSyncData;
-                this.rawSchedData = data.schedSyncData;
-                localForage.setItem(CAL_CACHE_KEY, this.rawCalData);
-                localForage.setItem(SCHED_CACHE_KEY, this.rawSchedData);
-            });
+            return this.getNewData().then(this.overwriteData.bind(this));
         });
     }
 
-    refreshData(): Promise<void> {
-        return this.getData().then((data: any) => {
-            this.rawCalData = this.parseCalendarData(this.rawCalData, data.calSyncData);
-            this.rawSchedData = this.parseScheduleData(this.rawSchedData, data.schedSyncData);
-            localForage.setItem(CAL_CACHE_KEY, this.rawCalData);
-            localForage.setItem(SCHED_CACHE_KEY, this.rawSchedData);
-        })
-    }
-
-    getSchedule(day: Date): ScheduleUtil.Schedule {
-        //temporary hack
-        let arg2 = null;
-        if (day.toDateString() in this.rawCalData) arg2 = this.rawCalData[day.toDateString()];
-        return ScheduleUtil.getSchedule(this.rawSchedData as ScheduleUtil.StoreSchedule[], arg2);
+    refreshData(): Promise<any> {
+        return this.getData().then(this.updateData.bind(this));
     }
 }
 
