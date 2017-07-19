@@ -10,6 +10,7 @@ import DataManage = require('./WHSLib/DataManage');
 import SchedDataManage = require('./WHSLib/SchedDataManage');
 import ScheduleUtil = require('./WHSLib/ScheduleUtil');
 import CalDataManage = require('./WHSLib/CalDataManage');
+import EventInterface = require('./WHSLib/EventInterface');
 import HTMLMap = require('./HTMLMap');
 
 "use strict";
@@ -54,7 +55,7 @@ function onDeviceReady(): void {
     // TODO: Cordova has been loaded. Perform any initialization that requires Cordova here.
 
     if (!get.initAPI()) console.log("HTTP failed!");
-    data = new DataManage(get, [sched]);
+    data = new DataManage(get, [cal]);
     // Register button
     document.querySelector('.bottom.fab').addEventListener('click', () => {
         console.log("click!");
@@ -67,8 +68,11 @@ function onDeviceReady(): void {
     //grabby grabby
     data.initData().then(() => {
         //loggy loggy
-        console.log(sched.getScheduleFromKey('C'));
-        
+        //console.log(sched.getScheduleFromKey('C'));
+        cal.getEvents(new Date(), (event: EventInterface) => {
+            console.log(JSON.stringify(event));
+        });
+
         //testing stuff
         HTMLMap.pushBackScheduleRow({ leftText: ['9:15am', '10:45am'], lineColor: 'red', rightText: 'Period 1', backgroundColor: 'lightgray' });
         HTMLMap.pushBackScheduleRow({ leftText: ['9:15am', '10:45am'], lineColor: 'orange', rightText: 'Period 2', backgroundColor: 'lightgreen' });
