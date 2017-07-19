@@ -20,21 +20,21 @@ class DataManage {
     private http: GetLib;
     private dataObj: Array<DataInterface>;
 
-    private lastSyncTime: Date;
+    private lastSyncTime: number;
 
     /*
      * Stupid promise chaining functions
      */
 
-    private getStored(key: string, err: string): Promise<any> {
+    private getStored(key: string, err: string): Promise<Object> {
         return localForage.getItem(key).then((data) => {
             console.log("key: " + key + " data: " + JSON.stringify(data));
-            if (data == null) return Promise.reject(err);
+            if (data === null) return Promise.reject(err);
             else return data;
         });
     }
 
-    private getData(): Promise<Object> { return this.getS(URL + '?syncTime=' + this.lastSyncTime.getTime()); }
+    private getData(): Promise<Object> { return this.getS(URL + '?syncTime=' + this.lastSyncTime); }
 
     private getNewData(): Promise<Object> { return this.getS(URL); }
 
@@ -45,13 +45,15 @@ class DataManage {
     private getS(URL: string): Promise<Object> {
         return this.http.get(URL).then((data) => {
             //update sync time
-            this.lastSyncTime = new Date();
+            this.lastSyncTime = Date.now();
             localForage.setItem(TIME_CACHE_KEY, this.lastSyncTime);
             return data;
         });
     }
 
     private updateData(data: Object): void {
+        console.log("Update global data!");
+        console.log(data);
         for (let i = 0, len = this.dataObj.length; i < len; i++) 
             if (this.dataObj[i].dataKey in data) this.dataObj[i].updataData(data[this.dataObj[i].dataKey]);
     }
@@ -71,8 +73,13 @@ class DataManage {
     }
 
     initData(): Promise<any> {
+        //init all the things
+        let ray: Array<Promise<any>> = [];
+        for (let i = 0, len = this.dataObj.length; i < len; i++) ray.push(this.dataObj[i].init());
         //load lastSyncTime from storage
-        return this.getStored(TIME_CACHE_KEY, "No stored sync time!").then((token: Date) => {
+        return Promise.all(ray).then(() => {
+            return this.getStored(TIME_CACHE_KEY, "No stored sync time!");
+        }).then((token: any) => {
             //cache sync token
             this.lastSyncTime = token;
             //fetch and load all the things
@@ -80,8 +87,8 @@ class DataManage {
             for (let i = 0, len = this.dataObj.length; i < len; i++) ray.push(this.dataObj[i].loadData());
             return Promise.all(ray).then((data) => {
                 this.updateData(data[0]);
-            });
-        }, (err) => {
+            }, (err) => Promise.reject(err));
+        }).catch((err) => {
             console.log(err);
             return this.getNewData().then(this.overwriteData.bind(this));
         });

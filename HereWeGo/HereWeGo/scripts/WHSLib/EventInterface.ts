@@ -7,6 +7,7 @@ interface EventInterface {
     isAllDay: boolean;
     startTime: Date;
     endTime: Date;
+    dayString: string;
     name: string;
     id: string;
 }

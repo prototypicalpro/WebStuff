@@ -57,6 +57,10 @@ class SchedDataManage implements DataInterface {
     dataKey: string = 'schedSyncData';
     private storedData: Array<StoreSchedule>;
 
+    init(): Promise<any> {
+        return new Promise(() => this.storedData = []);
+    }
+
     loadData(): Promise<any> {
         return localforage.getItem(SCHED_CACHE_KEY).then((data: Array<StoreSchedule>) => {
             if (data === null) return Promise.reject("No stored schedule!");

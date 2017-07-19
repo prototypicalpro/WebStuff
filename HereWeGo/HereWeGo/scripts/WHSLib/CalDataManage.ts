@@ -14,7 +14,7 @@ import EventInterface = require('./EventInterface');
 import { CAL_DB_NAME, CAL_CACHE_KEY } from './CacheKeys';
 
 //special consant for a special situation
-const EVENT_KEYS = ['isAllDay', 'startTime', 'endTime', 'name'];
+const EVENT_KEYS = ['isAllDay', 'startTime', 'endTime', 'dayString', 'name'];
 
 class CalDataManage implements DataInterface {
     dataKey: string = 'calSyncData';
@@ -23,23 +23,18 @@ class CalDataManage implements DataInterface {
     private crappyEvents: Array<EventInterface>;
     private db: IDBDatabase;
 
-    loadData(): Promise<any> {
+    init(): Promise<any> {
         //init indexedDB, but wrapped up the arse with promises
         return new Promise((resolve, reject) => {
             if (!window.indexedDB) return reject(false);
+            //if(window.indexedDB) return reject(false);
             this.usingDB = true;
 
             let req = window.indexedDB.open(CAL_DB_NAME);
             //we win!
-            req.onsuccess = (evt) => {
-                console.log("Opened DB!");
-                resolve(req.result);
-            };
+            req.onsuccess = resolve;
             //we lose!
-            req.onerror = (err: any) => {
-                console.error("OpenDB error:", err.target.errorCode);
-                reject(false);
-            };
+            req.onerror = reject;
             //we build!
             req.onupgradeneeded = (evt: any) => {
                 console.log("DB upgrading");
@@ -50,31 +45,42 @@ class CalDataManage implements DataInterface {
                 //IMPORTANT: update EVENT_KEYS everytime you change the EventInterface, otherwise
                 //it won't store the extra data
                 for (let i = 0, len = EVENT_KEYS.length; i < len; i++) store.createIndex(EVENT_KEYS[i], EVENT_KEYS[i]);
-
-                //reject the promise because no more calendar data
-                reject("No stored calendar!");
             };
-        }).catch((err) => {
-            //catch only indexedDB errors, not missing calendar errors
-            if (err === false) {
-                //guess we're not using indexedDB then
-                console.log("Using localforage for calendar!");
-                this.usingDB = false;
-                //start up localforage, we're doing it the crappy way
-                return localforage.getItem(CAL_CACHE_KEY).then((data: any) => {
-                    if (data === null) return Promise.reject("No stored calendar!");
-                    this.crappyEvents = data;
-                });
-            }
+        }).then((evt: any) => {
+            console.log("Opened DB!");
+            this.db = evt.target.result;
+        }, (err) => {
+            //guess we're not using indexedDB then
+            console.log("Using localforage for calendar!");
             console.log(err);
-            Promise.reject(err);
+            this.usingDB = false;
+            this.crappyEvents = [];
         });
+    }
+
+    loadData(): Promise<any> {
+        //if using DB, we can assume that the calendar database is already fine
+        if (this.usingDB) return new Promise((resolve) => { return resolve(); });
+        //but if not, better check localforage
+        else {
+            return localforage.getItem(CAL_CACHE_KEY).then((data: Array<EventInterface>) => {
+                if (data === null) return Promise.reject("No stored calendar!");
+                this.crappyEvents = data;
+            });
+        }
     }
 
     updataData(data: any): void {
         //if it's indexedDB, this should be pretty easy
         //if not, oh well
+        console.log("Update calData!");
+        console.log(data);
         data = data as Array<EventInterface>;
+        //add a column for the daystring, because I'm sick of searching with new Date()
+        data.map((event: EventInterface) => {
+            event.dayString = new Date(event.startTime).toDateString();
+            return data;
+        });
         if (this.usingDB) {
             let objectStore = this.db.transaction([CAL_DB_NAME], "readwrite").objectStore(CAL_DB_NAME);
             //moar promises!
@@ -88,7 +94,7 @@ class CalDataManage implements DataInterface {
                     let cursor = event.target.result as IDBCursorWithValue;
                     if (cursor) {
                         //remove if old
-                        if (cursor.value.startTime.getTime() < nowTime) cursor.delete();
+                        if (new Date(cursor.value.startTime).getTime() < nowTime) cursor.delete();
                         cursor.continue();
                     }
                     else resolve();
@@ -103,12 +109,13 @@ class CalDataManage implements DataInterface {
                         req.onsuccess = resolve;
                         req.onerror = reject;
                     }));
-                    
                     else ray.push(new Promise((resolve, reject) => {
-                        let req = objectStore.put(data[i].id);
+                        let event: EventInterface = data[i];
+                        event.dayString = new Date(event.startTime).toDateString();
+                        let req = objectStore.put(event);
                         req.onsuccess = resolve;
                         req.onerror = reject;
-                    }));;
+                    }));
                 }
                 return Promise.all(ray);
             }); 
@@ -120,27 +127,34 @@ class CalDataManage implements DataInterface {
             let nowDay: Date = new Date();
             nowDay.setHours(0, 0, 0, 0);
             let nowTime: number = nowDay.getTime();
-            for (let i = 0, len = this.crappyEvents.length; i < len; i++) {
-                if (this.crappyEvents[i].startTime.getTime() < nowTime) {
-                    delete this.crappyEvents[i];
-                    //gawd this is terrible
-                    //we remove a spot from the array, so we have to do this as well
-                    i--;
-                    len--;
-                }
+            for (let i = this.crappyEvents.length - 1; i >= 0 ; i--) {
+                if (new Date(this.crappyEvents[i].startTime).getTime() < nowTime) this.crappyEvents.splice(i, 1);
+                //gawd this is terrible
             }
             //then nest a bunch of for loops to update every event
             //for every updated event
-            for (let i = 0, len = data.length; i < len; i++) {
+            for (let i = data.length - 1; i >= 0; i--) {
                 //check against every stored event for an id match
-                for (let j = 0, len2 = this.crappyEvents.length; j < len2; j++) {
+                console.log(data);
+                console.log(this.crappyEvents);
+                for (let j = this.crappyEvents.length - 1; j >= 0; j--) {
                     if (data[i].id === this.crappyEvents[j].id) {
                         //if cancelled, delete, else update
-                        if ('cancelled' in data[i]) delete this.crappyEvents[j];
-                        else this.crappyEvents[j] = data[i];
+                        if ('cancelled' in data[i]) this.crappyEvents.splice(j, 1);
+                        else {
+                            console.log("loop");
+                            this.crappyEvents[j] = data[i];
+                            this.crappyEvents[j].dayString = new Date(this.crappyEvents[j].startTime).toDateString();
+                        }
+                        data.splice(i, 1);
                         break;
                     }
                 }
+            }
+            //drop every other element leftover into crappyEvents
+            for (let i = 0, len = data.length; i < len; i++) {
+                data[i].dayString = new Date(data[i].startTime).toDateString();
+                this.crappyEvents.push(data[i]);
             }
             //store everything we just did
             localforage.setItem(CAL_CACHE_KEY, this.crappyEvents);
@@ -148,8 +162,15 @@ class CalDataManage implements DataInterface {
     }
 
     overwriteData(data: any): void {
+        console.log("overwrite data!");
+        console.log(data);
         //cast
         data = data as Array<EventInterface>;
+        //crappy nonsense
+        data.map((event: EventInterface) => {
+            event.dayString = new Date(event.startTime).toDateString();
+            return data;
+        });
         //check the storage mediums
         if (this.usingDB) {
             let objectStore: IDBObjectStore = this.db.transaction([CAL_DB_NAME], "readwrite").objectStore(CAL_DB_NAME);
@@ -184,26 +205,23 @@ class CalDataManage implements DataInterface {
     getEvents(day: Date, cursorFunc: (event: EventInterface) => void): void{
         //this is where the db should pay off
         if (this.usingDB) {
-            let thing: Promise<any> = new Promise((resolve, reject) => {
-                //only cursor through items with correct day
-                let req: IDBRequest = this.db.transaction([CAL_DB_NAME], "readonly").objectStore(CAL_DB_NAME).index('startTime').openCursor(IDBKeyRange.only(day.toDateString()));
-                req.onsuccess = (event: any) => {
-                    let cursor: IDBCursorWithValue = event.target.result;
-                    if (cursor) {
-                        cursorFunc(cursor.value);
-                        cursor.continue();
-                    }
-                    else resolve();
+            let req: IDBRequest = this.db.transaction([CAL_DB_NAME], "readonly").objectStore(CAL_DB_NAME).index('dayString').openCursor(IDBKeyRange.only(day.toDateString()));
+            req.onsuccess = (event: any) => {
+                let cursor: IDBCursorWithValue = event.target.result;
+                if (cursor) {
+                    cursorFunc(cursor.value);
+                    cursor.continue();
                 }
-                req.onerror = reject;
-            });
+                else return;
+            };
         }
         //or maybe not, that's kinda complicated
         else {
             let thing: Promise<any> = new Promise(() => {
                 let dateString: string = day.toDateString();
-                for (let i = 0, len = this.crappyEvents.length; i < len; i++) 
-                    if (this.crappyEvents[i].startTime.toDateString() === dateString) cursorFunc(this.crappyEvents[i]);
+                for (let i = 0, len = this.crappyEvents.length; i < len; i++) {
+                    if (this.crappyEvents[i].dayString === dateString) cursorFunc(this.crappyEvents[i]);
+                }
             });
         }
     }
