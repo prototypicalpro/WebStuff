@@ -28,7 +28,6 @@ class DataManage {
 
     private getStored(key: string, err: string): Promise<Object> {
         return localForage.getItem(key).then((data) => {
-            console.log("key: " + key + " data: " + JSON.stringify(data));
             if (data === null) return Promise.reject(err);
             else return data;
         });
@@ -52,8 +51,6 @@ class DataManage {
     }
 
     private updateData(data: Object): void {
-        console.log("Update global data!");
-        console.log(data);
         for (let i = 0, len = this.dataObj.length; i < len; i++) 
             if (this.dataObj[i].dataKey in data) this.dataObj[i].updataData(data[this.dataObj[i].dataKey]);
     }
@@ -72,14 +69,16 @@ class DataManage {
         this.dataObj = dataThings
     }
 
-    initData(): Promise<any> {
+    loadData(): Promise<any> {
         //init all the things
         let ray: Array<Promise<any>> = [];
         for (let i = 0, len = this.dataObj.length; i < len; i++) ray.push(this.dataObj[i].init());
         //load lastSyncTime from storage
-        return Promise.all(ray).then(() => {
-            return this.getStored(TIME_CACHE_KEY, "No stored sync time!");
-        }).then((token: any) => {
+        return Promise.all(ray);
+    }
+
+    initData(): Promise<any> {
+        return this.getStored(TIME_CACHE_KEY, "No stored sync time!").then((token: number) => {
             //cache sync token
             this.lastSyncTime = token;
             //fetch and load all the things

@@ -65,8 +65,11 @@ function onDeviceReady(): void {
         });
     });
 
+    let start: number = performance.now();
     //grabby grabby
-    data.initData().then(() => {
+    data.loadData().catch(data.initData.bind(data)).then(() => {
+        let end: number = performance.now();
+        console.log("Init took " + (end - start));
         //loggy loggy
         //console.log(sched.getScheduleFromKey('C'));
         cal.getEvents(new Date(), (event: EventInterface) => {
@@ -81,6 +84,8 @@ function onDeviceReady(): void {
         HTMLMap.pushBackScheduleRow({ leftText: ['9:15am', '10:45am'], lineColor: 'blue', rightText: 'Period 4', backgroundColor: '#EFEFEF' });
 
         HTMLMap.startAnimation();
+    }).then(data.initData.bind(data)).then(() => {
+        
     }, (err) => console.log(err));
 }
 

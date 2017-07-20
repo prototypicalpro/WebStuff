@@ -27,7 +27,7 @@ class CalDataManage implements DataInterface {
         //init indexedDB, but wrapped up the arse with promises
         return new Promise((resolve, reject) => {
             if (!window.indexedDB) return reject(false);
-            //if(window.indexedDB) return reject(false);
+            //if (window.indexedDB) return reject(false);
             this.usingDB = true;
 
             let req = window.indexedDB.open(CAL_DB_NAME);
@@ -73,8 +73,6 @@ class CalDataManage implements DataInterface {
     updataData(data: any): void {
         //if it's indexedDB, this should be pretty easy
         //if not, oh well
-        console.log("Update calData!");
-        console.log(data);
         data = data as Array<EventInterface>;
         //add a column for the daystring, because I'm sick of searching with new Date()
         data.map((event: EventInterface) => {
@@ -135,14 +133,11 @@ class CalDataManage implements DataInterface {
             //for every updated event
             for (let i = data.length - 1; i >= 0; i--) {
                 //check against every stored event for an id match
-                console.log(data);
-                console.log(this.crappyEvents);
                 for (let j = this.crappyEvents.length - 1; j >= 0; j--) {
                     if (data[i].id === this.crappyEvents[j].id) {
                         //if cancelled, delete, else update
                         if ('cancelled' in data[i]) this.crappyEvents.splice(j, 1);
                         else {
-                            console.log("loop");
                             this.crappyEvents[j] = data[i];
                             this.crappyEvents[j].dayString = new Date(this.crappyEvents[j].startTime).toDateString();
                         }
@@ -162,8 +157,6 @@ class CalDataManage implements DataInterface {
     }
 
     overwriteData(data: any): void {
-        console.log("overwrite data!");
-        console.log(data);
         //cast
         data = data as Array<EventInterface>;
         //crappy nonsense
