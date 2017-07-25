@@ -9,6 +9,10 @@
          url('../fonts/geometricslabserif703boldbt.svg#geometricslabserif703boldbt5942f8f8b47f4') format('svg');
 }
 
+p {
+    margin: 0;
+}
+
 /*
  * Other Stuff
  */
@@ -46,7 +50,7 @@ body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    height: 45vh;
+    height: 61vh;
     width: 100vw;
     transition: height 600ms cubic-bezier(0.215, 0.61, 0.355, 1);
 }
@@ -72,34 +76,31 @@ body {
  *      Period 3
  */
 
-/* Global Top Section CSS */
-.top {
-    
-}
-
 /* Global Top Section Text CSS */
-.top.text {
+.topText {
     font-family: "BenjaminFont"; /* Benjamin, this is for you */
     color: white;
     margin: 0;
 }
 
 /* Text positioning */
-.top.cont {
-    padding-left: 10vw;
+.topCont {
+    padding-left: 5vw;
     position: relative;
     top: 50%;
     transform: translateY(-50%);
 }
 
 /* Upper Text (A) */
-.top.text.upText {
-    font-size: 400%;
+.topText.up {
+    font-size: 18vh;
+    margin-bottom: -4vh;
 }
 
 /* Lower Text (Period 3) */
-.top.text.lowText {
-    font-size: 150%;
+.topText.low {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 7vh;
 }
 
 /*
@@ -108,36 +109,32 @@ body {
  * Should be pretty messy
  */
 
-/* Global Bottom Section CSS */
-.bottom {
-   
-}
-
 /* Content Positioning */
-.bottom.cont {
+.botCont {
     background-color: #EFEFEF;
     height: 200vh;
     position: absolute;
-    top: 44vh;
+    top: 61vh;
     transition: transform 600ms cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
 /* Time Left Bar */
-.bottom.centerBar {
+.centerBar {
     background-color: #636363;
     width: 100vw;
-    height: 7vh;
+    height: 8vh;
+    float: left;
 }
 
 /* Positioning for Sub-Bar Elements */
-.bottom.bar {
+.bar {
     position: relative;
     top: 50%;
     transform: translateY(-50%);
 }
 
 /* Button Thingy, with Push Animation */
-.bottom.fab {
+.fab {
     box-shadow: 0 4px 6px 0 rgba(0, 0, 0, .14), 0 4px 5px rgba(0, 0, 0, .1);
     transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1), 
                 background-color 300ms cubic-bezier(0.4, 0, 0.2, 1), 
@@ -147,60 +144,91 @@ body {
     opacity: 1;
     border-radius: 50%;
     display: block;
-    height: 64px;
-    width: 64px;
+    height: 80px;
+    width: 80px;
     float: right;
     left: -10vw;
     z-index: 99;
 }
-.bottom.fab:active {
+.fab:active {
     box-shadow: 0 5px 15px 0 rgba(0, 0, 0, .4), 0 4px 7px 0 rgba(0, 0, 0, .1);
     background-color: #bfb6e4;
 }
 
 /* Time Left Text */
-.bottom.timeText {
+.timeText {
     text-transform: capitalize;
     font-family: "BenjaminFont"; /* Benjamin, this is also for you */
-    font-size: 125%;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 4vh;
     color: white;
     display: inline-block;
-    margin: 0;
-    left: 10vw;
+    margin-left: 5vw;
 }
 
 /* Schedule Graphic */
-.bottom.table {
-    width: 100vw;
-    height: 38vh;
-    border-collapse: collapse;
-    position: absolute;
+.schedText {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 5vw;
+    font-weight: 200;
+    margin-left: 4vw;
+    margin-top: 1vh;
+    margin-bottom: 0vh;
+    color: gray;
 }
 
-.bottom.row.leftCell{
-    border-right: 1px solid red;
+.table {
+    width: 100vw;
+    height: 52vh;
+    border-collapse: collapse;
+}
+
+.leftCell {
+    border-right: 2px solid red;
     width: 25vw;
     text-align: center;
+    margin: 0;
 }
 
-.bottom.text {
-    margin: 2px 0 2px 0;
-    border: 0;
-}
-
-.bottom.rightCell.text{
+.left.text {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 5.5vw;
     margin-left: 4vw;
-    font-weight: 500;
-    font-size: 150%;
+    margin-right: 4vw;
+}
+
+.left.low {
+    margin-top: 0.6vh;
+    margin-bottom: 0.5vh;
+}
+
+.left.up {
+    margin-top: 0.5vh;
+}
+
+.rightCell.text {
+    font-family: 'Montserrat', sans-serif;
+    margin-left: 4vw;
+    font-size: 6vh;
+}
+
+/* Events graphic */
+.evText {
+    font-family: 'Montserrat', sans-serif;
+    margin-left: 4vw;
+    margin-top: 1vw;
+    color: gray;
+    font-size: 5vw;
+    font-weight: 200;
 }
 
 /* Bottom Pullup Animation */
-.bottom.cont.start {
+.cont.start {
     transform: translateY(49vh);
 }
 
 /* Bottom Button Fade Animation*/
-.bottom.fab.start {
+.fab.start {
     opacity: 0;
 }
 

@@ -5,12 +5,13 @@
         Customize the content security policy in the meta tag below as needed. Add 'unsafe-inline' to default-src to enable inline JavaScript.
         For details, see http://go.microsoft.com/fwlink/?LinkID=617521
     -->
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; connect-src *">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src  *; font-src *; media-src *; connect-src *">
         
         <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
         <meta name="format-detection" content="telephone=no">
         <meta name="msapplication-tap-highlight" content="no">
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Open+Sans+Condensed:300,700|Roboto|Montserrat:200,300,400,500,600|Raleway:300" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="css/index.css">
         <title>HereWeGo</title>
     </head>
@@ -21,41 +22,51 @@
         <div class="background image start"></div>
         <div class="background shader start">
             <!-- Next we have the upper text -->
-            <div class="top cont">
-                <h1 class="top text upText"></h1>
-                <h2 class="top text lowText"></h2>
+            <div class="topCont">
+                <h1 class="topText up"></h1>
+                <h2 class="topText low"></h2>
             </div>
         </div>
         
         
         <!-- Bottom section, starting with the containing div -->
-        <div class="bottom cont start">
-            <div class="bottom centerBar">
-                <a class="bottom bar fab start"></a>
-                <p class="bottom bar timeText"></p>
+        <div class="botCont start">
+            <div class="centerBar">
+                <!--
+                <a class="bar fab start"></a>
+                -->
+                <p class="bar timeText"></p>
             </div>
             <!-- Schedule Table -->
-            <table class="bottom table"> <tbody></tbody> </table>
+
+            <table class="table"> <tbody id="schedule"> </tbody> </table>
+            <!-- Events Table -->
+            <p class="evText"> Events </p>
+            <table class="" 
+                <tbody>
+                  
+                </tbody> 
+            </table>
         </div>
         
         <table class="hidden">
-            <tr class="bottom row justRow" id="periodRow">
-                <td class="bottom row leftCell">
-                    <p class="bottom leftCell text upText">9:15am</p>
-                    <p class="bottom leftCell text lowText">10:25am</p>
+            <tr class="justRow" id="periodRow">
+                <td class="leftCell">
+                    <p class="left text up">9:15am</p>
+                    <p class="left text low">10:25am</p>
                 </td>
-                <td class="bottom row rightCell">
-                    <p class="bottom rightCell text">Period 1</p>
+                <td class="rightCell">
+                    <p class="rightCell text">Period 1</p>
                 </td>
             </tr>
         </table>
 
+        <!-- Cordova -->
+        <script type="text/javascript" src="cordova.js"></script>
         <!-- Gotta have that hawt formatting -->
         <script type="text/javascript" src="scripts/moment.js"></script>
         <!-- Storage -->
         <script type="text/javascript" src="scripts/localforage.js"></script>
-        <!-- Cordova -->
-        <script type="text/javascript" src="cordova.js"></script>
         <!-- The 'async' attribute is needed for RequireJS to work in a Windows app -->
         <script type="text/javascript" data-main="scripts/startup" src="lib/require.2.1.8.js" async></script>
     </body>

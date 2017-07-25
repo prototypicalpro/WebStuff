@@ -6,13 +6,13 @@
  */
 
 namespace HTMLMap {
-    export const bottomBarButton: Element = document.querySelector('.bottom.bar.fab');
-    export const bottomBarText: Element = document.querySelector('.bottom.bar.timeText');
+    export const bottomBarButton: Element = document.querySelector('.bar.fab');
+    export const bottomBarText: Element = document.querySelector('.bar.timeText');
 
-    export const topUpText: Element = document.querySelector('.top.upText');
-    export const topLowText: Element = document.querySelector('.top.lowText');
+    export const topUpText: Element = document.querySelector('.topText.up');
+    export const topLowText: Element = document.querySelector('.topText.low');
 
-    const tableObject: Node = document.querySelector('tbody');
+    const scheduleTableObject: Node = document.querySelector('#schedule');
     const scheduleRowTemplate: HTMLElement = document.querySelector('#periodRow') as HTMLElement;
 
     export const startAnimation = (): boolean => {
@@ -31,25 +31,33 @@ namespace HTMLMap {
         lineColor: string;
         rightText: string;
         backgroundColor?: string;
+        fontWeight: string;
+        fontColor: string;
     }
 
     export const pushBackScheduleRow = (row: ScheduleRowData): void => {
         //fix all the varibles
-        scheduleRowTemplate.querySelector('.leftCell.upText').innerHTML = row.leftText[0];
-        scheduleRowTemplate.querySelector('.leftCell.lowText').innerHTML = row.leftText[1];
+        scheduleRowTemplate.querySelector('.text.up').innerHTML = row.leftText[0];
+        scheduleRowTemplate.querySelector('.text.low').innerHTML = row.leftText[1];
         let temp: HTMLElement = scheduleRowTemplate.querySelector('.leftCell') as HTMLElement; //yay typescript
         temp.style.borderRightColor = row.lineColor;
         scheduleRowTemplate.querySelector('.rightCell.text').innerHTML = row.rightText;
+        let temp2: NodeListOf<Element> = scheduleRowTemplate.querySelectorAll('.text');
+        for (let i = 0, len = temp2.length; i < len; i++) {
+            let element: HTMLElement = temp2.item(i) as HTMLElement;
+            element.style.fontWeight = row.fontWeight;
+            element.style.color = row.fontColor;
+        }
         if (row.backgroundColor != undefined) scheduleRowTemplate.style.backgroundColor = row.backgroundColor;
         scheduleRowTemplate.id = row.rightText;
         scheduleRowTemplate.classList.remove('hidden');
         //create a copy of the schedule row template
         let nextRow = scheduleRowTemplate.cloneNode(true);
         //add it to the table
-        tableObject.appendChild(nextRow);
+        scheduleTableObject.appendChild(nextRow);
     }
 
-    export const deleteScheduleRows = (): void => { while (tableObject.firstChild) tableObject.removeChild(tableObject.firstChild); }
+    export const deleteScheduleRows = (): void => { while (scheduleTableObject.firstChild) scheduleTableObject.removeChild(scheduleTableObject.firstChild); }
 }
 
 export = HTMLMap;

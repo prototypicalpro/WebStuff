@@ -78,6 +78,7 @@ class DataManage {
     }
 
     initData(): Promise<any> {
+        console.log("Init!");
         return this.getStored(TIME_CACHE_KEY, "No stored sync time!").then((token: number) => {
             //cache sync token
             this.lastSyncTime = token;

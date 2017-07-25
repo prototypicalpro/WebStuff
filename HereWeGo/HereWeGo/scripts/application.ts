@@ -57,17 +57,19 @@ function onDeviceReady(): void {
     if (!get.initAPI()) console.log("HTTP failed!");
     data = new DataManage(get, [cal]);
     // Register button
-    document.querySelector('.bottom.fab').addEventListener('click', () => {
+    /*
+    document.querySelector('.fab').addEventListener('click', () => {
         console.log("click!");
         HTMLMap.deleteScheduleRows();
         data.refreshData().then(() => {
             console.log(sched.getScheduleFromKey('C'));
         });
     });
+    */
 
     let start: number = performance.now();
     //grabby grabby
-    data.loadData().catch(data.initData.bind(data)).then(() => {
+    data.loadData().then(() => {
         let end: number = performance.now();
         console.log("Init took " + (end - start));
         //loggy loggy
@@ -77,14 +79,19 @@ function onDeviceReady(): void {
         });
 
         //testing stuff
-        HTMLMap.pushBackScheduleRow({ leftText: ['9:15am', '10:45am'], lineColor: 'red', rightText: 'Period 1', backgroundColor: 'lightgray' });
-        HTMLMap.pushBackScheduleRow({ leftText: ['9:15am', '10:45am'], lineColor: 'orange', rightText: 'Period 2', backgroundColor: 'lightgreen' });
-        HTMLMap.pushBackScheduleRow({ leftText: ['9:15am', '10:45am'], lineColor: 'yellow', rightText: 'Lunch', backgroundColor: '#EFEFEF' });
-        HTMLMap.pushBackScheduleRow({ leftText: ['9:15am', '10:45am'], lineColor: 'green', rightText: 'Period 3', backgroundColor: '#EFEFEF' });
-        HTMLMap.pushBackScheduleRow({ leftText: ['9:15am', '10:45am'], lineColor: 'blue', rightText: 'Period 4', backgroundColor: '#EFEFEF' });
+        HTMLMap.pushBackScheduleRow({ leftText: ['9:15am', '10:45am'], lineColor: 'red', rightText: 'Period 1', backgroundColor: '#EFEFEF', fontWeight: '200', fontColor: 'black' });
+        HTMLMap.pushBackScheduleRow({ leftText: ['9:15am', '10:45am'], lineColor: 'orange', rightText: 'Period 2', backgroundColor: 'lightgreen', fontWeight: '200', fontColor: 'black' });
+        HTMLMap.pushBackScheduleRow({ leftText: ['9:15am', '10:45am'], lineColor: 'yellow', rightText: 'Lunch', backgroundColor: '#EFEFEF', fontWeight: '200', fontColor: 'black'  });
+        HTMLMap.pushBackScheduleRow({ leftText: ['9:15am', '10:45am'], lineColor: 'green', rightText: 'Period 3', backgroundColor: '#EFEFEF', fontWeight: '200', fontColor: 'black'  });
+        HTMLMap.pushBackScheduleRow({ leftText: ['9:15am', '10:45am'], lineColor: 'blue', rightText: 'Period 4', backgroundColor: '#EFEFEF', fontWeight: '200', fontColor: 'black'  });
+
+        HTMLMap.topUpText.innerHTML = 'A';
+        HTMLMap.topLowText.innerHTML = 'Period 2';
+
+        HTMLMap.bottomBarText.innerHTML = '45 Minutes Remaining';
 
         HTMLMap.startAnimation();
-    }).then(data.initData.bind(data)).then(() => {
+    }).then(data.initData.bind(data), (err) => console.log(err)).catch(data.initData.bind(data)).then(() => {
         
     }, (err) => console.log(err));
 }
