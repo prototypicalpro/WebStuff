@@ -6,6 +6,7 @@
 import * as moment from 'moment';
 import localforage = require('localforage');
 import DataInterface = require("./DataInterface");
+import EventInterface = require('./EventInterface');
 import { SCHED_CACHE_KEY } from './CacheKeys';
 import ScheduleUtil = require('./ScheduleUtil');
 
@@ -58,10 +59,7 @@ class SchedDataManage implements DataInterface {
     private storedData: Array<StoreSchedule>;
 
     init(): Promise<any> {
-        return new Promise(() => this.storedData = []);
-    }
-
-    loadData(): Promise<any> {
+        this.storedData = [];
         return localforage.getItem(SCHED_CACHE_KEY).then((data: Array<StoreSchedule>) => {
             if (data === null) return Promise.reject("No stored schedule!");
             else {
@@ -89,6 +87,21 @@ class SchedDataManage implements DataInterface {
         for (let i = 0, len = this.storedData.length; i < len; i++) {
             if (this.storedData[i].key === schedKey) return scheduleFromCloudData(this.storedData[i]);
         }
+        return ScheduleUtil.NoSchool;
+    }
+
+    //I really shouldn't be messing with events in this file but oh well
+    getScheduleFromEventList(events: Array<EventInterface>): ScheduleUtil.Schedule {
+        //map array of schedule keys that we can search later
+        let schedKeys: Array<String> = this.storedData.map((schedule: StoreSchedule) => { return schedule.key; });
+        //for every event given to us
+        for (let i = 0; i < events.length; i++) {
+            //check if there's a matching name using (hopefully) built in function
+            let index = schedKeys.indexOf(events[i].name)
+            //and if there is, return it
+            if (index >= 0) return scheduleFromCloudData(this.storedData[index]);
+        }
+        //no schedule found, no school...?
         return ScheduleUtil.NoSchool;
     }
 }

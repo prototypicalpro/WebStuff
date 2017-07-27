@@ -8,6 +8,7 @@ interface EventInterface {
     startTime: Date;
     endTime: Date;
     dayString: string;
+    schedule: boolean;
     name: string;
     id: string;
 }

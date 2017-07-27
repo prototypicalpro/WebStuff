@@ -14,7 +14,7 @@ import EventInterface = require('./EventInterface');
 import { CAL_DB_NAME, CAL_CACHE_KEY } from './CacheKeys';
 
 //special consant for a special situation
-const EVENT_KEYS = ['isAllDay', 'startTime', 'endTime', 'dayString', 'name'];
+const EVENT_KEYS = ['isAllDay', 'startTime', 'endTime', 'dayString', 'name', 'schedule'];
 
 class CalDataManage implements DataInterface {
     dataKey: string = 'calSyncData';
@@ -55,19 +55,11 @@ class CalDataManage implements DataInterface {
             console.log(err);
             this.usingDB = false;
             this.crappyEvents = [];
-        });
-    }
-
-    loadData(): Promise<any> {
-        //if using DB, we can assume that the calendar database is already fine
-        if (this.usingDB) return new Promise((resolve) => { return resolve(); });
-        //but if not, better check localforage
-        else {
             return localforage.getItem(CAL_CACHE_KEY).then((data: Array<EventInterface>) => {
                 if (data === null) return Promise.reject("No stored calendar!");
                 this.crappyEvents = data;
             });
-        }
+        });
     }
 
     updataData(data: any): void {
@@ -215,6 +207,33 @@ class CalDataManage implements DataInterface {
                 for (let i = 0, len = this.crappyEvents.length; i < len; i++) {
                     if (this.crappyEvents[i].dayString === dateString) cursorFunc(this.crappyEvents[i]);
                 }
+            });
+        }
+    }
+
+    //gets the schedule key for today, the lazy way of course
+    getScheduleKey(day: Date): Promise<string> {
+        if (this.usingDB) {
+            return new Promise((resolve, reject) => {
+                let req = this.db.transaction([CAL_DB_NAME], "readonly").objectStore(CAL_DB_NAME).index('dayString').openCursor(IDBKeyRange.only(day.toDateString()));
+                req.onsuccess = (event: any) => {
+                    let cursor: IDBCursorWithValue = event.target.result;
+                    if (cursor) {
+                        if (cursor.value.schedule === true) resolve(cursor.value.title);
+                        else cursor.continue();
+                    }
+                    else resolve(null);
+                };
+                req.onerror = reject;
+            });
+        }
+        else {
+            return new Promise((resolve) => {
+                let dateString: string = day.toDateString();
+                for (let i = 0, len = this.crappyEvents.length; i < len; i++) {
+                    if (this.crappyEvents[i].schedule && this.crappyEvents[i].dayString === dateString) resolve(this.crappyEvents[i].name);
+                }
+                resolve(null);
             });
         }
     }

@@ -55,7 +55,7 @@ function onDeviceReady(): void {
     // TODO: Cordova has been loaded. Perform any initialization that requires Cordova here.
 
     if (!get.initAPI()) console.log("HTTP failed!");
-    data = new DataManage(get, [cal]);
+    data = new DataManage(get, [cal, sched]);
     // Register button
     /*
     document.querySelector('.fab').addEventListener('click', () => {
@@ -72,27 +72,49 @@ function onDeviceReady(): void {
     data.loadData().then(() => {
         let end: number = performance.now();
         console.log("Init took " + (end - start));
-        //loggy loggy
-        //console.log(sched.getScheduleFromKey('C'));
-        cal.getEvents(new Date(), (event: EventInterface) => {
-            console.log(JSON.stringify(event));
+        //start up the early data stuff
+        //we're assuming that we only need a few importnant data when we initially launch the app,
+        //so we build the rest after we get updated data from the interwebs
+        return cal.getScheduleKey(new Date()).then((key: string) => {
+            let schedule: ScheduleUtil.Schedule = sched.getScheduleFromKey(key);
+            if (key === null) console.log("No school dumbo");
+            else updateTime(schedule);
         });
+    }).then(data.getNewData.bind(data)).catch(data.getNewData.bind(data)).then(() => {
+        //do it again to make sure nothing has changed
+        return cal.getScheduleKey(new Date()).then((key: string) => {
+            let schedule: ScheduleUtil.Schedule = sched.getScheduleFromKey(key);
+            if (key === null) console.log("No school dumbo");
+            else {
+                updateTime(schedule);
+                //but with moar everthing else because we know our data now
+                //construct schedule graphic
+                let currentPeriod = schedule.getCurrentPeriodIndex();
+                //line color based on some math I never plan on writing
+                const lineColors: Array<string> = ['#90ee90', '#73d26f', '#55b54e', '#359a2d', '#008000'];
+                for (let i = 0; i < schedule.getNumPeriods(); i++) {
+                    //cache period for less keyboard strain
+                    let period = schedule.getPeriod(i);
+                    if (period.getType() !== ScheduleUtil.PeriodType.PASSING) {
+                        //background color based on current period
+                        let background = '#EFEFEF';
+                        if (currentPeriod === i) background = 'lightgreen';
 
-        //testing stuff
-        HTMLMap.pushBackScheduleRow({ leftText: ['9:15am', '10:45am'], lineColor: 'red', rightText: 'Period 1', backgroundColor: '#EFEFEF', fontWeight: '200', fontColor: 'black' });
-        HTMLMap.pushBackScheduleRow({ leftText: ['9:15am', '10:45am'], lineColor: 'orange', rightText: 'Period 2', backgroundColor: 'lightgreen', fontWeight: '200', fontColor: 'black' });
-        HTMLMap.pushBackScheduleRow({ leftText: ['9:15am', '10:45am'], lineColor: 'yellow', rightText: 'Lunch', backgroundColor: '#EFEFEF', fontWeight: '200', fontColor: 'black'  });
-        HTMLMap.pushBackScheduleRow({ leftText: ['9:15am', '10:45am'], lineColor: 'green', rightText: 'Period 3', backgroundColor: '#EFEFEF', fontWeight: '200', fontColor: 'black'  });
-        HTMLMap.pushBackScheduleRow({ leftText: ['9:15am', '10:45am'], lineColor: 'blue', rightText: 'Period 4', backgroundColor: '#EFEFEF', fontWeight: '200', fontColor: 'black'  });
 
-        HTMLMap.topUpText.innerHTML = 'A';
-        HTMLMap.topLowText.innerHTML = 'Period 2';
-
-        HTMLMap.bottomBarText.innerHTML = '45 Minutes Remaining';
-
-        HTMLMap.startAnimation();
-    }).then(data.initData.bind(data), (err) => console.log(err)).catch(data.initData.bind(data)).then(() => {
-        
+                        HTMLMap.pushBackScheduleRow({
+                            leftText: [period.getStart().format('h:mma'), period.getEnd().format('h:mma')],
+                            lineColor: lineColors[i],
+                            rightText: period.getName(),
+                            backgroundColor: background,
+                            fontWeight: '200',
+                            fontColor: 'black',
+                        });
+                    }
+                }
+            }
+            //and the final touch
+            HTMLMap.startAnimation();
+        });
     }, (err) => console.log(err));
 }
 

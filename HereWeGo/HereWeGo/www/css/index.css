@@ -93,14 +93,13 @@ body {
 
 /* Upper Text (A) */
 .topText.up {
-    font-size: 18vh;
-    margin-bottom: -4vh;
+    font-size: 12vh;
 }
 
 /* Lower Text (Period 3) */
 .topText.low {
     font-family: 'Montserrat', sans-serif;
-    font-size: 7vh;
+    font-size: 6vh;
 }
 
 /*
@@ -160,7 +159,7 @@ body {
     text-transform: capitalize;
     font-family: "BenjaminFont"; /* Benjamin, this is also for you */
     font-family: 'Montserrat', sans-serif;
-    font-size: 4vh;
+    font-size: 3.5vh;
     color: white;
     display: inline-block;
     margin-left: 5vw;
@@ -223,8 +222,8 @@ body {
 }
 
 /* Bottom Pullup Animation */
-.cont.start {
-    transform: translateY(49vh);
+.botCont.start {
+    transform: translateY(32vh);
 }
 
 /* Bottom Button Fade Animation*/

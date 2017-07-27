@@ -35,7 +35,7 @@ class DataManage {
 
     private getData(): Promise<Object> { return this.getS(URL + '?syncTime=' + this.lastSyncTime); }
 
-    private getNewData(): Promise<Object> { return this.getS(URL); }
+    private getNewDataFunc(): Promise<Object> { return this.getS(URL); }
 
     /*
      * Other utility functions
@@ -69,29 +69,23 @@ class DataManage {
         this.dataObj = dataThings
     }
 
+    //attempts to load cached data, throw exception if any data is missing
     loadData(): Promise<any> {
         //init all the things
-        let ray: Array<Promise<any>> = [];
+        let ray: Array<Promise<any>> = [
+            //load lastSyncTime from storage
+            this.getStored(TIME_CACHE_KEY, "No stored sync time!").then((token: number) => {
+                //cache sync token
+                this.lastSyncTime = token;
+            })
+        ];
         for (let i = 0, len = this.dataObj.length; i < len; i++) ray.push(this.dataObj[i].init());
-        //load lastSyncTime from storage
         return Promise.all(ray);
     }
 
-    initData(): Promise<any> {
-        console.log("Init!");
-        return this.getStored(TIME_CACHE_KEY, "No stored sync time!").then((token: number) => {
-            //cache sync token
-            this.lastSyncTime = token;
-            //fetch and load all the things
-            let ray: Array<Promise<any>> = [this.getData()];
-            for (let i = 0, len = this.dataObj.length; i < len; i++) ray.push(this.dataObj[i].loadData());
-            return Promise.all(ray).then((data) => {
-                this.updateData(data[0]);
-            }, (err) => Promise.reject(err));
-        }).catch((err) => {
-            console.log(err);
-            return this.getNewData().then(this.overwriteData.bind(this));
-        });
+    //gets new data and overwrited any old data
+    getNewData(): Promise<any> {
+        return this.getNewDataFunc().then(this.overwriteData.bind(this));
     }
 
     refreshData(): Promise<any> {
