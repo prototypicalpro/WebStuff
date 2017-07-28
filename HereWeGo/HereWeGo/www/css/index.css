@@ -50,7 +50,7 @@ body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    height: 61vh;
+    height: 48vh;
     width: 100vw;
     transition: height 600ms cubic-bezier(0.215, 0.61, 0.355, 1);
 }
@@ -113,7 +113,7 @@ body {
     background-color: #EFEFEF;
     height: 200vh;
     position: absolute;
-    top: 61vh;
+    top: 48vh;
     transition: transform 600ms cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
@@ -166,19 +166,9 @@ body {
 }
 
 /* Schedule Graphic */
-.schedText {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 5vw;
-    font-weight: 200;
-    margin-left: 4vw;
-    margin-top: 1vh;
-    margin-bottom: 0vh;
-    color: gray;
-}
-
 .table {
     width: 100vw;
-    height: 52vh;
+    height: 40vh;
     border-collapse: collapse;
 }
 
@@ -191,13 +181,13 @@ body {
 
 .left.text {
     font-family: 'Montserrat', sans-serif;
-    font-size: 5.5vw;
+    font-size: 2.6vh;
     margin-left: 4vw;
     margin-right: 4vw;
 }
 
 .left.low {
-    margin-top: 0.6vh;
+    margin-top: 0.5vh;
     margin-bottom: 0.5vh;
 }
 
@@ -223,7 +213,7 @@ body {
 
 /* Bottom Pullup Animation */
 .botCont.start {
-    transform: translateY(32vh);
+    transform: translateY(48vh);
 }
 
 /* Bottom Button Fade Animation*/

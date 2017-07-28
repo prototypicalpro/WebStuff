@@ -112,6 +112,10 @@ function onDeviceReady(): void {
                     }
                 }
             }
+
+            //ADD DEBUG HERE
+            HTMLMap.topLowText.innerHTML = "Period 3";
+
             //and the final touch
             HTMLMap.startAnimation();
         });
