@@ -11,6 +11,7 @@ import SchedDataManage = require('./WHSLib/SchedDataManage');
 import ScheduleUtil = require('./WHSLib/ScheduleUtil');
 import CalDataManage = require('./WHSLib/CalDataManage');
 import EventInterface = require('./WHSLib/EventInterface');
+import ScheduleGraphic = require('./UILib/ScheduleGraphic');
 import HTMLMap = require('./HTMLMap');
 
 "use strict";
@@ -70,8 +71,6 @@ function onDeviceReady(): void {
     let start: number = performance.now();
     //grabby grabby
     data.loadData().then(() => {
-        let end: number = performance.now();
-        console.log("Init took " + (end - start));
         //start up the early data stuff
         //we're assuming that we only need a few importnant data when we initially launch the app,
         //so we build the rest after we get updated data from the interwebs
@@ -87,34 +86,33 @@ function onDeviceReady(): void {
             if (key === null) console.log("No school dumbo");
             else {
                 constructTop(schedule);
+                let end: number = performance.now();
+                console.log("Init took " + (end - start));
                 //but with moar everthing else because we know our data now
                 //construct schedule graphic
+                let tempGraphic = new ScheduleGraphic('unique id');
+
                 let currentPeriod = schedule.getCurrentPeriodIndex();
                 //line color based on some math I never plan on writing
+                let periodInc = 0;
                 const lineColors: Array<string> = ['#90ee90', '#73d26f', '#55b54e', '#359a2d', '#008000'];
                 for (let i = 0; i < schedule.getNumPeriods(); i++) {
                     //cache period for less keyboard strain
                     let period = schedule.getPeriod(i);
                     if (period.getType() !== ScheduleUtil.PeriodType.PASSING) {
                         //background color based on current period
-                        let background = '#EFEFEF';
-                        if (currentPeriod === i) background = 'lightgreen';
-
-
-                        HTMLMap.pushBackScheduleRow({
-                            leftText: [period.getStart().format('h:mma'), period.getEnd().format('h:mma')],
-                            lineColor: lineColors[i],
-                            rightText: period.getName(),
-                            backgroundColor: background,
-                            fontWeight: '200',
-                            fontColor: 'black',
-                        });
+                        tempGraphic.pushBackRow(
+                            period.getStart().format('h:mma'), period.getEnd().format('h:mma'),
+                            lineColors[periodInc],
+                            period.getName(),
+                            currentPeriod === i ? 'lightgreen' : undefined,
+                        );
+                        periodInc++;
                     }
                 }
+                //set the html
+                HTMLMap.setBottomHTML(tempGraphic.getHTML());
             }
-
-            //ADD DEBUG HERE
-            HTMLMap.topLowText.innerHTML = "Period 3";
 
             //and the final touch
             HTMLMap.startAnimation();

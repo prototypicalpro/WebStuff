@@ -10,21 +10,22 @@
 abstract class UIItem {
     //unique ID, so this element can be updated later
     abstract readonly id: string;
-    //HTML template, should be constant
-    abstract template: string;
     //Varibles to put in template, in form of { name: value }
-    abstract values: Object;
+    //searches for strings in double curly beackets and replaces them (e.g. {{thing}})
+    //no spaces in there please
     //this function will search every member of values, and fill the template
-    getHTML(): string {
-        //get all the keys from the values object
-        let keys: Array<string> = Object.keys(this.values);
-        //temporary copy of template
-        let temp = this.template;
-        //replace them with the computed values
-        for (let i = 0, len = keys.length; i < len; i++) temp.replace('{{' + keys[i] + '}}', this.values[keys[i]]);
-        //return the computed HTML
-        return temp;
+    protected templateEngine(template: string, values: Object): string {
+        //get all teh keys, and map them to a RegEx for optimization
+        let re = new RegExp(Object.keys(values)
+            //give the strings the template syntax
+            .map((str) => { return '{{' + str + '}}'; })
+            //join them with the or operator
+            .join('|'), 'g');
+        //then in the replace, match the things to the things (filtering out the {{}} first)
+        return template.replace(re, function (matched) { return values[matched.replace(new RegExp(/{|}/, 'g'), '')]; });
     }
+
+    abstract getHTML(): string;
 }
 
 export = UIItem;

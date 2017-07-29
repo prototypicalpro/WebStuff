@@ -9,7 +9,7 @@ interface EventInterface {
     endTime: Date;
     dayString: string;
     schedule: boolean;
-    name: string;
+    title: string;
     id: string;
 }
 

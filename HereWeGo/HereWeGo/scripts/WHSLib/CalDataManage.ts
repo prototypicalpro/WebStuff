@@ -14,7 +14,7 @@ import EventInterface = require('./EventInterface');
 import { CAL_DB_NAME, CAL_CACHE_KEY } from './CacheKeys';
 
 //special consant for a special situation
-const EVENT_KEYS = ['isAllDay', 'startTime', 'endTime', 'dayString', 'name', 'schedule'];
+const EVENT_KEYS = ['isAllDay', 'startTime', 'endTime', 'dayString', 'title', 'schedule'];
 
 class CalDataManage implements DataInterface {
     dataKey: string = 'calSyncData';
@@ -231,9 +231,9 @@ class CalDataManage implements DataInterface {
             return new Promise((resolve) => {
                 let dateString: string = day.toDateString();
                 for (let i = 0, len = this.crappyEvents.length; i < len; i++) {
-                    if (this.crappyEvents[i].schedule && this.crappyEvents[i].dayString === dateString) resolve(this.crappyEvents[i].name);
+                    if (this.crappyEvents[i].schedule && this.crappyEvents[i].dayString === dateString) return resolve(this.crappyEvents[i].title);
                 }
-                resolve(null);
+                return resolve(null);
             });
         }
     }

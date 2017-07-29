@@ -5,7 +5,7 @@
         Customize the content security policy in the meta tag below as needed. Add 'unsafe-inline' to default-src to enable inline JavaScript.
         For details, see http://go.microsoft.com/fwlink/?LinkID=617521
     -->
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src  *; font-src *; media-src *; connect-src *">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src * 'unsafe-inline'; font-src *; media-src *; connect-src *">
         
         <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
         <meta name="format-detection" content="telephone=no">
@@ -32,34 +32,21 @@
         <!-- Bottom section, starting with the containing div -->
         <div class="botCont start">
             <div class="centerBar">
-                <!--
+                <!-- uncomment for purple button
                 <a class="bar fab start"></a>
                 -->
                 <p class="bar timeText"></p>
             </div>
-            <!-- Schedule Table -->
 
-            <table class="table"> <tbody id="schedule"> </tbody> </table>
-            <!-- Events Table -->
-            <p class="evText"> Events </p>
-            <table class="" 
-                <tbody>
-                  
-                </tbody> 
+            <!-- Div for all bottom content, which will be constructed later -->
+            <div id="content"></div>
+
+            <p class="evText">Events</p>
+            <table class="eventTable">
+                <td class="leftCell"> <p>9:30pm</p> </td>
+                <td class="rightCell"> <p>Swim meet</p> </td>
             </table>
         </div>
-        
-        <table class="hidden">
-            <tr class="justRow" id="periodRow">
-                <td class="leftCell">
-                    <p class="left text up">9:15am</p>
-                    <p class="left text low">10:25am</p>
-                </td>
-                <td class="rightCell">
-                    <p class="rightCell text">Period 1</p>
-                </td>
-            </tr>
-        </table>
 
         <!-- Cordova -->
         <script type="text/javascript" src="cordova.js"></script>

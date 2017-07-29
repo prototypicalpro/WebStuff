@@ -15,6 +15,8 @@ namespace HTMLMap {
     const scheduleTableObject: Node = document.querySelector('#schedule');
     const scheduleRowTemplate: HTMLElement = document.querySelector('#periodRow') as HTMLElement;
 
+    const bottomContent: HTMLElement = document.querySelector('#content') as HTMLElement;
+
     export const startAnimation = (): boolean => {
         // Startup animation
         // Crappily take all elements and rip out the startup animation class to start animation
@@ -58,6 +60,11 @@ namespace HTMLMap {
     }
 
     export const deleteScheduleRows = (): void => { while (scheduleTableObject.firstChild) scheduleTableObject.removeChild(scheduleTableObject.firstChild); }
+
+    //add HTML to the bottom section
+    export const setBottomHTML = (html: string): void => {
+        bottomContent.innerHTML = html;
+    }
 }
 
 export = HTMLMap;

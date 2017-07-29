@@ -97,7 +97,7 @@ class SchedDataManage implements DataInterface {
         //for every event given to us
         for (let i = 0; i < events.length; i++) {
             //check if there's a matching name using (hopefully) built in function
-            let index = schedKeys.indexOf(events[i].name)
+            let index = schedKeys.indexOf(events[i].title)
             //and if there is, return it
             if (index >= 0) return scheduleFromCloudData(this.storedData[index]);
         }
