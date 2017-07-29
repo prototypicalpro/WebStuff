@@ -26,14 +26,14 @@ export function initialize(): void {
     localForage.config({ name: LOCALFORAGE_NAME });
 }
 
-function updateTime(schedule: ScheduleUtil.Schedule): void {
+function constructTop(schedule: ScheduleUtil.Schedule): void {
     const index = schedule.getCurrentPeriodIndex();
     if (index === ScheduleUtil.PeriodType.BEFORE_START) {
         //before start code
         HTMLMap.bottomBarText.innerHTML = "School starts " + moment().to(schedule.getPeriod(0).getStart());
         HTMLMap.topLowText.innerHTML = "";
     }
-    if (index === ScheduleUtil.PeriodType.AFTER_END) {
+    else if (index === ScheduleUtil.PeriodType.AFTER_END) {
         //after end code
         HTMLMap.bottomBarText.innerHTML = moment().format('LT');
         HTMLMap.topLowText.innerHTML = "";
@@ -78,7 +78,7 @@ function onDeviceReady(): void {
         return cal.getScheduleKey(new Date()).then((key: string) => {
             let schedule: ScheduleUtil.Schedule = sched.getScheduleFromKey(key);
             if (key === null) console.log("No school dumbo");
-            else updateTime(schedule);
+            else constructTop(schedule);
         });
     }).then(data.getNewData.bind(data)).catch(data.getNewData.bind(data)).then(() => {
         //do it again to make sure nothing has changed
@@ -86,7 +86,7 @@ function onDeviceReady(): void {
             let schedule: ScheduleUtil.Schedule = sched.getScheduleFromKey(key);
             if (key === null) console.log("No school dumbo");
             else {
-                updateTime(schedule);
+                constructTop(schedule);
                 //but with moar everthing else because we know our data now
                 //construct schedule graphic
                 let currentPeriod = schedule.getCurrentPeriodIndex();
