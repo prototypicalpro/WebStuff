@@ -7,7 +7,10 @@
 
 namespace HTMLMap {
     export const bottomBarButton: Element = document.querySelector('.bar.fab');
-    export const bottomBarText: Element = document.querySelector('.bar.timeText');
+    export const bottomBarText: Element = document.querySelector('.timeText');
+
+    const menuBar: HTMLElement = document.querySelector('#menuBar') as HTMLElement;
+    const menuLine: HTMLElement = document.querySelector('#menuLine') as HTMLElement;
 
     export const topUpText: Element = document.querySelector('.topText.up');
     export const topLowText: Element = document.querySelector('.topText.low');
@@ -15,7 +18,7 @@ namespace HTMLMap {
     const scheduleTableObject: Node = document.querySelector('#schedule');
     const scheduleRowTemplate: HTMLElement = document.querySelector('#periodRow') as HTMLElement;
 
-    const bottomContent: HTMLElement = document.querySelector('#content') as HTMLElement;
+    export const bottomContent: HTMLElement = document.querySelector('#content') as HTMLElement;
 
     export const startAnimation = (): boolean => {
         // Startup animation

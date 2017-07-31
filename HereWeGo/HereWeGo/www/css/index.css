@@ -121,8 +121,6 @@ body {
 .centerBar {
     background-color: #636363;
     width: 100vw;
-    height: 8vh;
-    float: left;
 }
 
 /* Positioning for Sub-Bar Elements */
@@ -161,8 +159,58 @@ body {
     font-family: 'Montserrat', sans-serif;
     font-size: 3.5vh;
     color: white;
-    display: inline-block;
     margin-left: 5vw;
+    padding-top: 1.5vh;
+}
+
+/* Bottom UI Menu */
+#menuBar {
+    width: 100vw;
+    height: 5vh;
+    table-layout: fixed;
+}
+
+.menuRow {
+    text-align: center;
+}
+
+.menuText {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 200;
+    font-size: 2.5vh;
+    color: white;
+}
+
+#menuWrap {
+    width: 100vw;
+    height: 4px;
+    margin-top: -4px;
+    margin-bottom: 0.8vh;
+}
+
+#menuLine {
+    height: 4px;
+    background-color: white;
+    box-shadow: 0 1px 6px #777;
+}
+
+/* Global Graphic positioning, puts everything on a giant page side by side */
+
+#content {
+    width: 200vw;
+    display: block;
+}
+
+.wrap {
+    width: 100vw;
+    display: block;
+    float: left;
+}
+
+#wrapper {
+    width: 100vw;
+    list-style: none;
+    overflow-x: hidden;
 }
 
 /* Schedule Graphic */

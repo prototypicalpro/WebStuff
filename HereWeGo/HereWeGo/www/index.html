@@ -35,19 +35,28 @@
                 <!-- uncomment for purple button
                 <a class="bar fab start"></a>
                 -->
-                <p class="bar timeText"></p>
+                <p class="timeText"></p>
+
+                <!-- Menu Bar, will have to be populated later -->
+                <table id="menuBar">
+                    <!-- Later as in when I write the code to populate it -->
+                    <td class="menuRow"> <p class="menuText">Schedule</p> </td>
+                    <td class="menuRow"> <p class="menuText">Events</p> </td>
+                    <!--<td class="menuRow"> <p class="menuText">Help</p> </td>-->
+                </table>
+
+                <!-- Menu Bar line, which will get hecka moved around n stuff -->
+                <div id="menuWrap"><div id="menuLine"></div></div>
+
             </div>
-
+            
             <!-- Div for all bottom content, which will be constructed later -->
-            <div id="content"></div>
+            <div id="wrapper"><div id="content"></div></div>
 
-            <p class="evText">Events</p>
-            <table class="eventTable">
-                <td class="leftCell"> <p>9:30pm</p> </td>
-                <td class="rightCell"> <p>Swim meet</p> </td>
-            </table>
         </div>
 
+        <!-- And for christ sake I finally broke and added IScroll -->
+        <script type="text/javascript" src="scripts/iscroll.js"></script>
         <!-- Cordova -->
         <script type="text/javascript" src="cordova.js"></script>
         <!-- Gotta have that hawt formatting -->

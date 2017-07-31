@@ -12,6 +12,8 @@ import ScheduleUtil = require('./WHSLib/ScheduleUtil');
 import CalDataManage = require('./WHSLib/CalDataManage');
 import EventInterface = require('./WHSLib/EventInterface');
 import ScheduleGraphic = require('./UILib/ScheduleGraphic');
+import EventGraphic = require('./UILib/EventGraphic');
+import SlideTabUI = require('./UILib/SlideTabUI');
 import HTMLMap = require('./HTMLMap');
 
 "use strict";
@@ -20,6 +22,7 @@ var data: DataManage;
 var sched: SchedDataManage = new SchedDataManage();
 var cal: CalDataManage = new CalDataManage();
 var get: GetLib = new GetLib();
+var slider: SlideTabUI;
 
 export function initialize(): void {
     document.addEventListener('deviceready', onDeviceReady, false);
@@ -82,12 +85,12 @@ function onDeviceReady(): void {
     }).then(data.getNewData.bind(data)).catch(data.getNewData.bind(data)).then(() => {
         //do it again to make sure nothing has changed
         return cal.getScheduleKey(new Date()).then((key: string) => {
+            slider = new SlideTabUI('very unique id');
+
             let schedule: ScheduleUtil.Schedule = sched.getScheduleFromKey(key);
             if (key === null) console.log("No school dumbo");
             else {
                 constructTop(schedule);
-                let end: number = performance.now();
-                console.log("Init took " + (end - start));
                 //but with moar everthing else because we know our data now
                 //construct schedule graphic
                 let tempGraphic = new ScheduleGraphic('unique id');
@@ -110,12 +113,24 @@ function onDeviceReady(): void {
                         periodInc++;
                     }
                 }
-                //set the html
-                HTMLMap.setBottomHTML(tempGraphic.getHTML());
+                slider.pushBackItem(tempGraphic.getHTML());
             }
 
-            //and the final touch
-            HTMLMap.startAnimation();
+            //are you ready for this hawt event construction
+            //its gonna have so many callbacks I'm gonna die
+            let tempEvent = new EventGraphic('unique id 2');
+            return cal.getEvents(new Date(), (event: EventInterface) => {
+                tempEvent.pushBackEvent(moment(event.startTime).format('h:mma'), event.title);
+            }).then(() => {
+                slider.pushBackItem(tempEvent.getHTML());
+                HTMLMap.setBottomHTML(slider.getHTML());
+                //and the final touch
+                HTMLMap.startAnimation();
+                slider.startSliderUI();
+                //debug of course
+                let end: number = performance.now();
+                console.log("Init took " + (end - start));
+            });
         });
     }, (err) => console.log(err));
 }

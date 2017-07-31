@@ -187,26 +187,29 @@ class CalDataManage implements DataInterface {
     }
 
     //other more interesting functions
-    getEvents(day: Date, cursorFunc: (event: EventInterface) => void): void{
+    getEvents(day: Date, cursorFunc: (event: EventInterface) => void): Promise<any>{
         //this is where the db should pay off
         if (this.usingDB) {
-            let req: IDBRequest = this.db.transaction([CAL_DB_NAME], "readonly").objectStore(CAL_DB_NAME).index('dayString').openCursor(IDBKeyRange.only(day.toDateString()));
-            req.onsuccess = (event: any) => {
-                let cursor: IDBCursorWithValue = event.target.result;
-                if (cursor) {
-                    cursorFunc(cursor.value);
-                    cursor.continue();
-                }
-                else return;
-            };
+            return new Promise((resolve) => {
+                let req: IDBRequest = this.db.transaction([CAL_DB_NAME], "readonly").objectStore(CAL_DB_NAME).index('dayString').openCursor(IDBKeyRange.only(day.toDateString()));
+                req.onsuccess = (event: any) => {
+                    let cursor: IDBCursorWithValue = event.target.result;
+                    if (cursor) {
+                        if (!cursor.value.schedule) cursorFunc(cursor.value);
+                        cursor.continue();
+                    }
+                    else return resolve();
+                };
+            });
         }
         //or maybe not, that's kinda complicated
         else {
-            let thing: Promise<any> = new Promise(() => {
+            return new Promise((resolve) => {
                 let dateString: string = day.toDateString();
                 for (let i = 0, len = this.crappyEvents.length; i < len; i++) {
                     if (this.crappyEvents[i].dayString === dateString) cursorFunc(this.crappyEvents[i]);
                 }
+                return resolve();
             });
         }
     }

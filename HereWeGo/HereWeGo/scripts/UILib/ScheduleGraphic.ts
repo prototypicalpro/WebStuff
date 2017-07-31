@@ -4,16 +4,14 @@
  * I'll have to do some dynamic lazy loading nonsense to make it that way tho
  */
 
-
 import UIItem = require('./UIItem');
 
 class ScheduleGraphic extends UIItem {
     //HTML Template
     //It's gonna be ugly, that's just how it is
-    readonly id: string;
 
     //schedule table template
-    tableTemplate: string = `
+    private readonly tableTemplate: string = `
         <table id="{{id}}" class="table">
             <tbody>{{content}}</tbody> 
         </table>`;
@@ -21,7 +19,7 @@ class ScheduleGraphic extends UIItem {
     private tempContentString: string = "";
 
     //period item template
-    itemTemplate: string = `
+    private readonly itemTemplate: string = `
         <tr class="justRow" id="{{name}}" style="background-color:{{backColor}};">
             <td class="leftCell" style="border-right: 2px solid {{lineColor}};">
                 <p class="left text up">{{upTime}}</p>
@@ -31,12 +29,6 @@ class ScheduleGraphic extends UIItem {
                 <p class="rightCell text">{{name}}</p>
             </td>
         </tr>`
-
-
-    constructor(id: string) {
-        super();
-        this.id = id;
-    }
 
     pushBackRow(leftUpText: string, leftLowText: string, lineColor: string, rightText: string, backgroundColor?: string) {
         this.tempContentString += this.templateEngine(this.itemTemplate, {
