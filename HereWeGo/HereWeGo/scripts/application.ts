@@ -108,7 +108,7 @@ function onDeviceReady(): void {
                             period.getStart().format('h:mma'), period.getEnd().format('h:mma'),
                             lineColors[periodInc],
                             period.getName(),
-                            currentPeriod === i ? 'lightgreen' : undefined,
+                            3 === i ? 'lightgreen' : undefined,
                         );
                         periodInc++;
                     }
@@ -125,6 +125,7 @@ function onDeviceReady(): void {
                 slider.pushBackItem(tempEvent.getHTML());
                 HTMLMap.setBottomHTML(slider.getHTML());
                 //and the final touch
+                HTMLMap.topLowText.innerHTML = "Period 3";
                 HTMLMap.startAnimation();
                 slider.startSliderUI();
                 //debug of course

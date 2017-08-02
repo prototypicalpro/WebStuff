@@ -33,13 +33,13 @@ class SlideTabUI extends UIItem{
             scrollY: false,
             snap: true,
             scrollbars: false,
+            eventPassthrough: true,
             indicators: {
                 el: '#menuWrap',
                 listenY: false,
                 shrink: 'clip'
             }
         } as any);
-        this.scroll.scrollTo(10, 0);
     }
 }
 
