@@ -11,11 +11,9 @@ import HTMLMap = require('../HTMLMap');
 
 class SlideTabUI extends UIItem{
     //wrapper template to make everything horizontally flatmapped
-    private readonly wrapperTemplate: string = `<div class="wrap">{{stuff}}</div>` 
+    private readonly wrapperTemplate: string = `<div class="js_slide">{{stuff}}</div>` 
     //stored temporary string of HTML;
     private tempString: string = "";
-    //IScroll object to store
-    private scroll: IScroll;
     //function to add an element to be flatmapped
     pushBackItem(item: string): void {
         this.tempString += this.templateEngine(this.wrapperTemplate, { stuff: item });
@@ -26,20 +24,17 @@ class SlideTabUI extends UIItem{
         this.tempString = "";
         return temp;
     }
-    //and start up iscroll
+    //and start up lory
     startSliderUI() {
-        this.scroll = new IScroll('#wrapper', {
-            scrollX: true,
-            scrollY: false,
-            snap: true,
-            scrollbars: false,
-            eventPassthrough: true,
-            indicators: {
-                el: '#menuWrap',
-                listenY: false,
-                shrink: 'clip'
-            }
-        } as any);
+        let thing = document.querySelector('.selectMe')
+        lory(thing, {
+
+        });
+        //bind to the onSlide so menu line
+        thing.addEventListener('after.lory.slide', (evt: any) => {
+            HTMLMap.menuLine.style.transform = 'translateX(' + 25 * evt.detail.currentSlide + 'vw)';
+        });
+        
     }
 }
 

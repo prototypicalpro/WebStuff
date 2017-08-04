@@ -12,51 +12,57 @@
         <meta name="msapplication-tap-highlight" content="no">
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Open+Sans+Condensed:300,700|Roboto|Montserrat:200,300,400,500,600|Raleway:300" rel="stylesheet">
-        <link rel="stylesheet" type="text/css" href="css/index.css">
+        <!-- TODO: REMOVE ONLINE FONTS -->
+        <style>
+            @import url('https://www.fontify.me/wf/e783c54a93f0eb65fc48f48fb64618cb');
+        </style>
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
         <title>HereWeGo</title>
     </head>
     <body>
-
         <!-- Here We Go! -->
         <!-- Top section, starting with the background -->
-        <div class="background image start"></div>
-        <div class="background shader start">
-            <!-- Next we have the upper text -->
-            <div class="topCont">
-                <h1 class="topText up"></h1>
-                <h2 class="topText low"></h2>
+        <!-- Text is mixed around in there so the shader covers some of it -->
+        <div class="background image"></div>
+        <h1 class="upText"></h1>
+        <div class="background shader"></div>
+        <!-- Sliding content div, contains the bulk of the app -->
+        <div class="selectMe">
+            <div class="js_frame">
+                <div class="js_slides">
+                    <!-- Start the app with the essential text loaded -->
+                    <div class="js_slide">
+                        <div id="textWrap">
+                            <h2 class="lowText"></h2>
+                            <p class="timeText"></p>
+                        </div>
+                    </div>
+                    <div class="js_slide second">
+                        <p> Why hello there </p>
+                    </div>
+                    <!-- Anything after will be populated as the app loads -->
+                </div>
             </div>
         </div>
-        
-        
-        <!-- Bottom section, starting with the containing div -->
-        <div class="botCont start">
-            <div class="centerBar">
-                <!-- uncomment for purple button
-                <a class="bar fab start"></a>
-                -->
-                <p class="timeText"></p>
 
-                <!-- Menu Bar, will have to be populated later -->
-                <table id="menuBar">
-                    <!-- Later as in when I write the code to populate it -->
-                    <td class="menuRow"> <p class="menuText">Schedule</p> </td>
-                    <td class="menuRow"> <p class="menuText">Events</p> </td>
-                    <!--<td class="menuRow"> <p class="menuText">Help</p> </td>-->
-                </table>
+        <!-- uncomment for purple button (which may or may not work)
+        <a class="bar fab start"></a>
+        -->
 
-                <!-- Menu Bar line, which will get hecka moved around n stuff -->
-                <div id="menuWrap"><div id="menuLine"></div></div>
+        <!-- Menu Bar, will have to be populated later -->
+        <table id="menuBar">
+            <!-- Later as in when I write the code to populate it -->
+            <td class="menuRow"> <p class="menuText">Home</p> </td>
+            <td class="menuRow"> <p class="menuText">Schedule</p> </td>
+            <td class="menuRow"> <p class="menuText">Events</p> </td>
+            <td class="menuRow"> <p class="menuText">Help</p> </td>
+        </table>
 
-            </div>
-            
-            <!-- Div for all bottom content, which will be constructed later -->
-            <div id="wrapper"><div id="content"></div></div>
+        <!-- Menu Bar line, which will get hecka moved around n stuff -->
+        <div id="menuWrap"><div id="menuLine"></div></div>
 
-        </div>
-
-        <!-- And for christ sake I finally broke and added IScroll -->
-        <script type="text/javascript" src="scripts/iscroll.js"></script>
+        <!-- And for christ sake I finally broke and added IScroll, now Lory -->
+        <script type="text/javascript" src="scripts/lory.min.js"></script>
         <!-- Cordova -->
         <script type="text/javascript" src="cordova.js"></script>
         <!-- Gotta have that hawt formatting -->

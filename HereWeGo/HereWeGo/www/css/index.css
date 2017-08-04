@@ -50,126 +50,86 @@ body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    height: 48vh;
+    height: 100vh;
     width: 100vw;
     transition: height 600ms cubic-bezier(0.215, 0.61, 0.355, 1);
+    position: fixed;
 }
 
 /* Background Image */
 .background.image {
     background-image: url("../images/background.jpg");
-    position: fixed;
     z-index: -1;
 }
 
 /* Background Trancperency Gradient */
 .background.shader {
+    /* TODO: Replace with image
     background-image: url("../images/gradient.png");
-    position: absolute;
+    */
+    background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.4));
 }
 
 /*
  * Top Content CSS
  * Styles the text that shows the important nonsense that we actually
  * launched the app for
- * e.g: A
- *      Period 3
  */
 
 /* Global Top Section Text CSS */
-.topText {
-    font-family: "BenjaminFont"; /* Benjamin, this is for you */
-    color: white;
-    margin: 0;
-}
-
-/* Text positioning */
-.topCont {
-    padding-left: 5vw;
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
-}
 
 /* Upper Text (A) */
-.topText.up {
-    font-size: 12vh;
+.upText {
+    font-family: "BenjaminFont"; /* Benjamin, this is for you */
+    color: white;
+    font-size: 170vw;
+    opacity: 0.5;
+    margin: 0;
+    position: fixed;
+    bottom: -20vh;
+    left: -22vw;
+}
+
+/* Lower text wrapper stuff (for fancy animation) */
+#textWrap {
+    font-family: 'Montserrat', sans-serif;
+    position: absolute;
+    top: 75.5vh;
+    left: 5vw;
 }
 
 /* Lower Text (Period 3) */
-.topText.low {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 6vh;
-}
-
-/*
- * Bottom Content CSS
- * Styles erethang else
- * Should be pretty messy
- */
-
-/* Content Positioning */
-.botCont {
-    background-color: #EFEFEF;
-    height: 200vh;
-    position: absolute;
-    top: 48vh;
-    transition: transform 600ms cubic-bezier(0.215, 0.61, 0.355, 1);
-}
-
-/* Time Left Bar */
-.centerBar {
-    background-color: #636363;
-    width: 100vw;
-}
-
-/* Positioning for Sub-Bar Elements */
-.bar {
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-/* Button Thingy, with Push Animation */
-.fab {
-    box-shadow: 0 4px 6px 0 rgba(0, 0, 0, .14), 0 4px 5px rgba(0, 0, 0, .1);
-    transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1), 
-                background-color 300ms cubic-bezier(0.4, 0, 0.2, 1), 
-                color 300ms cubic-bezier(0.4, 0, 0.2, 1),
-                opacity 600ms linear;
-    background-color: #D0C6F8;
-    opacity: 1;
-    border-radius: 50%;
-    display: block;
-    height: 80px;
-    width: 80px;
-    float: right;
-    left: -10vw;
-    z-index: 99;
-}
-.fab:active {
-    box-shadow: 0 5px 15px 0 rgba(0, 0, 0, .4), 0 4px 7px 0 rgba(0, 0, 0, .1);
-    background-color: #bfb6e4;
+.lowText {
+    font-size: 8vh;
+    color: white;
+    margin: 0;
+    margin-bottom: 0.5vh;
 }
 
 /* Time Left Text */
 .timeText {
     text-transform: capitalize;
-    font-family: "BenjaminFont"; /* Benjamin, this is also for you */
-    font-family: 'Montserrat', sans-serif;
-    font-size: 3.5vh;
+    font-size: 7vw;
     color: white;
-    margin-left: 5vw;
-    padding-top: 1.5vh;
 }
 
-/* Bottom UI Menu */
+/*
+ * Bottom Bar CSS
+ * Styles the menu slider bar thingy
+ * at the bottom of the screen
+ */
+
+/* Whole bar CSS */
 #menuBar {
-    width: 100vw;
-    height: 5vh;
     table-layout: fixed;
+    background-color: #636363;
+    width: 100vw;
+    height: 7vh;
+    position: absolute;
+    top: 93vh;
 }
 
+/* Text stuff */
 .menuRow {
     text-align: center;
 }
@@ -181,39 +141,51 @@ body {
     color: white;
 }
 
+/* Wrapper and CSS for line indicator */
 #menuWrap {
     width: 100vw;
-    height: 4px;
-    margin-top: -4px;
-    margin-bottom: 0.8vh;
+    position: absolute;
+    top: 99.5vh;
 }
 
 #menuLine {
-    height: 4px;
-    background-color: white;
-    box-shadow: 0 1px 6px #777;
+    width: 25vw;
+    height: 0.5vh;
+    background-color: white
 }
 
-/* Global Graphic positioning, puts everything on a giant page side by side */
+/* 
+ * Slidy Thingy CSS
+ * Attempts to put a bunch of pages all side by side
+ * Then allows you to swipe between them
+ */
 
-#content {
-    width: 200vw;
-    display: block;
-}
-
-.wrap {
+/* Wrapper div, aka the viewport */
+.js_frame {
     width: 100vw;
-    display: block;
+    overflow: hidden;
+}
+
+/* Content div, contains all the elements we want to scroll through */
+.js_slides {
+    /* Width must be adjusted to fit content */
+    width: 400vw;
+    white-space: nowrap;
+}
+
+/* wrap div, CSS for each content item */
+.js_slide {
+    width: 100vw;
+    height: 93vh;
     float: left;
 }
 
-#wrapper {
-    width: 100vw;
-    list-style: none;
-    overflow-x: hidden;
-}
-
-/* Schedule Graphic */
+/* 
+ * Schedule Graphic CSS
+ * CSS to be used with a template generated later
+ * by the javascript
+ * Should display a nice schedule graphic once generated
+ */
 .table {
     width: 100vw;
     height: 40vh;
@@ -259,17 +231,7 @@ body {
     font-weight: 300;
 }
 
-/* Bottom Pullup Animation */
-.botCont.start {
-    transform: translateY(48vh);
-}
-
-/* Bottom Button Fade Animation*/
-.fab.start {
-    opacity: 0;
-}
-
-/* Top Slide Animation */
-.background.start {
-    height: 100vh;
+/* Testing I Guess */
+.second {
+    background-color: #EFEFEF;
 }

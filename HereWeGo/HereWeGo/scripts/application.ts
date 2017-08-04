@@ -123,12 +123,14 @@ function onDeviceReady(): void {
                 tempEvent.pushBackEvent(moment(event.startTime).format('h:mma'), event.title);
             }).then(() => {
                 slider.pushBackItem(tempEvent.getHTML());
-                HTMLMap.setBottomHTML(slider.getHTML());
                 //and the final touch
                 HTMLMap.topLowText.innerHTML = "Period 3";
-                HTMLMap.startAnimation();
+                HTMLMap.bottomBarText.innerHTML = "45 Minutes Remaining"
+
+                HTMLMap.appendSliderHTML(slider.getHTML());
                 slider.startSliderUI();
                 //debug of course
+                
                 let end: number = performance.now();
                 console.log("Init took " + (end - start));
             });
