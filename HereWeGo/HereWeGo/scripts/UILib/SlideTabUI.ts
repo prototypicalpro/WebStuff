@@ -28,10 +28,14 @@ class SlideTabUI extends UIItem{
     startSliderUI() {
         let thing = document.querySelector('.selectMe')
         lory(thing, {
+            //snapping only to js_slide
+            classNameSlide: 'js_slide',
+            searchDepth: 1,
+            //snappier scrolling
             slideSpeed: 300,
             snapBackSpeed: 200,
             ease: 'cubic-bezier(0.1, 0.57, 0.1, 1)',
-
+            //fancy indicators
             indicators: [{
                 element: document.querySelector('#menuLine'),
                 axis: 'x',

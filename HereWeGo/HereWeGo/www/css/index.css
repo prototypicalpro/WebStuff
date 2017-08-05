@@ -24,7 +24,7 @@ p {
 html, body {
     margin: 0;
     overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: hidden;
 }
 
 body {
@@ -189,7 +189,7 @@ body {
  */
 .table {
     width: 100vw;
-    height: 40vh;
+    height: 62vh;
     border-collapse: collapse;
 }
 

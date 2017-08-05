@@ -120,17 +120,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * set active class to element which is the current slide
 	     */
 	    function setActiveElement(slides, currentIndex) {
-	        var _options = options;
+            //this is unnesesary
+            /*
+            var _options = options;
 	        var classNameActiveSlide = _options.classNameActiveSlide;
+            */
 	
 	
 	        slides.forEach(function (element, index) {
-	            if (element.classList.contains(classNameActiveSlide)) {
-	                element.classList.remove(classNameActiveSlide);
+                if (element.classList.contains(options.classNameActiveSlide)) {
+                    element.classList.remove(options.classNameActiveSlide);
 	            }
 	        });
 	
-	        slides[currentIndex].classList.add(classNameActiveSlide);
+            slides[currentIndex].classList.add(options.classNameActiveSlide);
 	    }
 	
 	    /**
@@ -341,11 +344,64 @@ return /******/ (function(modules) { // webpackBootstrap
 	            x: slideContainer.offsetLeft,
 	            y: slideContainer.offsetTop
 	        };
-	
+
+            //more special sauce
+            //edited to force the engine to search children for the js_slide class
+            //so slides can be nested in divs
+            var _slides;
+            //if we can search depth without classlist comparing
+            if (_options4.classNameSlide === '' && _options4.searchDepth > 0) {
+                //returns an array
+                var searchChildren = function (element, depth) {
+                    //decrement depth
+                    depth--;
+                    var _list = [];
+                    //for every child element
+                    for (var o = 0, len2 = element.children.length; o < len2; o++) {
+                        //if depth, search child elements and add them to the list
+                        if (depth >= 0) {
+                            //mmmmm recursion
+                            Array.prototype.splice.apply(_list, [_list.length, 0].concat(searchChildren(element.children[o], depth)));
+                        }
+                        //else take it and run
+                        else _list.push(element.children[o]);
+                    }
+                    //and return the array of new slides
+                    return _list;
+                };
+                //now we run it
+                _slides = searchChildren(slideContainer, _options4.searchDepth);
+            }
+            //else if we have to classlist compare
+            else if (_options4.classNameSlide !== '') {
+                //returns an array
+                var searchChildren = function (element, depth) {
+                    //decrement depth
+                    depth--;
+                    var _list = [];
+                    //for every child element
+                    for (var o = 0, len2 = element.children.length; o < len2; o++) {
+                        //if slide class, add slide
+                        if (element.children[o].classList.contains(_options4.classNameSlide)) _list.push(element.children[o]);
+                        //else if depth, search child elements and add them to the list
+                        else if (depth >= 0) {
+                            //mmmmm recursion
+                            Array.prototype.splice.apply(_list, [_list.length, 0].concat(searchChildren(element.children[o], depth)));
+                        }
+                    }
+                    //and return the array of new slides
+                    return _list;
+                };
+                //now we run it
+                _slides = searchChildren(slideContainer, _options4.searchDepth);
+            }
+            //else the slice should be sufficient (RIP recursion)
+            else _slides = slice.call(slideContainer.children);
+
 	        if (options.infinite) {
-	            slides = setupInfinite(slice.call(slideContainer.children));
+	            slides = setupInfinite(_slides);
 	        } else {
-	            slides = slice.call(slideContainer.children);
+	            slides = slice.call(_slides);
 	        }
 	
 	        reset();
@@ -907,7 +963,21 @@ return /******/ (function(modules) { // webpackBootstrap
        * B/c I miss IScroll
        * e.g. : [{element: getHTMLElement(), scrollAxis: 'x', speedRatio: 0.25}]
        */
-      indicators: []
+      indicators: [],
+
+      /**
+       * Slide class name for searching
+       * leave blank to snap to every element
+       */
+      classNameSlide: '',
+
+      /**
+       * Depth to search elements children
+       * e.g. <div><div class="js_slide"></div></div> would be depth 1
+       * Set to zero to disable searching children
+       * If classNameSLide is blank will grab every child at this depth and ignore parents
+       */
+      searchDepth: 0,
 	};
 
 /***/ }

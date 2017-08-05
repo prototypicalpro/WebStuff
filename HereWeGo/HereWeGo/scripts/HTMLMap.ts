@@ -18,7 +18,7 @@ namespace HTMLMap {
     const scheduleTableObject: Node = document.querySelector('#schedule');
     const scheduleRowTemplate: HTMLElement = document.querySelector('#periodRow') as HTMLElement;
 
-    export const content: HTMLElement = document.querySelector('.js_slides') as HTMLElement;
+    export const content: HTMLElement = document.querySelector('#addStuff') as HTMLElement;
 
     //interface which holds the data for a schedule row in html, which I will convert into an html object
     export interface ScheduleRowData {
@@ -33,8 +33,8 @@ namespace HTMLMap {
     export const deleteScheduleRows = (): void => { while (scheduleTableObject.firstChild) scheduleTableObject.removeChild(scheduleTableObject.firstChild); }
 
     //add HTML to the bottom section
-    export const appendSliderHTML = (html: string): void => {
-        content.innerHTML += html;
+    export const setSliderHTML = (html: string): void => {
+        content.innerHTML = html;
     }
 }
 
