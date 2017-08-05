@@ -126,6 +126,7 @@ function onDeviceReady(): void {
                 //and the final touch
                 HTMLMap.topLowText.innerHTML = "Period 3";
                 HTMLMap.bottomBarText.innerHTML = "45 Minutes Remaining"
+                HTMLMap.topUpText.innerHTML = "A";
 
                 HTMLMap.appendSliderHTML(slider.getHTML());
                 slider.startSliderUI();

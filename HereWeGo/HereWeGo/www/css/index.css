@@ -146,6 +146,7 @@ body {
     width: 100vw;
     position: absolute;
     top: 99.5vh;
+    background-color: #636363;
 }
 
 #menuLine {

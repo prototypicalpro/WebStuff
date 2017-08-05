@@ -28,13 +28,21 @@ class SlideTabUI extends UIItem{
     startSliderUI() {
         let thing = document.querySelector('.selectMe')
         lory(thing, {
+            slideSpeed: 300,
+            snapBackSpeed: 200,
+            ease: 'cubic-bezier(0.1, 0.57, 0.1, 1)',
 
+            indicators: [{
+                element: document.querySelector('#menuLine'),
+                axis: 'x',
+                speedRatio: -0.25
+            },
+            {
+                element: document.querySelector('#textWrap'),
+                axis: 'y',
+                speedRatio: -0.3
+            }]
         });
-        //bind to the onSlide so menu line
-        thing.addEventListener('after.lory.slide', (evt: any) => {
-            HTMLMap.menuLine.style.transform = 'translateX(' + 25 * evt.detail.currentSlide + 'vw)';
-        });
-        
     }
 }
 
