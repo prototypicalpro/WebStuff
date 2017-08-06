@@ -135,39 +135,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
             slides[currentIndex].classList.add(options.classNameActiveSlide);
 	    }
-	
-	    /**
-	     * private
-	     * setupInfinite: function to setup if infinite is set
-	     *
-	     * @param  {array} slideArray
-	     * @return {array} array of updated slideContainer elements
-	     */
-	    function setupInfinite(slideArray) {
-	        var _options2 = options;
-	        var infinite = _options2.infinite;
-	
-	
-	        var front = slideArray.slice(0, infinite);
-	        var back = slideArray.slice(slideArray.length - infinite, slideArray.length);
-	
-	        front.forEach(function (element) {
-	            var cloned = element.cloneNode(true);
-	
-	            slideContainer.appendChild(cloned);
-	        });
-	
-	        back.reverse().forEach(function (element) {
-	            var cloned = element.cloneNode(true);
-	
-	            slideContainer.insertBefore(cloned, slideContainer.firstChild);
-	        });
-	
-	        slideContainer.addEventListener(prefixes.transitionEnd, onTransitionEnd);
-	
-	        return slice.call(slideContainer.children);
-	    }
-	
+
 	    /**
 	     * [dispatchSliderEvent description]
 	     * @return {[type]} [description]
@@ -205,8 +173,12 @@ return /******/ (function(modules) { // webpackBootstrap
                     //moar for loops
                     indicators.forEach(function (obj) {
                         //do style stuff to indicators as well
-                        if (obj.axis === 'x') obj.element.style[prefixes.transform] = 'translate3d(' + to * obj.speedRatio + 'px, 0, 0)';
-                        else obj.element.style[prefixes.transform] = 'translate3d(0,' + to * obj.speedRatio + 'px,0)';
+                        //if we maxed out sliding, only slide to max
+                        var translateNum;
+                        if (obj.maxSlide && to < -frameWidth * obj.maxSlide) translateNum = -frameWidth * obj.maxSlide * obj.speedRatio;
+                        else translateNum = to * obj.speedRatio;
+                        if (obj.axis === 'x') obj.element.style[prefixes.transform] = 'translate3d(' + translateNum + 'px, 0, 0)';
+                        else obj.element.style[prefixes.transform] = 'translate3d(0,' + translateNum + 'px,0)';
                     });
 	            } else {
                     style[prefixes.transform] = 'translate(' + to + 'px, 0)';
@@ -214,8 +186,12 @@ return /******/ (function(modules) { // webpackBootstrap
                     //moar for loops
                     indicators.forEach(function (obj) {
                         //do style stuff to indicators as well
-                        if (obj.axis === 'x') obj.element.style[prefixes.transform] = 'translate(' + to * obj.speedRatio + 'px, 0)';
-                        else obj.element.style[prefixes.transform] = 'translate(0,' + to * obj.speedRatio + 'px)';
+                        //if we maxed out sliding, only slide to max
+                        var translateNum;
+                        if (obj.maxSlide && to < -frameWidth * obj.maxSlide) translateNum = -frameWidth * obj.maxSlide * obj.speedRatio;
+                        else translateNum = to * obj.speedRatio;
+                        if (obj.axis === 'x') obj.element.style[prefixes.transform] = 'translate(' + translateNum + 'px, 0)';
+                        else obj.element.style[prefixes.transform] = 'translate(0,' + translateNum + 'px)';
                     });
 	            }
 	        }
@@ -288,22 +264,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	         */
 	        if (slides[nextIndex].offsetLeft <= maxOffset) {
 	            index = nextIndex;
-	        }
-	
-	        if (infinite && (nextIndex === slides.length - infinite || nextIndex === 0)) {
-	            if (direction) {
-	                index = infinite;
-	            }
-	
-	            if (!direction) {
-	                index = slides.length - infinite * 2;
-	            }
-	
-	            position.x = slides[index].offsetLeft * -1;
-	
-	            transitionEndCallback = function transitionEndCallback() {
-	                translate(slides[index].offsetLeft * -1, 0, undefined);
-	            };
 	        }
 	
 	        if (classNameActiveSlide) {
@@ -398,11 +358,7 @@ return /******/ (function(modules) { // webpackBootstrap
             //else the slice should be sufficient (RIP recursion)
             else _slides = slice.call(slideContainer.children);
 
-	        if (options.infinite) {
-	            slides = setupInfinite(_slides);
-	        } else {
-	            slides = slice.call(_slides);
-	        }
+            slides = slice.call(_slides);
 	
 	        reset();
 	
@@ -456,15 +412,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            rewindSpeed = 0;
 	        }
 	
-	        if (infinite) {
-	            translate(slides[index + infinite].offsetLeft * -1, 0, null);
-	
-	            index = index + infinite;
-	            position.x = slides[index].offsetLeft * -1;
-	        } else {
-	            translate(slides[index].offsetLeft * -1, rewindSpeed, ease);
-	            position.x = slides[index].offsetLeft * -1;
-	        }
+	        translate(slides[index].offsetLeft * -1, rewindSpeed, ease);
+	        position.x = slides[index].offsetLeft * -1;
 	
 	        if (classNameActiveSlide) {
 	            setActiveElement(slice.call(slides), index);
@@ -529,14 +478,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        if (nextCtrl) {
 	            nextCtrl.removeEventListener('click', next);
-	        }
-	
-	        // remove cloned slides if infinite is set
-	        if (options.infinite) {
-	            Array.apply(null, Array(options.infinite)).forEach(function () {
-	                slideContainer.removeChild(slideContainer.firstChild);
-	                slideContainer.removeChild(slideContainer.lastChild);
-	            });
 	        }
 	
 	        dispatchSliderEvent('after', 'destroy');
@@ -903,13 +844,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  rewind: false,
 	
 	  /**
-	   * number of visible slides or false
-	   * use infinite or rewind, not both
-	   * @infinite {number}
-	   */
-	  infinite: false,
-	
-	  /**
 	   * class name for slider frame
 	   * @classNameFrame {string}
 	   */
@@ -959,9 +893,9 @@ return /******/ (function(modules) { // webpackBootstrap
       rewindOnResize: true,
 
       /**
-       * Class names + axis of indicators to scroll across + translate multiply factor
+       * Class names + axis of indicators to scroll across + translate multiply factor + maximum slide amount (in frame lengths)
        * B/c I miss IScroll
-       * e.g. : [{element: getHTMLElement(), scrollAxis: 'x', speedRatio: 0.25}]
+       * e.g. : [{element: getHTMLElement(), scrollAxis: 'x', speedRatio: 0.25, maxSlide: 1}]
        */
       indicators: [],
 

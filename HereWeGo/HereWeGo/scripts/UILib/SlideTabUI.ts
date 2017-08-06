@@ -39,12 +39,19 @@ class SlideTabUI extends UIItem{
             indicators: [{
                 element: document.querySelector('#menuLine'),
                 axis: 'x',
-                speedRatio: -0.25
+                speedRatio: -0.25,
             },
             {
                 element: document.querySelector('#textWrap'),
                 axis: 'y',
-                speedRatio: -0.3
+                speedRatio: -0.3,
+                maxSlide: 1
+            },
+            {
+                element: document.querySelector('#topBar'),
+                axis: 'x',
+                speedRatio: 1,
+                maxSlide: 1
             }]
         });
     }

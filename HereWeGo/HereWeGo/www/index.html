@@ -24,22 +24,83 @@
         <!-- Top section, starting with the background -->
         <!-- Text is mixed around in there so the shader covers some of it -->
         <div class="background image"></div>
-        <h1 class="upText"></h1>
+        <p class="upText"></p>
         <div class="background shader"></div>
+        <!-- Menu Button -->
+        <div id="sideButton"></div>
+        <!-- Bottom Text stuff-->
         <div id="textWrap">
-            <h2 class="lowText"></h2>
+            <p class="lowText"></p>
             <p class="timeText"></p>
         </div>
+        <!-- Top menu bar, which shows aup after the first slide -->
+        <div id="topBar"><p id="barText">Sunday, August 6</p></div>
+
         <!-- Sliding content div, contains the bulk of the app -->
         <div class="selectMe">
             <div class="js_frame">
                 <div class="js_slides">
-                    <!-- Start the app with the essential text loaded -->
-                    <div class="js_slide start">
-                        
+                    <!-- Start the app with the essential text loaded (see through slide) -->
+                    <div class="js_slide start"></div>
+                    <!-- Debug stuff (I think) -->
+                    <div class="js_slide schedEv">
+                        <p class="schedHead header">A Schedule</p>
+                        <!-- Debug Schedule Template (Messy) -->
+                        <table id="unique id" class="table">
+                            <tbody>
+                                <tr class="justRow" id="5" style="">
+                                    <td class="leftCell" style="border-right: 2px solid #90ee90;">
+                                        <p class="left text up">8:15am</p>
+                                        <p class="left text low">9:47am</p>
+                                    </td>
+                                    <td class="rightCell">
+                                        <p class="rightCell text">5</p>
+                                    </td>
+                                </tr>
+                                <tr class="justRow" id="6" style="background-color:#EFEFEF;">
+                                    <td class="leftCell" style="border-right: 2px solid #73d26f;">
+                                        <p class="left text up">9:52am</p>
+                                        <p class="left text low">11:24am</p>
+                                    </td>
+                                    <td class="rightCell">
+                                        <p class="rightCell text">6</p>
+                                    </td>
+                                </tr>
+                                <tr class="justRow" id="Lunch" style="background-color:lightgreen;">
+                                    <td class="leftCell" style="border-right: 2px solid #55b54e;">
+                                        <p class="left text up">11:24am</p>
+                                        <p class="left text low">12:01pm</p>
+                                    </td>
+                                    <td class="rightCell">
+                                        <p class="rightCell text">Lunch</p>
+                                    </td>
+                                </tr>
+                                <tr class="justRow" id="7" style="background-color:#EFEFEF;">
+                                    <td class="leftCell" style="border-right: 2px solid #359a2d;">
+                                        <p class="left text up">12:06pm</p>
+                                        <p class="left text low">1:38pm</p>
+                                    </td>
+                                    <td class="rightCell">
+                                        <p class="rightCell text">7</p>
+                                    </td>
+                                </tr>
+                                <tr class="justRow" id="8" style="background-color:#EFEFEF;">
+                                    <td class="leftCell" style="border-right: 2px solid #008000;">
+                                        <p class="left text up">1:43pm</p>
+                                        <p class="left text low">3:15pm</p>
+                                    </td>
+                                    <td class="rightCell">
+                                        <p class="rightCell text">8</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="evHead header">Events</p>
+                        <p class="benjamin"> This feature is @#$%ing stupid </p>
+                        <p class="benjamin"> -Benjamin, 2017</p>
                     </div>
-                    <div id="addStuff"></div>
                     <!-- Anything after will be populated as the app loads -->
+                    <div id="addStuff"></div>
                 </div>
             </div>
         </div>
@@ -53,7 +114,7 @@
             <!-- Later as in when I write the code to populate it -->
             <td class="menuRow"> <p class="menuText">Home</p> </td>
             <td class="menuRow"> <p class="menuText">Schedule</p> </td>
-            <td class="menuRow"> <p class="menuText">Events</p> </td>
+            <td class="menuRow"> <p class="menuText">Media</p> </td>
             <td class="menuRow"> <p class="menuText">Help</p> </td>
         </table>
 

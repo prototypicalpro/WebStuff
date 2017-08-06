@@ -128,7 +128,7 @@ function onDeviceReady(): void {
                 HTMLMap.setSliderHTML(slider.getHTML());
                 slider.startSliderUI();
                 //debug of course
-                
+
                 let end: number = performance.now();
                 console.log("Init took " + (end - start));
             });

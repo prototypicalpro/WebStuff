@@ -84,7 +84,6 @@ body {
     color: white;
     font-size: 170vw;
     opacity: 0.5;
-    margin: 0;
     position: fixed;
     bottom: -20vh;
     left: -22vw;
@@ -101,8 +100,8 @@ body {
 /* Lower Text (Period 3) */
 .lowText {
     font-size: 8vh;
+    font-weight: bold;
     color: white;
-    margin: 0;
     margin-bottom: 0.5vh;
 }
 
@@ -111,6 +110,40 @@ body {
     text-transform: capitalize;
     font-size: 7vw;
     color: white;
+}
+
+/* Menu Button CSS */
+#sideButton {
+    position: absolute;
+    z-index: 999; /* If there ever was a feature of CSS that clearly had good intentions, this would be it */
+    background-image: url("../images/navicon.png");
+    background-origin: content-box;
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 3.15vh;
+    height: 2.2vh;
+    padding: 3.25vh 5vw 3.25vh 5vw;
+}
+
+/* Top Menu Bar CSS */
+#topBar {
+    /* Stick it off the screen so the slider can bring it back */
+    position: absolute;
+    left: 100vw;
+    height: 8.7vh;
+    width: 100vw;
+    background-color: #636363;
+    z-index: 99; /* sigh */
+}
+
+#barText {
+    font-family: 'Montserrat', sans-serif;
+    color: white;
+    font-size: 5.5vw;
+    text-transform: capitalize;
+    line-height: 8.7vh;
+    position: relative;
+    left: 16vw;
 }
 
 /*
@@ -170,6 +203,8 @@ body {
 /* Content div, contains all the elements we want to scroll through */
 .js_slides {
     /* Width must be adjusted to fit content */
+    position: absolute;
+    top: 8.7vh;
     width: 400vw;
     white-space: nowrap;
 }
@@ -177,8 +212,27 @@ body {
 /* wrap div, CSS for each content item */
 .js_slide {
     width: 100vw;
-    height: 93vh;
+    height: 84.3vh;
     float: left;
+}
+
+/*
+ * Schedule and events CSS
+ * We'll see how this goes
+ */
+
+/* special full slide CSS */
+.schedEv {
+    background-color: #EFEFEF;
+}
+
+/* Header CSS */
+.header {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 5vh;
+    margin-left: 5vw;
+    margin-top: 1vh;
+    margin-bottom: 1vh;
 }
 
 /* 
@@ -189,7 +243,6 @@ body {
  */
 .table {
     width: 100vw;
-    height: 62vh;
     border-collapse: collapse;
 }
 
@@ -201,38 +254,30 @@ body {
 }
 
 .left.text {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Open Sans', sans-serif;
     font-size: 2.8vh;
     margin-left: 4vw;
     margin-right: 4vw;
 }
 
 .left.low {
-    margin-top: 0.5vh;
-    margin-bottom: 0.5vh;
+    margin-top: 0.6vh;
+    margin-bottom: 1.4vh;
 }
 
 .left.up {
-    margin-top: 0.5vh;
+    margin-top: 1.4vh;
 }
 
 .rightCell.text {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Open Sans', sans-serif;
     margin-left: 4vw;
-    font-size: 6vh;
+    font-size: 6.5vh;
 }
 
-/* Events graphic */
-.evText {
-    font-family: 'Montserrat', sans-serif;
-    margin-left: 4vw;
-    margin-top: 1vw;
-    color: gray;
-    font-size: 3vh;
-    font-weight: 300;
-}
-
-/* Testing I Guess */
-.second {
-    background-color: #EFEFEF;
+/* Please remove */
+.benjamin {
+    font-family: 'Open Sans', sans-serif;
+    margin-left: 5vw;
+    font-size: 5.5vw;
 }
