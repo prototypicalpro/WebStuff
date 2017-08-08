@@ -15,6 +15,7 @@ import ScheduleGraphic = require('./UILib/ScheduleGraphic');
 import EventGraphic = require('./UILib/EventGraphic');
 import SlideTabUI = require('./UILib/SlideTabUI');
 import HTMLMap = require('./HTMLMap');
+import Page = require('./UILib/Page');
 
 "use strict";
 
@@ -22,7 +23,6 @@ var data: DataManage;
 var sched: SchedDataManage = new SchedDataManage();
 var cal: CalDataManage = new CalDataManage();
 var get: GetLib = new GetLib();
-var slider: SlideTabUI;
 
 export function initialize(): void {
     document.addEventListener('deviceready', onDeviceReady, false);
@@ -85,48 +85,26 @@ function onDeviceReady(): void {
     }).then(data.getNewData.bind(data)).catch(data.getNewData.bind(data)).then(() => {
         //do it again to make sure nothing has changed
         return cal.getScheduleKey(new Date()).then((key: string) => {
-            slider = new SlideTabUI('very unique id');
-
+            //quicklaunch stuff
             let schedule: ScheduleUtil.Schedule = sched.getScheduleFromKey(key);
             if (key === null) console.log("No school dumbo");
-            else {
-                constructTop(schedule);
-                //but with moar everthing else because we know our data now
-                //construct schedule graphic
-                let tempGraphic = new ScheduleGraphic('unique id');
+            else constructTop(schedule);
 
-                let currentPeriod = schedule.getCurrentPeriodIndex();
-                //line color based on some math I never plan on writing
-                let periodInc = 0;
-                const lineColors: Array<string> = ['#90ee90', '#73d26f', '#55b54e', '#359a2d', '#008000'];
-                for (let i = 0; i < schedule.getNumPeriods(); i++) {
-                    //cache period for less keyboard strain
-                    let period = schedule.getPeriod(i);
-                    if (period.getType() !== ScheduleUtil.PeriodType.PASSING) {
-                        //background color based on current period
-                        tempGraphic.pushBackRow(
-                            period.getStart().format('h:mma'), period.getEnd().format('h:mma'),
-                            lineColors[periodInc],
-                            period.getName(),
-                            3 === i ? 'lightgreen' : undefined,
-                        );
-                        periodInc++;
-                    }
-                }
-                slider.pushBackItem(tempGraphic.getHTML());
-            }
+            //event object, since iteration (sigh)
+            let eventUI: EventGraphic = new EventGraphic(null);
 
-            //are you ready for this hawt event construction
-            //its gonna have so many callbacks I'm gonna die
-            let tempEvent = new EventGraphic('unique id 2');
-            return cal.getEvents(new Date(), (event: EventInterface) => {
-                tempEvent.pushBackEvent(moment(event.startTime).format('h:mma'), event.title);
-            }).then(() => {
-                slider.pushBackItem(tempEvent.getHTML());
-                //and the final touch
-
-                HTMLMap.setSliderHTML(slider.getHTML());
-                slider.startSliderUI();
+            //get all the events in there
+            return cal.getEvents(new Date(), eventUI.iterateEvent.bind(this)).then(() => {
+                //construct the whole second page
+                //ONE LINE WOOOOOOOO
+                HTMLMap.setSliderHTML(new SlideTabUI([
+                    new Page('Schedule', [
+                        new ScheduleGraphic(schedule),
+                        eventUI,
+                    ])
+                ]).getHTML());
+                //beuty in abstracton my friends
+                SlideTabUI.startSliderUI();
                 //debug of course
 
                 let end: number = performance.now();

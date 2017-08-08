@@ -25,6 +25,8 @@ html, body {
     margin: 0;
     overflow-x: hidden;
     overflow-y: hidden;
+    height: 100vh;
+    width: 100vw;
 }
 
 body {
@@ -114,7 +116,7 @@ body {
 
 /* Menu Button CSS */
 #sideButton {
-    position: absolute;
+    position: fixed;
     z-index: 999; /* If there ever was a feature of CSS that clearly had good intentions, this would be it */
     background-image: url("../images/navicon.png");
     background-origin: content-box;
@@ -128,7 +130,7 @@ body {
 /* Top Menu Bar CSS */
 #topBar {
     /* Stick it off the screen so the slider can bring it back */
-    position: absolute;
+    position: fixed;
     left: 100vw;
     height: 8.7vh;
     width: 100vw;
@@ -142,7 +144,7 @@ body {
     font-size: 5.5vw;
     text-transform: capitalize;
     line-height: 8.7vh;
-    position: relative;
+    position: absolute;
     left: 16vw;
 }
 
@@ -158,7 +160,7 @@ body {
     background-color: #636363;
     width: 100vw;
     height: 7vh;
-    position: absolute;
+    position: fixed;
     top: 93vh;
 }
 
@@ -177,7 +179,7 @@ body {
 /* Wrapper and CSS for line indicator */
 #menuWrap {
     width: 100vw;
-    position: absolute;
+    position: fixed;
     top: 99.5vh;
     background-color: #636363;
 }
@@ -196,6 +198,8 @@ body {
 
 /* Wrapper div, aka the viewport */
 .js_frame {
+    position: fixed;
+    height: 100vh;
     width: 100vw;
     overflow: hidden;
 }
@@ -203,10 +207,11 @@ body {
 /* Content div, contains all the elements we want to scroll through */
 .js_slides {
     /* Width must be adjusted to fit content */
-    position: absolute;
+    position: fixed;
     top: 8.7vh;
     width: 400vw;
     white-space: nowrap;
+    overflow: hidden;
 }
 
 /* wrap div, CSS for each content item */
@@ -216,15 +221,17 @@ body {
     float: left;
 }
 
+/* special full slide CSS */
+.content {
+    background-color: #EFEFEF;
+}
+
 /*
  * Schedule and events CSS
  * We'll see how this goes
  */
 
-/* special full slide CSS */
-.schedEv {
-    background-color: #EFEFEF;
-}
+
 
 /* Header CSS */
 .header {

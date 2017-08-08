@@ -8,12 +8,6 @@
  */
 
 abstract class UIItem {
-    //unique ID, so this element can be updated later
-    public readonly id: string;
-
-    //constructor must accept ID
-    constructor(id: string) { this.id = id; }
-
     //Varibles to put in template, in form of { name: value }
     //searches for strings in double curly beackets and replaces them (e.g. {{thing}})
     //no spaces in there please

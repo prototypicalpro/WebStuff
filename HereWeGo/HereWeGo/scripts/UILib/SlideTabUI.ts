@@ -9,24 +9,27 @@
 import UIItem = require('./UIItem');
 import HTMLMap = require('../HTMLMap');
 
-class SlideTabUI extends UIItem{
+class SlideTabUI extends UIItem {
     //wrapper template to make everything horizontally flatmapped
-    private readonly wrapperTemplate: string = `<div class="js_slide">{{stuff}}</div>` 
-    //stored temporary string of HTML;
-    private tempString: string = "";
-    //function to add an element to be flatmapped
-    pushBackItem(item: string): void {
-        this.tempString += this.templateEngine(this.wrapperTemplate, { stuff: item });
+    private readonly wrapperTemplate: string = `<div class="js_slide content">{{stuff}}</div>`;
+    //stored pages, to be flatmapped and shiz
+    private readonly pages: Array<UIItem>;
+    //fill them varlibles
+    constructor(pages: Array<UIItem>) {
+        super();
+        this.pages = pages;
     }
     //and the getHTML
     getHTML(): string {
-        let temp = this.tempString;
-        this.tempString = "";
-        return temp;
+        let tempstr: string = '';
+        for (let i = 0, len = this.pages.length; i < len; i++) {
+            tempstr += this.templateEngine(this.wrapperTemplate, { stuff: this.pages[i].getHTML() });
+        }
+        return tempstr;
     }
     //and start up lory
-    startSliderUI() {
-        let thing = document.querySelector('.selectMe')
+    static startSliderUI() {
+        let thing = document.querySelector('body')
         lory(thing, {
             //snapping only to js_slide
             classNameSlide: 'js_slide',
@@ -39,7 +42,7 @@ class SlideTabUI extends UIItem{
             indicators: [{
                 element: document.querySelector('#menuLine'),
                 axis: 'x',
-                speedRatio: -0.25,
+                speedRatio: -0.25, //TODO: Dynamically scale bottom menu and calculate at runtime
             },
             {
                 element: document.querySelector('#textWrap'),
