@@ -4,12 +4,13 @@
 // and then run "window.location.reload()" in the JavaScript Console.
 import localForage = require("localforage");
 import * as moment from 'moment';
-import { LOCALFORAGE_NAME } from './WHSLib/CacheKeys'
 import GetLib = require('./GetLib/GetLib');
 import DataManage = require('./WHSLib/DataManage');
 import SchedDataManage = require('./WHSLib/SchedDataManage');
+import ScheduleData = require('./WHSLib/ScheduleData');
 import ScheduleUtil = require('./WHSLib/ScheduleUtil');
 import CalDataManage = require('./WHSLib/CalDataManage');
+import EventData = require('./WHSLib/EventData');
 import EventInterface = require('./WHSLib/EventInterface');
 import ScheduleGraphic = require('./UILib/ScheduleGraphic');
 import EventGraphic = require('./UILib/EventGraphic');
@@ -20,18 +21,14 @@ import Page = require('./UILib/Page');
 "use strict";
 
 var data: DataManage;
-var sched: SchedDataManage = new SchedDataManage();
-var cal: CalDataManage = new CalDataManage();
 var get: GetLib = new GetLib();
 
 export function initialize(): void {
     document.addEventListener('deviceready', onDeviceReady, false);
-    //configure localforage
-    localForage.config({ name: LOCALFORAGE_NAME });
 }
 
 function constructTop(schedule: ScheduleUtil.Schedule): void {
-    const index = schedule.getCurrentPeriodIndex();
+    const index = schedule.getCurrentPeriodIndex(Date.now());
     if (index === ScheduleUtil.PeriodType.BEFORE_START) {
         //before start code
         HTMLMap.bottomBarText.innerHTML = "School starts " + moment().to(schedule.getPeriod(0).getStart());
@@ -59,59 +56,53 @@ function onDeviceReady(): void {
     // TODO: Cordova has been loaded. Perform any initialization that requires Cordova here.
 
     if (!get.initAPI()) console.log("HTTP failed!");
-    data = new DataManage(get, [cal, sched]);
-    // Register button
-    /*
-    document.querySelector('.fab').addEventListener('click', () => {
-        console.log("click!");
-        HTMLMap.deleteScheduleRows();
-        data.refreshData().then(() => {
-            console.log(sched.getScheduleFromKey('C'));
-        });
-    });
-    */
+    data = new DataManage(get, [new CalDataManage(), new SchedDataManage()]);
 
     let start: number = performance.now();
     //grabby grabby
     data.loadData().then(() => {
         //start up the early data stuff
+        let calData: EventData = data.returnData(0);
+        //grab the schedule key
+        return calData.getScheduleKey(new Date());
+    }).then((key: string) => {
+        //check key, then get the schedule for it
+        if (key === null) console.log('No School dumbo');
+        else return (data.returnData(1) as ScheduleData).getSchedule(key);
+    }).then((sched: ScheduleUtil.Schedule) => {
         //we're assuming that we only need a few importnant data when we initially launch the app,
         //so we build the rest after we get updated data from the interwebs
-        return cal.getScheduleKey(new Date()).then((key: string) => {
-            let schedule: ScheduleUtil.Schedule = sched.getScheduleFromKey(key);
-            if (key === null) console.log("No school dumbo");
-            else constructTop(schedule);
-        });
-    }).then(data.getNewData.bind(data)).catch(data.getNewData.bind(data)).then(() => {
-        //do it again to make sure nothing has changed
-        return cal.getScheduleKey(new Date()).then((key: string) => {
-            //quicklaunch stuff
-            let schedule: ScheduleUtil.Schedule = sched.getScheduleFromKey(key);
-            if (key === null) console.log("No school dumbo");
-            else constructTop(schedule);
-
-            //event object, since iteration (sigh)
-            let eventUI: EventGraphic = new EventGraphic(null);
-
-            //get all the events in there
-            return cal.getEvents(new Date(), eventUI.iterateEvent.bind(this)).then(() => {
-                //construct the whole second page
-                //ONE LINE WOOOOOOOO
-                HTMLMap.setSliderHTML(new SlideTabUI([
-                    new Page('Schedule', [
-                        new ScheduleGraphic(schedule),
-                        eventUI,
-                    ])
-                ]).getHTML());
-                //beuty in abstracton my friends
-                SlideTabUI.startSliderUI();
-                //debug of course
-
-                let end: number = performance.now();
-                console.log("Init took " + (end - start));
-            });
-        });
-    }, (err) => console.log(err));
+        constructTop(sched);
+        let end = performance.now();
+        console.log("Init took: " + (end - start));
+        return;
+    })
+    //after that ridiculous nonsense, we grab new data, and do it all over again
+    .then(data.getNewData.bind(data)).catch(data.getNewData.bind(data)).then(() => {
+        //start up the early data stuff
+        let calData: EventData = data.returnData(0);
+        //grab the schedule key
+        return calData.getScheduleKey(new Date());
+    }).then((key: string) => {
+        //check key, then get the schedule for it
+        if (key === null) console.log('No School dumbo');
+        else return (data.returnData(1) as ScheduleData).getSchedule(key);
+    }).then((sched: ScheduleUtil.Schedule) => {
+        //reload!
+        constructTop(sched);
+        //we're assuming that we only need a few importnant data when we initially launch the app,
+        //so we build the rest after we get updated data from the interwebs
+        
+        //and the moment you've all been wating for: the rest of the UI
+        let dataObj = data.returnData();
+        HTMLMap.setSliderHTML(new SlideTabUI([
+            new Page('Schedule', [
+                new ScheduleGraphic(dataObj[1], dataObj[0])
+            ])    
+        ]).getHTML())
+        //aaand yay!
+        SlideTabUI.startSliderUI();
+    }).catch((err) => console.log(err));
 }
 
 function onPause(): void {

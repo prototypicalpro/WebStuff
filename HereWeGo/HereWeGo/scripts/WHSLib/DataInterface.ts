@@ -13,6 +13,8 @@ interface DataInterface {
     updataData(data: any): void;
     //overwrite function, deletes any existing data and replaces it with the passed data
     overwriteData(data: any): void;
+    //and finally, return the data or utility class that our program wants
+    getData(): any;
 }
 
 export = DataInterface;

@@ -231,8 +231,6 @@ body {
  * We'll see how this goes
  */
 
-
-
 /* Header CSS */
 .header {
     font-family: 'Open Sans', sans-serif;
@@ -248,38 +246,54 @@ body {
  * by the javascript
  * Should display a nice schedule graphic once generated
  */
-.table {
+
+/* Whole row CSS */
+.justRow {
     width: 100vw;
-    border-collapse: collapse;
+    display: flex;
+    align-items: stretch;
 }
 
+/* Left cell with times CSS */
 .leftCell {
-    border-right: 2px solid red;
-    width: 25vw;
+    width: 30vw;
+    height: 11vh;
     text-align: center;
-    margin: 0;
 }
 
-.left.text {
+.leftUp, .leftLow {
     font-family: 'Open Sans', sans-serif;
     font-size: 2.8vh;
-    margin-left: 4vw;
-    margin-right: 4vw;
 }
 
-.left.low {
-    margin-top: 0.6vh;
-    margin-bottom: 1.4vh;
-}
-
-.left.up {
+.leftUp {
     margin-top: 1.4vh;
+    margin-bottom: 0.6vh;
 }
 
-.rightCell.text {
+/* Right Cell CSS */
+.rText {
+    margin-left: 4.5vw;
+    margin-top: 1vh;
     font-family: 'Open Sans', sans-serif;
-    margin-left: 4vw;
     font-size: 6.5vh;
+}
+
+.smallRText {
+    font-size: 5vh;
+    margin-bottom: 0;
+}
+
+/* Event Row CSS */
+.eventCol {
+    vertical-align: top;
+}
+
+.evText {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 2.5vh;
+    margin-left: 4.5vw;
+    margin-bottom: 1vh;
 }
 
 /* Please remove */

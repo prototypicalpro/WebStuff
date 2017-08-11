@@ -5,60 +5,81 @@
  */
 
 import UIItem = require('./UIItem');
+import ScheduleData = require('../WHSLib/ScheduleData');
 import ScheduleUtil = require('../WHSLib/ScheduleUtil');
+import EventData = require('../WHSLib/EventData');
+import CalDataManage = require('../WHSLib/CalDataManage');
+import { PeriodType } from '../WHSLib/ScheduleUtil';
 
 class ScheduleGraphic extends UIItem {
     //storage schedule
-    private sched: ScheduleUtil.Schedule;
+    private sched: ScheduleData;
+    //storage events
+    private event: EventData;
+    //I sorta have to include this due to the direct database
 
     //HTML Template
     //It's gonna be ugly, that's just how it i
     //schedule table template
     private readonly tableTemplate: string = `
         <p class="schedHead header">{{head}}</p>
-        <table class="table">
-            <tbody>{{content}}</tbody> 
-        </table>`;
+        {{sched}}
+        <p class="evHead header">Events</p>
+        {{events}}`;
 
     private tempContentString: string = "";
 
     //period item template
     private readonly itemTemplate: string = `
-        <tr class="justRow" style="background-color:{{backColor}};">
-            <td class="leftCell" style="border-right: 2px solid {{lineColor}};">
-                <p class="left text up">{{upTime}}</p>
-                <p class="left text low">{{lowTime}}</p>
-            </td>
-            <td class="rightCell">
-                <p class="rightCell text">{{name}}</p>
-            </td>
-        </tr>`
+         <div class="justRow" style="background-color:{{backColor}};">
+            <div class="leftCell">
+                <p class="leftUp">{{upTime}}</p>
+                <p class="leftLow">{{lowTime}}</p>
+            </div>
+            <div id="rightWrap" style="border-left: 2px solid {{lineColor}};">
+                <p class="rText">{{name}}</p>
+                {{events}}
+            </div>
+        </div>`
+
+    //event item template for inline with the schedule
+    private readonly inlineEventTemplate: string = `
+        <p class="evText">{{name}}</p>`;
+
+    //event item template for other evetns outside of school
+    private readonly eventTemplate: string = `
+        <p class="regEv">{{time}} - {{name}}</p>`;
 
     //constructor with schedule
-    constructor(sched: ScheduleUtil.Schedule) {
+    constructor(sched: ScheduleData, event: EventData) {
         super();
         this.sched = sched;
+        this.event = event;
     }
 
     getHTML(): string {
         //construct the middle graphic
         let ret: string = '';
+        //cache current schedule
+        //there must be some sort of law against this, but I'm sick of .then
+        //TODO: Fix Async IndexedDB Hell
         //cache current period
-        let cur = this.sched.getCurrentPeriodIndex();
-        let inv = 1.0 / this.sched.getNumPeriods();
-        for (let i = 0, len = this.sched.getNumPeriods(); i < len; i++) {
+        let cur = schedule.getCurrentPeriodIndex(Date.now());
+        let inv = 1.0 / schedule.getNumPeriods();
+        for (let i = 0, len = schedule.getNumPeriods(); i < len; i++) {
             //cache period
-            let period = this.sched.getPeriod(i);
+            let period = schedule.getPeriod(i);
             //do period types differently of course
             switch (period.getType()) {
-                case ScheduleUtil.PeriodType.CLASS:
-                case ScheduleUtil.PeriodType.LUNCH:
+                case PeriodType.CLASS:
+                case PeriodType.LUNCH:
                     ret += this.templateEngine(this.itemTemplate, {
                         upTime: period.getStart().format('h:mma'),
                         lowTime: period.getEnd().format('h:mma'),
                         lineColor: this.blendColors('#008000', '#90ee90', (len - i) * inv),
                         name: period.getName(),
-                        backColor: cur === i ? 'lightgreen' : undefined
+                        backColor: cur === i ? 'lightgreen' : '',
+                        events: ''
                     });
                     break;
                 default:
@@ -67,8 +88,8 @@ class ScheduleGraphic extends UIItem {
         }
         //add the header
         return this.templateEngine(this.tableTemplate, {
-            head: this.sched.getName() + ' Schedule',
-            content: ret,
+            head: schedule.getName() + ' Schedule',
+            sched: ret,
         });
     }
 

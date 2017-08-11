@@ -3,106 +3,80 @@
  * and creation from the cloud data
  */
 
-import * as moment from 'moment';
-import localforage = require('localforage');
 import DataInterface = require("./DataInterface");
-import EventInterface = require('./EventInterface');
-import { SCHED_CACHE_KEY } from './CacheKeys';
-import ScheduleUtil = require('./ScheduleUtil');
-
-//utility interface to represent the data retrieved from the cloud
-interface StoreSchedule {
-    periods: Array<Array<string>>;
-    key: string;
-    name: string;
-}
-//utility enum to represent the array locations of data items in the period string array from the cloud
-const enum IndexName {
-    START_TIME = 0,
-    END_TIME = 1,
-    PERIOD_TYPE = 2,
-    NAME = 3
-}
-
-// all times from the cloud will read like a clock
-// for more info read "string + format" in moment.js docs
-const fmt = "hh:mma";
-
-const periodFromCloudData = (data: Array<string>): ScheduleUtil.Period => {
-    return new ScheduleUtil.Period(moment(data[IndexName.START_TIME], fmt), moment(data[IndexName.END_TIME], fmt), ScheduleUtil.PeriodType[data[IndexName.PERIOD_TYPE]], data[IndexName.NAME]);
-}
-
-const scheduleFromCloudData = (data: StoreSchedule): ScheduleUtil.Schedule => {
-    //construct period array from recieved data
-    let schedule: Array<ScheduleUtil.Period> = [];
-    for (let i = 0, len = data.periods.length; i < len; i++) {
-        schedule.push(periodFromCloudData(data.periods[i]));
-    }
-    //fill in the gaps of the passed array
-    let o = 0;
-    for (let i = 0, len = schedule.length; i < len - 1; i++ , o++) {
-        //if the end time for the first is not equal to the start time for the last
-        //eg there is a time gap
-        if (!schedule[o].getEnd().isSame(schedule[o + 1].getStart())) {
-            //fill the gap with a passing time
-            schedule.splice(o + 1, 0, new ScheduleUtil.Period(schedule[o].getEnd(), schedule[o + 1].getStart(), ScheduleUtil.PeriodType.PASSING, ""));
-            //increment index so we skip over the element we just made
-            o++;
-        }
-    }
-    return new ScheduleUtil.Schedule(schedule, data.name);
-}
+import { SCHED_DB_NAME } from './CacheKeys';
+import StoreSchedUtil = require('./StoreSchedUtil');
+import ScheduleData = require('./ScheduleData');
 
 //class which takes all that raw nonsense and turns it into abstraction
 class SchedDataManage implements DataInterface {
     dataKey: string = 'schedSyncData';
-    private storedData: Array<StoreSchedule>;
+
+    //database!
+    private db: IDBDatabase;
 
     init(): Promise<any> {
-        this.storedData = [];
-        return localforage.getItem(SCHED_CACHE_KEY).then((data: Array<StoreSchedule>) => {
-            if (data === null) return Promise.reject("No stored schedule!");
-            else {
-                this.storedData = data;
-                localforage.setItem(SCHED_CACHE_KEY, this.storedData);
-            }
+        //init indexedDB, but wrapped up the arse with promises
+        return new Promise((resolve, reject) => {
+            //TODO: Uh Oh
+            if (!window.indexedDB) return reject(false);
+            let req = window.indexedDB.open(SCHED_DB_NAME);
+            //we win!
+            req.onsuccess = resolve;
+            //we lose!
+            req.onerror = reject;
+            //we build!
+            req.onupgradeneeded = (evt: any) => {
+                console.log("Sched DB upgrading");
+                //create the event storage
+                let store: IDBObjectStore = evt.currentTarget.result.createObjectStore(SCHED_DB_NAME, { keyPath: 'key' });
+
+                //and create all the searchable stuffums
+                //IMPORTANT: update SCHED_KEYS everytime you change the EventInterface, otherwise
+                //it won't store the extra data
+                for (let i = 0, len = StoreSchedUtil.SCHED_KEYS.length; i < len; i++) store.createIndex(StoreSchedUtil.SCHED_KEYS[i], StoreSchedUtil.SCHED_KEYS[i]);
+            };
+        }).then((evt: any) => {
+            console.log("Sched Opened DB!");
+            this.db = evt.target.result;
         });
     }
 
     //this update function is simple: if we got data, overwrite
     updataData(data: any): void {
-        if (data.length > 0) {
-            this.storedData = data;
-            localforage.setItem(SCHED_CACHE_KEY, this.storedData);
-        }
+        //cast
+        data = data as Array<StoreSchedUtil.StoreSchedule>;
+        //do marginal checking
+        if (data.length > 0) this.overwriteData(data);
     }
 
+    //same as update, but we don't do any checking
     overwriteData(data: any): void {
-        this.storedData = data;
-        localforage.setItem(SCHED_CACHE_KEY, this.storedData);
+        //cast
+        data = data as Array<StoreSchedUtil.StoreSchedule>;
+        let objectStore = this.db.transaction([SCHED_DB_NAME], "readwrite").objectStore(SCHED_DB_NAME);
+        let thing: Promise<any> = new Promise((resolve, reject) => {
+            //delete the whole database
+            let req = objectStore.clear();
+            req.onsuccess = resolve;
+            req.onerror = reject;
+        }).then(() => {
+            //fill our object store with the new schedule
+            let ray: Array<Promise<any>> = [];
+            for (let i = 0, len = data.length; i < len; i++) {
+                ray.push(new Promise((resolve, reject) => {
+                    let req = objectStore.add(data[i]);
+                    req.onsuccess = resolve;
+                    req.onerror = reject;
+                }));
+            }
+            return Promise.all(ray);
+        });
     }
 
-    //proprietary functions for frontend use
-    getScheduleFromKey(schedKey: string): ScheduleUtil.Schedule {
-        for (let i = 0, len = this.storedData.length; i < len; i++) {
-            if (this.storedData[i].key === schedKey) return scheduleFromCloudData(this.storedData[i]);
-        }
-        return ScheduleUtil.NoSchool;
-    }
-
-    //I really shouldn't be messing with events in this file but oh well
-    getScheduleFromEventList(events: Array<EventInterface>): ScheduleUtil.Schedule {
-        //map array of schedule keys that we can search later
-        let schedKeys: Array<String> = this.storedData.map((schedule: StoreSchedule) => { return schedule.key; });
-        //for every event given to us
-        for (let i = 0; i < events.length; i++) {
-            //check if there's a matching name using (hopefully) built in function
-            let index = schedKeys.indexOf(events[i].title)
-            //and if there is, return it
-            if (index >= 0) return scheduleFromCloudData(this.storedData[index]);
-        }
-        //no schedule found, no school...?
-        return ScheduleUtil.NoSchool;
+    //get the utility class and send it to the super class
+    getData(): ScheduleData {
+        return new ScheduleData(this.db);
     }
 }
 
