@@ -59,8 +59,8 @@ namespace ScheduleUtil {
         //I don't know if this is the best way, but it's my way
         //returns a negative number corresponding to a PeriodType if school hasn't started,
         //otherwise returns the index of the current period to be used in getPeriod()
-        getCurrentPeriodIndex(): number {
-            let now = moment();
+        getCurrentPeriodIndex(time: number): number {
+            let now = moment(time);
             //check if school has started
             if (this.periods[0].getStart().isAfter(now)) return PeriodType.BEFORE_START;
             //school has started, check if school has ended
