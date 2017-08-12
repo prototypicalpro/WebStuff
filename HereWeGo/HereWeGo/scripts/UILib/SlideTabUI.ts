@@ -20,12 +20,12 @@ class SlideTabUI extends UIItem {
         this.pages = pages;
     }
     //and the getHTML
-    getHTML(): string {
-        let tempstr: string = '';
-        for (let i = 0, len = this.pages.length; i < len; i++) {
-            tempstr += this.templateEngine(this.wrapperTemplate, { stuff: this.pages[i].getHTML() });
-        }
-        return tempstr;
+    getHTML(): Promise<string> {
+        //get all the htmls in parellel
+        return Promise.all(this.pages.map((page) => { return page.getHTML(); })).then((strings: Array<string>) => {
+            //wrap each item,  join them all, and return the string
+            return strings.map((string) => { return this.templateEngine(this.wrapperTemplate, { stuff: string }); }).join('');
+        })
     }
     //and start up lory
     static startSliderUI() {

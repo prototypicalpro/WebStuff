@@ -19,7 +19,7 @@ class ScheduleGraphic extends UIItem {
     //I sorta have to include this due to the direct database
 
     //HTML Template
-    //It's gonna be ugly, that's just how it i
+    //It's gonna be ugly, that's just how it is
     //schedule table template
     private readonly tableTemplate: string = `
         <p class="schedHead header">{{head}}</p>
@@ -57,39 +57,59 @@ class ScheduleGraphic extends UIItem {
         this.event = event;
     }
 
-    getHTML(): string {
-        //construct the middle graphic
-        let ret: string = '';
-        //cache current schedule
-        //there must be some sort of law against this, but I'm sick of .then
-        //TODO: Fix Async IndexedDB Hell
-        //cache current period
-        let cur = schedule.getCurrentPeriodIndex(Date.now());
-        let inv = 1.0 / schedule.getNumPeriods();
-        for (let i = 0, len = schedule.getNumPeriods(); i < len; i++) {
-            //cache period
-            let period = schedule.getPeriod(i);
+    getHTML(): Promise<string> {
+        //get the schedule key for today, then get the schedule object associated with it
+        //all in a flatmapped .then structure
+        let schedule: ScheduleUtil.Schedule;
+        return this.event.getScheduleKey(new Date()).then(this.sched.getSchedule.bind(this.sched)).then((schedObj: any) => {
+            //cast to schedule
+            schedule = schedObj as ScheduleUtil.Schedule;
+            //do all the construction stuff
+            let index = schedule.getCurrentPeriodIndex(Date.now());
+            const inv = 1.0 / schedule.getNumPeriods();
+            //all parrellel b/c we're already async so why not
+            let ray: Array<Promise<string>> = [];
+            for (let i = 0, len = schedule.getNumPeriods(); i < len; i++) {
+                //if it's not passing or whatever, we display it
+                let period: ScheduleUtil.Period = schedule.getPeriod(i);
+                //make a buncha row templates
+                if (period.getType() >= 0 && period.getType() != ScheduleUtil.PeriodType.PASSING) ray.push(this.makeRow(period, i * inv, index === i));
+            }
+            return Promise.all(ray);
+        }).then((strings: Array<string>) => {
+            //now we have all the components, lets package them up and send it off to our display class
+            let ret = strings.join('');
+            //add the header
+            return this.templateEngine(this.tableTemplate, {
+                head: schedule.getName() + ' Schedule',
+                sched: ret,
+            });
+        });        
+    }
+
+    //promise chaining function to construct individual rows of the graphic
+    private makeRow(period: ScheduleUtil.Period, colorBlendFrac: number, isCurrent: boolean): Promise<string> {
+        //query events to see if there are any during this period
+        let eventString = '';
+        return this.event.getEvents(period.getStart().valueOf(), period.getEnd().valueOf(), (event) => {
+            eventString += this.templateEngine(this.inlineEventTemplate, { name: event.title });
+        }).then(() => {
+            //return the fully constructed template
             //do period types differently of course
             switch (period.getType()) {
                 case PeriodType.CLASS:
                 case PeriodType.LUNCH:
-                    ret += this.templateEngine(this.itemTemplate, {
+                    return this.templateEngine(this.itemTemplate, {
                         upTime: period.getStart().format('h:mma'),
                         lowTime: period.getEnd().format('h:mma'),
-                        lineColor: this.blendColors('#008000', '#90ee90', (len - i) * inv),
+                        lineColor: this.blendColors('#004700', '#00ff00', colorBlendFrac),
                         name: period.getName(),
-                        backColor: cur === i ? 'lightgreen' : '',
-                        events: ''
+                        backColor: isCurrent ? 'lightgreen' : '',
+                        events: eventString
                     });
-                    break;
                 default:
-                    break;
+                    return '';
             }
-        }
-        //add the header
-        return this.templateEngine(this.tableTemplate, {
-            head: schedule.getName() + ' Schedule',
-            sched: ret,
         });
     }
 

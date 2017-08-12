@@ -23,7 +23,7 @@ abstract class UIItem {
         return template.replace(re, function (matched) { return values[matched.replace(new RegExp(/{|}/, 'g'), '')]; });
     }
 
-    abstract getHTML(): string;
+    abstract getHTML(): Promise<string>;
 }
 
 export = UIItem;

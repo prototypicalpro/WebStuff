@@ -13,7 +13,7 @@ import CalDataManage = require('./WHSLib/CalDataManage');
 import EventData = require('./WHSLib/EventData');
 import EventInterface = require('./WHSLib/EventInterface');
 import ScheduleGraphic = require('./UILib/ScheduleGraphic');
-import EventGraphic = require('./UILib/EventGraphic');
+//import EventGraphic = require('./UILib/EventGraphic');
 import SlideTabUI = require('./UILib/SlideTabUI');
 import HTMLMap = require('./HTMLMap');
 import Page = require('./UILib/Page');
@@ -25,6 +25,27 @@ var get: GetLib = new GetLib();
 
 export function initialize(): void {
     document.addEventListener('deviceready', onDeviceReady, false);
+    console.log("init func: " + performance.now());
+    let start: number = performance.now();
+    //grabby grabby
+    data.loadData().then(() => {
+        //start up the early data stuff
+        let calData: EventData = data.returnData(0);
+        //grab the schedule key
+        return calData.getScheduleKey(new Date());
+    }).then((key: string) => {
+        //check key, then get the schedule for it
+        if (key === null) console.log('No School dumbo');
+        else return (data.returnData(1) as ScheduleData).getSchedule(key);
+    }).then((sched: ScheduleUtil.Schedule) => {
+        //we're assuming that we only need a few importnant data when we initially launch the app,
+        //so we build the rest after we get updated data from the interwebs
+        constructTop(sched);
+        let end = performance.now();
+        console.log("Init took: " + (end - start));
+        return;
+        //after that ridiculous nonsense, we grab new data, and do it all over again
+    });
 }
 
 function constructTop(schedule: ScheduleUtil.Schedule): void {
@@ -50,6 +71,8 @@ function constructTop(schedule: ScheduleUtil.Schedule): void {
 }
 
 function onDeviceReady(): void {
+    console.log("device ready: " + performance.now());
+
     document.addEventListener('pause', onPause, false);
     document.addEventListener('resume', onResume, false);
 
@@ -57,28 +80,9 @@ function onDeviceReady(): void {
 
     if (!get.initAPI()) console.log("HTTP failed!");
     data = new DataManage(get, [new CalDataManage(), new SchedDataManage()]);
-
-    let start: number = performance.now();
-    //grabby grabby
-    data.loadData().then(() => {
-        //start up the early data stuff
-        let calData: EventData = data.returnData(0);
-        //grab the schedule key
-        return calData.getScheduleKey(new Date());
-    }).then((key: string) => {
-        //check key, then get the schedule for it
-        if (key === null) console.log('No School dumbo');
-        else return (data.returnData(1) as ScheduleData).getSchedule(key);
-    }).then((sched: ScheduleUtil.Schedule) => {
-        //we're assuming that we only need a few importnant data when we initially launch the app,
-        //so we build the rest after we get updated data from the interwebs
-        constructTop(sched);
-        let end = performance.now();
-        console.log("Init took: " + (end - start));
-        return;
-    })
-    //after that ridiculous nonsense, we grab new data, and do it all over again
-    .then(data.getNewData.bind(data)).catch(data.getNewData.bind(data)).then(() => {
+    let start;
+    data.getNewData().catch(data.getNewData.bind(data)).then(() => {
+        start = performance.now();
         //start up the early data stuff
         let calData: EventData = data.returnData(0);
         //grab the schedule key
@@ -90,18 +94,20 @@ function onDeviceReady(): void {
     }).then((sched: ScheduleUtil.Schedule) => {
         //reload!
         constructTop(sched);
-        //we're assuming that we only need a few importnant data when we initially launch the app,
-        //so we build the rest after we get updated data from the interwebs
-        
         //and the moment you've all been wating for: the rest of the UI
         let dataObj = data.returnData();
-        HTMLMap.setSliderHTML(new SlideTabUI([
+        //return the contructed html
+        return new SlideTabUI([
             new Page('Schedule', [
                 new ScheduleGraphic(dataObj[1], dataObj[0])
-            ])    
-        ]).getHTML())
+            ])
+        ]).getHTML();
+    }).then((html: string) => {
         //aaand yay!
+        HTMLMap.setSliderHTML(html);
         SlideTabUI.startSliderUI();
+        let end = performance.now();
+        console.log("Second init took: " + (end - start));
     }).catch((err) => console.log(err));
 }
 

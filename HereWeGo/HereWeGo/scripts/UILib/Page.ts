@@ -20,12 +20,12 @@ class Page extends UIItem {
         this.items = items;
     }
     //do the thang
-    getHTML(): string {
+    getHTML(): Promise<string> {
         //lets make these items pop
         //and by pop I mean construct
-        let ret: string = '';
-        for (let i = 0, len = this.items.length; i < len; i++) ret += this.items[i].getHTML();
-        return ret;
+        //get all the html in parellel, join them together, and return it
+        return Promise.all(this.items.map((item) => { return item.getHTML(); })).then((array: Array<string>) => { return array.join(''); });
+        //one line!
     }
 }
 

@@ -3,6 +3,7 @@
  * Using the UIItem API
  */
 
+/*
 import UIItem = require('./UIItem');
 import EventInterface = require('../WHSLib/EventInterface');
 import * as moment from 'moment';
@@ -54,3 +55,4 @@ class EventGraphic extends UIItem {
 }
 
 export = EventGraphic;
+*/
