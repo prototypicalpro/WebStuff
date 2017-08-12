@@ -12,6 +12,7 @@
 import GetLib = require('../GetLib/GetLib');
 import DataInterface = require('./DataInterface');
 import ScheduleUtil = require('./ScheduleUtil');
+import DBManage = require('../DBLib/DBManage');
 import { TIME_CACHE_KEY } from './CacheKeys';
 
 const URL: string = 'https://script.google.com/macros/s/AKfycbxyS4utDJEJ3bE2spSE4SIRlwj10M2Owbe7_XWrOFSobfniQjve/exec';
@@ -19,9 +20,8 @@ const URL: string = 'https://script.google.com/macros/s/AKfycbxyS4utDJEJ3bE2spSE
 class DataManage {
     private http: GetLib;
     private dataObj: Array<DataInterface>;
-
+    private db: IDBDatabase;
     private lastSyncTime: number;
-
     /*
      * Stupid promise chaining functions
      */
@@ -45,25 +45,24 @@ class DataManage {
 
     private updateData(data: Object): void {
         for (let i = 0, len = this.dataObj.length; i < len; i++) 
-            if (this.dataObj[i].dataKey in data) this.dataObj[i].updataData(data[this.dataObj[i].dataKey]);
+            if (this.dataObj[i].dataKey in data) this.dataObj[i].updataData(this.db, data[this.dataObj[i].dataKey]);
     }
 
     private overwriteData(data: Object): void {
         for (let i = 0, len = this.dataObj.length; i < len; i++)
-            if (this.dataObj[i].dataKey in data) this.dataObj[i].overwriteData(data[this.dataObj[i].dataKey]);
+            if (this.dataObj[i].dataKey in data) this.dataObj[i].overwriteData(this.db, data[this.dataObj[i].dataKey]);
     }
 
     /*
      * Actual exposed functions
      */
 
-    constructor(http: GetLib, dataThings: Array<DataInterface>) {
-        this.http = http;
+    constructor(dataThings: Array<DataInterface>) {
         this.dataObj = dataThings
     }
 
     //attempts to load cached data, throw exception if any data is missing
-    loadData(): Promise<any> {
+    initData(): Promise<any> {
         //init all the things
         let ray: Array<Promise<any>> = [
             new Promise((resolve, reject) => {
@@ -72,10 +71,21 @@ class DataManage {
                 if (!lastSync) return reject("No stored last time");
                 this.lastSyncTime = parseInt(lastSync);
                 return resolve();
-            })
+            }),
+            DBManage.constructDB(this.dataObj.map((data) => { return data.dbInfo; })).then((db: IDBDatabase) => { this.db = db })
         ];
-        for (let i = 0, len = this.dataObj.length; i < len; i++) ray.push(this.dataObj[i].init());
         return Promise.all(ray);
+    }
+
+    //starts up HTTP, in a seperate function so I can do stuff without cordova first
+    //MUST CALL BEFORE ANY INTERNET STUFF
+    initHTTP(): boolean {
+        this.http = new GetLib();
+        if (!this.http.initAPI()) {
+            console.log("http failed");
+            return false;
+        }
+        return true;
     }
 
     //gets new data and overwrited any old data
@@ -89,8 +99,8 @@ class DataManage {
 
     //returns the subclasses defined by each module, where the application can then acess the data
     returnData(index: number = -1): Array<any> | any {
-        if (index === -1) return this.dataObj.map((sub) => { return sub.getData() });
-        else return this.dataObj[index].getData();
+        if (index === -1) return this.dataObj.map((sub) => { return sub.getData(this.db) });
+        else return this.dataObj[index].getData(this.db);
     }
 }
 

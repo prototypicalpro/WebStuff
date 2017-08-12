@@ -3,18 +3,20 @@
  * I figured I wanted the backend to be kinda modular, so here we go
  */
 
+import { DBInfoInterface } from '../DBLib/DBManage';
+
 interface DataInterface {
+    //database info for the superclass to manage
+    dbInfo: DBInfoInterface;
     //the key for the sync data this object will use (e.g. "calSyncData")
     //should be constant
     dataKey: string; 
-    //init function, instantiate database or whatnot
-    init(): Promise<any>;
     //update function, takes recieved data (using the key above) and updates the stored data
-    updataData(data: any): void;
+    updataData(db: IDBDatabase, data: any): void;
     //overwrite function, deletes any existing data and replaces it with the passed data
-    overwriteData(data: any): void;
+    overwriteData(db: IDBDatabase, data: any): void;
     //and finally, return the data or utility class that our program wants
-    getData(): any;
+    getData(db: IDBDatabase): any;
 }
 
 export = DataInterface;

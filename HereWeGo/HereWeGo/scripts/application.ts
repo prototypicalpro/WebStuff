@@ -2,9 +2,7 @@
 // http://go.microsoft.com/fwlink/?LinkID=397705
 // To debug code on page load in cordova-simulate or on Android devices/emulators: launch your app, set breakpoints, 
 // and then run "window.location.reload()" in the JavaScript Console.
-import localForage = require("localforage");
 import * as moment from 'moment';
-import GetLib = require('./GetLib/GetLib');
 import DataManage = require('./WHSLib/DataManage');
 import SchedDataManage = require('./WHSLib/SchedDataManage');
 import ScheduleData = require('./WHSLib/ScheduleData');
@@ -20,32 +18,11 @@ import Page = require('./UILib/Page');
 
 "use strict";
 
-var data: DataManage;
-var get: GetLib = new GetLib();
+var data: DataManage = new DataManage([new CalDataManage(), new SchedDataManage()]);
 
 export function initialize(): void {
     document.addEventListener('deviceready', onDeviceReady, false);
     console.log("init func: " + performance.now());
-    let start: number = performance.now();
-    //grabby grabby
-    data.loadData().then(() => {
-        //start up the early data stuff
-        let calData: EventData = data.returnData(0);
-        //grab the schedule key
-        return calData.getScheduleKey(new Date());
-    }).then((key: string) => {
-        //check key, then get the schedule for it
-        if (key === null) console.log('No School dumbo');
-        else return (data.returnData(1) as ScheduleData).getSchedule(key);
-    }).then((sched: ScheduleUtil.Schedule) => {
-        //we're assuming that we only need a few importnant data when we initially launch the app,
-        //so we build the rest after we get updated data from the interwebs
-        constructTop(sched);
-        let end = performance.now();
-        console.log("Init took: " + (end - start));
-        return;
-        //after that ridiculous nonsense, we grab new data, and do it all over again
-    });
 }
 
 function constructTop(schedule: ScheduleUtil.Schedule): void {
@@ -72,16 +49,30 @@ function constructTop(schedule: ScheduleUtil.Schedule): void {
 
 function onDeviceReady(): void {
     console.log("device ready: " + performance.now());
-
     document.addEventListener('pause', onPause, false);
     document.addEventListener('resume', onResume, false);
 
-    // TODO: Cordova has been loaded. Perform any initialization that requires Cordova here.
-
-    if (!get.initAPI()) console.log("HTTP failed!");
-    data = new DataManage(get, [new CalDataManage(), new SchedDataManage()]);
-    let start;
-    data.getNewData().catch(data.getNewData.bind(data)).then(() => {
+    let start: number = performance.now();
+    //grabby grabby
+    data.initData().then(() => {
+        //start up the early data stuff
+        let calData: EventData = data.returnData(0);
+        //grab the schedule key
+        return calData.getScheduleKey(new Date());
+    }).then((key: string) => {
+        //check key, then get the schedule for it
+        if (key === null) console.log('No School dumbo');
+        else return (data.returnData(1) as ScheduleData).getSchedule(key);
+    }).then((sched: ScheduleUtil.Schedule) => {
+        //we're assuming that we only need a few importnant data when we initially launch the app,
+        //so we build the rest after we get updated data from the interwebs
+        constructTop(sched);
+        let end = performance.now();
+        console.log("Init took: " + (end - start));
+        data.initHTTP();
+        return data.getNewData();
+        //after that ridiculous nonsense, we grab new data, and do it all over again
+    }).catch((err) => console.log(err)).catch(data.getNewData.bind(data)).then(() => {
         start = performance.now();
         //start up the early data stuff
         let calData: EventData = data.returnData(0);
