@@ -27,20 +27,25 @@ class ScheduleGraphic extends UIItem {
         <p class="evHead header">Events</p>
         {{events}}`;
 
-    private tempContentString: string = "";
-
     //period item template
     private readonly itemTemplate: string = `
          <div class="justRow" style="background-color:{{backColor}};">
             <div class="leftCell">
-                <p class="leftUp">{{upTime}}</p>
-                <p class="leftLow">{{lowTime}}</p>
+                <div class="incep">
+                    <p class="leftUp">{{upTime}}</p>
+                    <p class="leftLow">{{lowTime}}</p>
+                </div>
             </div>
             <div id="rightWrap" style="border-left: 2px solid {{lineColor}};">
                 <p class="rText">{{name}}</p>
-                {{events}}
+                {{evWrap}}
             </div>
         </div>`
+
+    private readonly inlineEventWrapper: string = `
+    <div class="evWrap">
+        {{events}}
+    </div>`;
 
     //event item template for inline with the schedule
     private readonly inlineEventTemplate: string = `
@@ -65,7 +70,9 @@ class ScheduleGraphic extends UIItem {
             //cast to schedule
             schedule = schedObj as ScheduleUtil.Schedule;
             //do all the construction stuff
-            let index = schedule.getCurrentPeriodIndex(Date.now());
+            //TODO: REMOVE THIS
+            //let index = schedule.getCurrentPeriodIndex(Date.now());
+            let index = 7;
             const inv = 1.0 / schedule.getNumPeriods();
             //all parrellel b/c we're already async so why not
             let ray: Array<Promise<string>> = [];
@@ -94,6 +101,8 @@ class ScheduleGraphic extends UIItem {
         return this.event.getEvents(period.getStart().valueOf(), period.getEnd().valueOf(), (event) => {
             eventString += this.templateEngine(this.inlineEventTemplate, { name: event.title });
         }).then(() => {
+            //template the event string
+            if (eventString != '') eventString = this.templateEngine(this.inlineEventWrapper, { events: eventString });
             //return the fully constructed template
             //do period types differently of course
             switch (period.getType()) {
@@ -105,7 +114,7 @@ class ScheduleGraphic extends UIItem {
                         lineColor: this.blendColors('#004700', '#00ff00', colorBlendFrac),
                         name: period.getName(),
                         backColor: isCurrent ? 'lightgreen' : '',
-                        events: eventString
+                        evWrap: eventString,
                     });
                 default:
                     return '';

@@ -26,7 +26,8 @@ export function initialize(): void {
 }
 
 function constructTop(schedule: ScheduleUtil.Schedule): void {
-    const index = schedule.getCurrentPeriodIndex(Date.now());
+    //TODO: REPLACE WITH REAL DATE
+    const index = schedule.getCurrentPeriodIndex(1502567109490);
     if (index === ScheduleUtil.PeriodType.BEFORE_START) {
         //before start code
         HTMLMap.bottomBarText.innerHTML = "School starts " + moment().to(schedule.getPeriod(0).getStart());
@@ -69,10 +70,12 @@ function onDeviceReady(): void {
         constructTop(sched);
         let end = performance.now();
         console.log("Init took: " + (end - start));
+        
+        //after that ridiculous nonsense, we grab new data, and do it all over again
+    }).catch((err) => console.log(err)).then(() => {
         data.initHTTP();
         return data.getNewData();
-        //after that ridiculous nonsense, we grab new data, and do it all over again
-    }).catch((err) => console.log(err)).catch(data.getNewData.bind(data)).then(() => {
+    }).then(() => {
         start = performance.now();
         //start up the early data stuff
         let calData: EventData = data.returnData(0);

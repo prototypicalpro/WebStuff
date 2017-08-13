@@ -250,6 +250,7 @@ body {
 /* Whole row CSS */
 .justRow {
     width: 100vw;
+    min-height: 12vh;
     display: flex;
     align-items: stretch;
 }
@@ -257,31 +258,43 @@ body {
 /* Left cell with times CSS */
 .leftCell {
     width: 30vw;
-    height: 11vh;
     text-align: center;
+}
+
+.incep {
+    /* My apologies for crappy centering hack */
+    position: relative;
+    top: 50%;
+    margin-top: -4.75vh;
 }
 
 .leftUp, .leftLow {
     font-family: 'Open Sans', sans-serif;
-    font-size: 2.8vh
+    font-size: 3.25vh
 }
 
 .leftUp {
-    margin-top: 1.4vh;
     margin-bottom: 0.6vh;
 }
 
 /* Right Cell CSS */
+
+/* Name Text */
 .rText {
     margin-left: 4.5vw;
-    margin-top: 1vh;
     font-family: 'Open Sans', sans-serif;
     font-size: 6.5vh;
+    margin-top: 1vh;
 }
 
+/* Optional extra margin class, used in ScheduleGraphic */
+.cRText {
+    
+}
+
+/* eventually needed */
 .smallRText {
     font-size: 5vh;
-    margin-bottom: 0;
 }
 
 /* Event Row CSS */
@@ -289,11 +302,16 @@ body {
     vertical-align: top;
 }
 
+.evWrap {
+    margin-bottom: 1.5vh;
+    margin-left: 4.5vw;
+    margin-top: -0.5vh;
+}
+
 .evText {
     font-family: 'Open Sans', sans-serif;
-    font-size: 2.5vh;
-    margin-left: 4.5vw;
-    margin-bottom: 1vh;
+    font-size: 3vh;
+    margin-bottom: 0.5vh;
 }
 
 /* Please remove */
