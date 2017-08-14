@@ -9,6 +9,7 @@ import ScheduleData = require('../WHSLib/ScheduleData');
 import ScheduleUtil = require('../WHSLib/ScheduleUtil');
 import EventData = require('../WHSLib/EventData');
 import CalDataManage = require('../WHSLib/CalDataManage');
+import * as moment from 'moment';
 import { PeriodType } from '../WHSLib/ScheduleUtil';
 
 class ScheduleGraphic extends UIItem {
@@ -22,10 +23,8 @@ class ScheduleGraphic extends UIItem {
     //It's gonna be ugly, that's just how it is
     //schedule table template
     private readonly tableTemplate: string = `
-        <p class="schedHead header">{{head}}</p>
-        {{sched}}
-        <p class="evHead header">Events</p>
-        {{events}}`;
+        <p class="schedHead header">{{head}}</p>   
+        {{sched}}`;
 
     //period item template
     private readonly itemTemplate: string = `
@@ -36,9 +35,11 @@ class ScheduleGraphic extends UIItem {
                     <p class="leftLow">{{lowTime}}</p>
                 </div>
             </div>
-            <div id="rightWrap" style="border-left: 2px solid {{lineColor}};">
-                <p class="rText">{{name}}</p>
-                {{evWrap}}
+            <div class="rWrap" style="border-left: 2px solid {{lineColor}};">
+                <div>
+                    <p class="rText">{{name}}</p>
+                    {{evWrap}}
+                </div>
             </div>
         </div>`
 
@@ -53,7 +54,14 @@ class ScheduleGraphic extends UIItem {
 
     //event item template for other evetns outside of school
     private readonly eventTemplate: string = `
-        <p class="regEv">{{time}} - {{name}}</p>`;
+        <div class="evRow">
+            <div class="leftCell"> 
+                <div class="incep"> <p class="leftLow">{{time}}</p> </div> 
+            </div>
+            <div class="rWrap" style="border-left: 2px solid {{lineColor}}">
+                <p class="evText evRight">{{name}}</p> 
+            </div>
+        </div>`;
 
     //constructor with schedule
     constructor(sched: ScheduleData, event: EventData) {
@@ -76,14 +84,19 @@ class ScheduleGraphic extends UIItem {
             const inv = 1.0 / schedule.getNumPeriods();
             //all parrellel b/c we're already async so why not
             let ray: Array<Promise<string>> = [];
+            //add before school events on first
+            ray.push(this.makeBeforeEvents(schedule.getPeriod(0).getStart().valueOf(), '#000000'));
             for (let i = 0, len = schedule.getNumPeriods(); i < len; i++) {
                 //if it's not passing or whatever, we display it
                 let period: ScheduleUtil.Period = schedule.getPeriod(i);
                 //make a buncha row templates
                 if (period.getType() >= 0 && period.getType() != ScheduleUtil.PeriodType.PASSING) ray.push(this.makeRow(period, i * inv, index === i));
             }
+            //add the after school events on last
+            ray.push(this.makeAfterEvents(schedule.getPeriod(schedule.getNumPeriods() - 1).getEnd().valueOf(), '#FF0000'));
             return Promise.all(ray);
         }).then((strings: Array<string>) => {
+            //get the last two elements in the array and put them somewhere else (they're different)
             //now we have all the components, lets package them up and send it off to our display class
             let ret = strings.join('');
             //add the header
@@ -120,6 +133,38 @@ class ScheduleGraphic extends UIItem {
                     return '';
             }
         });
+    }
+
+    //also check before and after school for events, and display those
+    private makeBeforeEvents(startTime: number, color: string): Promise<string> {
+        //get the start of the day pointed to
+        let start = new Date(startTime);
+        start.setHours(0, 0, 0, 0);
+        //query events to see if there are any before startTime
+        let eventString = '';
+        return this.event.getEvents(start.getTime(), startTime, (event) => {
+            eventString += this.templateEngine(this.eventTemplate, {
+                time: moment(event.startTime).format('h:mma'),
+                name: event.title,
+                lineColor: color,
+            });
+        }).then(() => { return eventString; });
+    }
+
+    //and after school too
+    private makeAfterEvents(startTime: number, color: string): Promise<string> {
+        //get the end of the day pointed to
+        let end = new Date();
+        end.setHours(23, 59, 59, 999); //lol this is too good
+        //query events to see if there are any after startTime
+        let eventString = '';
+        return this.event.getEvents(startTime, end.getTime(), (event) => {
+            eventString += this.templateEngine(this.eventTemplate, {
+                time: moment(event.startTime).format('h:mma'),
+                name: event.title,
+                lineColor: color,
+            });
+        }).then(() => { return eventString; });
     }
 
     //utility color function from this jesus post: https://stackoverflow.com/questions/5560248/programmatically-lighten-or-darken-a-hex-color-or-rgb-and-blend-colors

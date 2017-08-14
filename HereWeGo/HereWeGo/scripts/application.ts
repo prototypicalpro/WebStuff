@@ -27,7 +27,7 @@ export function initialize(): void {
 
 function constructTop(schedule: ScheduleUtil.Schedule): void {
     //TODO: REPLACE WITH REAL DATE
-    const index = schedule.getCurrentPeriodIndex(1502567109490);
+    const index = schedule.getCurrentPeriodIndex(Date.now());
     if (index === ScheduleUtil.PeriodType.BEFORE_START) {
         //before start code
         HTMLMap.bottomBarText.innerHTML = "School starts " + moment().to(schedule.getPeriod(0).getStart());
@@ -42,10 +42,23 @@ function constructTop(schedule: ScheduleUtil.Schedule): void {
         //current period code
         const period = schedule.getPeriod(index);
         HTMLMap.bottomBarText.innerHTML = moment().to(period.getEnd(), true) + " remaining";
-        HTMLMap.topLowText.innerHTML = "Period " + period.getName();
+        switch (period.getType()) {
+            case ScheduleUtil.PeriodType.CLASS:
+                HTMLMap.topLowText.innerHTML = 'Period ' + period.getName();
+                break;
+            case ScheduleUtil.PeriodType.LUNCH:
+                HTMLMap.topLowText.innerHTML = 'Lunch';
+                break;
+            case ScheduleUtil.PeriodType.PASSING:
+                HTMLMap.topLowText.innerHTML = 'Passing';
+                break;
+        }
     }
 
     HTMLMap.topUpText.innerHTML = schedule.getName();
+    //TODO: REMOVE
+    HTMLMap.topLowText.innerHTML = 'Period 4';
+    HTMLMap.bottomBarText.innerHTML = '25 minutes remaining';
 }
 
 function onDeviceReady(): void {
@@ -62,7 +75,7 @@ function onDeviceReady(): void {
         return calData.getScheduleKey(new Date());
     }).then((key: string) => {
         //check key, then get the schedule for it
-        if (key === null) console.log('No School dumbo');
+        if (key === null) Promise.reject('No School dumbo');
         else return (data.returnData(1) as ScheduleData).getSchedule(key);
     }).then((sched: ScheduleUtil.Schedule) => {
         //we're assuming that we only need a few importnant data when we initially launch the app,

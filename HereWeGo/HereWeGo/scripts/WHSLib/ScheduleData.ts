@@ -60,7 +60,7 @@ class ScheduleData {
         }).then((data: any) => {
             return this.scheduleFromCloudData(data.target.result);
         //if we don't find it or error, there's no school
-            }).catch((err) => { return ScheduleUtil.NoSchool; });
+        }).catch((err) => { return ScheduleUtil.NoSchool; });
     }
 }
 

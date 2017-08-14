@@ -219,6 +219,8 @@ body {
     width: 100vw;
     height: 84.3vh;
     float: left;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: auto;
 }
 
 /* special full slide CSS */
@@ -236,8 +238,8 @@ body {
     font-family: 'Open Sans', sans-serif;
     font-size: 5vh;
     margin-left: 5vw;
-    margin-top: 1vh;
-    margin-bottom: 1vh;
+    margin-top: 1.5vh;
+    margin-bottom: 1.5vh;
 }
 
 /* 
@@ -250,7 +252,7 @@ body {
 /* Whole row CSS */
 .justRow {
     width: 100vw;
-    min-height: 12vh;
+    min-height: 13vh;
     display: flex;
     align-items: stretch;
 }
@@ -258,19 +260,21 @@ body {
 /* Left cell with times CSS */
 .leftCell {
     width: 30vw;
-    text-align: center;
+    display: flex;
+    align-items: center;
 }
 
 .incep {
     /* My apologies for crappy centering hack */
-    position: relative;
-    top: 50%;
-    margin-top: -4.75vh;
+    width: 30vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .leftUp, .leftLow {
     font-family: 'Open Sans', sans-serif;
-    font-size: 3.25vh
+    font-size: 5.25vw;
 }
 
 .leftUp {
@@ -278,18 +282,17 @@ body {
 }
 
 /* Right Cell CSS */
+.rWrap {
+    display: flex;
+    align-items: center;
+}
 
 /* Name Text */
 .rText {
     margin-left: 4.5vw;
+    margin-top: -0.25vh;
     font-family: 'Open Sans', sans-serif;
     font-size: 6.5vh;
-    margin-top: 1vh;
-}
-
-/* Optional extra margin class, used in ScheduleGraphic */
-.cRText {
-    
 }
 
 /* eventually needed */
@@ -297,21 +300,35 @@ body {
     font-size: 5vh;
 }
 
-/* Event Row CSS */
+/* Inline Event Row CSS */
 .eventCol {
     vertical-align: top;
 }
 
 .evWrap {
-    margin-bottom: 1.5vh;
+    margin-bottom: 1.25vh;
     margin-left: 4.5vw;
-    margin-top: -0.5vh;
+    margin-top: -0.75vh;
 }
 
 .evText {
     font-family: 'Open Sans', sans-serif;
-    font-size: 3vh;
+    font-size: 5.25vw;
     margin-bottom: 0.5vh;
+}
+
+/* Regular Event Row CSS */
+.evRow {
+    width: 100vw;
+    min-height: 6.5vh;
+    display: flex;
+    align-items: stretch;
+}
+
+/* This is in addition to evText */
+.evRight {
+    margin: 0;
+    margin-left: 4.5vw;
 }
 
 /* Please remove */
