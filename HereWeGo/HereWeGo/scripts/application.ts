@@ -57,8 +57,8 @@ function constructTop(schedule: ScheduleUtil.Schedule): void {
 
     HTMLMap.topUpText.innerHTML = schedule.getName();
     //TODO: REMOVE
-    HTMLMap.topLowText.innerHTML = 'Period 4';
-    HTMLMap.bottomBarText.innerHTML = '25 minutes remaining';
+    //HTMLMap.topLowText.innerHTML = 'Period 4';
+    //HTMLMap.bottomBarText.innerHTML = '25 minutes remaining';
 }
 
 function onDeviceReady(): void {

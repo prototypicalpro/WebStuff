@@ -8,6 +8,7 @@
 
 import UIItem = require('./UIItem');
 import HTMLMap = require('../HTMLMap');
+import lory = require('../lory');
 
 class SlideTabUI extends UIItem {
     //wrapper template to make everything horizontally flatmapped
@@ -30,7 +31,7 @@ class SlideTabUI extends UIItem {
     //and start up lory
     static startSliderUI() {
         let thing = document.querySelector('body')
-        lory(thing, {
+        lory.lory(thing, {
             //snapping only to js_slide
             classNameSlide: 'js_slide',
             searchDepth: 1,

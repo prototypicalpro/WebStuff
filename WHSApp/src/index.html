@@ -31,6 +31,28 @@
   <!-- Ionic's root component and where the app will load -->
   <ion-app></ion-app>
 
+  <!--Loading screen hack-->
+  <style>
+    #loading{
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background-color: red;
+    }
+
+    #text{
+      font-family: "GeometricSlabSerif703Bold";
+      font-size: 500%;
+      float: left;
+    }
+  </style>
+  <div id="loading" *ngIf="someVar">
+    <p id="text">Loading...</p>
+  </div>
+  
+
+
   <!-- The polyfills js is generated during the build process -->
   <script src="build/polyfills.js"></script>
 
