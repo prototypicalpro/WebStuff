@@ -49,13 +49,13 @@ body {
 
 /* Global Background CSS */
 .background {
+    position: fixed;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     height: 100vh;
     width: 100vw;
     transition: height 600ms cubic-bezier(0.215, 0.61, 0.355, 1);
-    position: fixed;
 }
 
 /* Background Image */
@@ -117,7 +117,7 @@ body {
 /* Menu Button CSS */
 #sideButton {
     position: fixed;
-    z-index: 999; /* If there ever was a feature of CSS that clearly had good intentions, this would be it */
+    z-index: 10; /* If there ever was a feature of CSS that clearly had good intentions, this would be it */
     background-image: url("../images/navicon.png");
     background-origin: content-box;
     background-size: cover;
@@ -135,13 +135,13 @@ body {
     height: 8.7vh;
     width: 100vw;
     background-color: #636363;
-    z-index: 99; /* sigh */
+    z-index: 9; /* sigh */
 }
 
 #barText {
     font-family: 'Montserrat', sans-serif;
     color: white;
-    font-size: 5.5vw;
+    font-size: 5vw;
     text-transform: capitalize;
     line-height: 8.7vh;
     position: absolute;
@@ -172,7 +172,7 @@ body {
 .menuText {
     font-family: 'Montserrat', sans-serif;
     font-weight: 200;
-    font-size: 2.5vh;
+    font-size: 4.5vw;
     color: white;
 }
 
@@ -185,7 +185,7 @@ body {
 }
 
 #menuLine {
-    width: 25vw;
+    width: 33.3vw;
     height: 0.5vh;
     background-color: white
 }
@@ -225,7 +225,149 @@ body {
 
 /* special full slide CSS */
 .content {
+    background-color: white;
+}
+
+/**
+ * Side Menu CSS
+ * CSS which styles the left side menu activited by the button in the top right
+ * Won't have any affect on HTML until javascript loads the menu in
+ * Also will be based on my UIItem Framework somehow
+ * Also Lory for sliding fancyness
+ */
+
+/* Sidemenu frame div */
+.SMFrame {
+    position: fixed;
+    width: 70vw;
+    height: 100vh;
+    overflow: hidden;
+    z-index: 99;
+}
+
+/* Shadow effect div */
+.SMShadow {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background-color: black;
+    opacity: 0;
+}
+
+/* Sidemenu content div */
+.SMCont {
+    position: fixed;
+    width: 170vw;
+    height: 100vh;
+    white-space: nowrap;
+    transform: translateX(-70vw);
+}
+
+/* Generic slide CSS */
+.SMSlide {
+    width: 70vw;
+    height: 100vh;
+    float: left;
+}
+
+/* Blank slide CSS */
+.blank {
+    width: 100vw;
+}
+
+/* Actual Side Menu CSS */
+#sideMenu {
     background-color: #EFEFEF;
+    box-shadow: -1px 0px 2px rgba(0, 0, 0, 0.2), 1px 0px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Header of side menu CSS */
+.SMHead {
+    width: 100%;
+    height: 20vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-image: url("../images/WHS.jpg");
+}
+
+/* Text in header CSS */
+.SMTopText {
+    position: relative;
+    top: 14.5vh;
+    left: 5vw;
+    font-family: 'Montserrat', sans-serif;
+    color: white;
+    font-size: 5vw;
+}
+
+/* List of buttons in sidemenu CSS */
+/* Global item list CSS */
+.SMItems {
+    padding-left: 5vw;
+    font-family: 'Open Sans', sans-serif;
+}
+
+/* Individual item CSS */
+.SMItem {
+    background-size: 4vh 4vh;
+    background-position-y: 1.5vh;
+    background-repeat: no-repeat;
+    width: 65vw;
+    min-height: 7vh;
+    display: flex;
+    align-items: center;
+    
+}
+
+/* Text in individual item CSS */
+.SMItemText {
+    font-size: 4vw;
+    margin-left: 14vw;
+}
+
+/* Bottom section of menu CSS */
+.SMBot {
+    position: absolute;
+    bottom: 0;
+}
+
+.quote {
+    color: gray;
+    font-weight: 600;
+    font-size: 3.5vw;
+    font-style: italic;
+    width: 65vw;
+    white-space: normal;
+    overflow-wrap: break-word;
+}
+
+/**
+ * Icons for side menu items
+ */
+
+#map {
+    background-image: url("../images/map.png");
+}
+
+#sVUE {
+    background-image: url("../images/grade.png");
+}
+
+#DB {
+    background-image: url("../images/list.png");
+}
+
+#navi {
+    background-image: url("../images/university.png");
+}
+
+#site {
+    background-image: url("../images/share.png");
+}
+
+#setting {
+    background-image: url("../images/gear.png");
 }
 
 /*
@@ -236,10 +378,10 @@ body {
 /* Header CSS */
 .header {
     font-family: 'Open Sans', sans-serif;
-    font-size: 5vh;
+    font-size: 5vw;
     margin-left: 5vw;
-    margin-top: 1.5vh;
-    margin-bottom: 1.5vh;
+    margin-top: 1.6vh;
+    margin-bottom: 1vh;
 }
 
 /* 
@@ -252,7 +394,7 @@ body {
 /* Whole row CSS */
 .justRow {
     width: 100vw;
-    min-height: 13vh;
+    min-height: 10vh;
     display: flex;
     align-items: stretch;
 }
@@ -269,16 +411,21 @@ body {
     width: 30vw;
     display: flex;
     flex-direction: column;
-    align-items: center;
-}
-
-.leftUp, .leftLow {
+    align-items: flex-end;
     font-family: 'Open Sans', sans-serif;
-    font-size: 5.25vw;
+    margin-right: 4.5vw;
+    text-transform: uppercase;
 }
 
 .leftUp {
     margin-bottom: 0.6vh;
+    font-weight: 400;
+    font-size: 4vw;
+}
+
+.leftLow {
+    color: gray;
+    font-size: 3.5vw;
 }
 
 /* Right Cell CSS */
@@ -292,7 +439,7 @@ body {
     margin-left: 4.5vw;
     margin-top: -0.25vh;
     font-family: 'Open Sans', sans-serif;
-    font-size: 6.5vh;
+    font-size: 5vh;
 }
 
 /* eventually needed */
@@ -311,23 +458,24 @@ body {
     margin-top: -0.75vh;
 }
 
-.evText {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 5.25vw;
-    margin-bottom: 0.5vh;
-}
-
 /* Regular Event Row CSS */
 .evRow {
     width: 100vw;
-    min-height: 6.5vh;
+    min-height: 8vh;
     display: flex;
     align-items: stretch;
 }
 
+/* Small Event Row CSS */
+.evSmall {
+    min-height: 4vh;
+}
+
 /* This is in addition to evText */
 .evRight {
-    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 4vw;
+    margin-bottom: 0.5vh;
     margin-left: 4.5vw;
 }
 

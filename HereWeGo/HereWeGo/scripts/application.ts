@@ -3,6 +3,7 @@
 // To debug code on page load in cordova-simulate or on Android devices/emulators: launch your app, set breakpoints, 
 // and then run "window.location.reload()" in the JavaScript Console.
 import * as moment from 'moment';
+import lory = require('./lory');
 import DataManage = require('./WHSLib/DataManage');
 import SchedDataManage = require('./WHSLib/SchedDataManage');
 import ScheduleData = require('./WHSLib/ScheduleData');
@@ -11,7 +12,7 @@ import CalDataManage = require('./WHSLib/CalDataManage');
 import EventData = require('./WHSLib/EventData');
 import EventInterface = require('./WHSLib/EventInterface');
 import ScheduleGraphic = require('./UILib/ScheduleGraphic');
-//import EventGraphic = require('./UILib/EventGraphic');
+import EventGraphic = require('./UILib/EventGraphic');
 import SlideTabUI = require('./UILib/SlideTabUI');
 import HTMLMap = require('./HTMLMap');
 import Page = require('./UILib/Page');
@@ -20,8 +21,11 @@ import Page = require('./UILib/Page');
 
 var data: DataManage = new DataManage([new CalDataManage(), new SchedDataManage()]);
 
+var menu;
+
 export function initialize(): void {
     document.addEventListener('deviceready', onDeviceReady, false);
+    StatusBar.styleLightContent();
     console.log("init func: " + performance.now());
 }
 
@@ -83,7 +87,7 @@ function onDeviceReady(): void {
         constructTop(sched);
         let end = performance.now();
         console.log("Init took: " + (end - start));
-        
+
         //after that ridiculous nonsense, we grab new data, and do it all over again
     }).catch((err) => console.log(err)).then(() => {
         data.initHTTP();
@@ -93,28 +97,122 @@ function onDeviceReady(): void {
         //start up the early data stuff
         let calData: EventData = data.returnData(0);
         //grab the schedule key
-        return calData.getScheduleKey(new Date());
-    }).then((key: string) => {
+        //for today, tommorrow, and day after
+        let today = new Date();
+        let tomorrow = new Date();
+        tomorrow.setDate(today.getDate() + 1);
+        let nextDay = new Date();
+        nextDay.setDate(today.getDate() + 2);
+        return Promise.all([calData.getScheduleKey(today), calData.getScheduleKey(tomorrow), calData.getScheduleKey(nextDay)]);
+    }).then((keys: Array<string>) => {
         //check key, then get the schedule for it
-        if (key === null) console.log('No School dumbo');
-        else return (data.returnData(1) as ScheduleData).getSchedule(key);
-    }).then((sched: ScheduleUtil.Schedule) => {
+        //TODO: Fix
+        let schedData = data.returnData(1) as ScheduleData;
+        return Promise.all([
+            !keys[0] ? null : schedData.getSchedule(keys[0]),
+            !keys[1] ? null : schedData.getSchedule(keys[1]),
+            !keys[2] ? null : schedData.getSchedule(keys[2])
+        ]);
+    }).then((sched: Array<ScheduleUtil.Schedule | null>) => {
         //reload!
-        constructTop(sched);
+        constructTop(sched[0]);
         //and the moment you've all been wating for: the rest of the UI
         let dataObj = data.returnData();
         //return the contructed html
+        //do date stuff to get start and end of today and tommorrow
+        const msInDayMinusOne = 86399999;
+        //get start of today
+        let start: any = new Date();
+        start.setHours(0, 0, 0, 0);
+        start = start.getTime();
+        //add rest of day to that number to get the end of the day
+        let end = start + msInDayMinusOne;
+        //then add one to push it over to the next day
+        let start2 = end + 1;
+        //repeat
+        let end2 = start2 + msInDayMinusOne;
+        let start3 = end2 + 1;
+        let end3 = start3 + msInDayMinusOne;
         return new SlideTabUI([
             new Page('Schedule', [
-                new ScheduleGraphic(dataObj[1], dataObj[0])
+                new ScheduleGraphic(sched[0]),
+                new EventGraphic(dataObj[0], 'Today', start, end),
+                new EventGraphic(dataObj[0], 'Tomorrow', start2, end2, !sched[1] ? [{
+                    title: 'No School',
+                    startTime: 0,
+                    endTime: 0,
+                    isAllDay: true,
+                    id: '',
+                    schedule: true,
+                }] : [{
+                    title: sched[1].getName() + ' Schedule',
+                    startTime: 0,
+                    endTime: 0,
+                    isAllDay: true,
+                    id: '',
+                    schedule: true,
+                }]),
+                new EventGraphic(dataObj[0], moment(start3).format('dddd'), start3, end3, !sched[2] ? [{
+                    title: 'No School',
+                    startTime: 0,
+                    endTime: 0,
+                    isAllDay: true,
+                    id: '',
+                    schedule: true,
+                }] : [{
+                    title: sched[2].getName() + ' Schedule',
+                    startTime: 0,
+                    endTime: 0,
+                    isAllDay: true,
+                    id: '',
+                    schedule: true,
+                }])
             ])
         ]).getHTML();
-    }).then((html: string) => {
-        //aaand yay!
-        HTMLMap.setSliderHTML(html);
-        SlideTabUI.startSliderUI();
-        let end = performance.now();
-        console.log("Second init took: " + (end - start));
+        }).then((html: string) => {
+            //aaand yay!
+            HTMLMap.setSliderHTML(html);
+            SlideTabUI.startSliderUI();
+            let end = performance.now();
+            console.log("Second init took: " + (end - start));
+
+            //DEBUG for side menu
+            menu = lory.lory(document.querySelector('body'), {
+                //different naming scheme
+                classNameFrame: 'SMFrame',
+                classNameSlideContainer: 'SMCont',
+                //snappier scrolling
+                slideSpeed: 300,
+                snapBackSpeed: 200,
+                ease: 'cubic-bezier(0.1, 0.57, 0.1, 1)',
+                //disable overflow scrolling
+                overflowScroll: false,
+                //set default index to when menu is hidden
+                defaultIndex: 1,
+                //and no touchy when it's hidden as well
+                noTouchIndex: 1,
+                //finally, black fade thingy
+                indicators: [{
+                    element: document.querySelector('.SMShadow'),
+                    speedRatio: 0.002,
+                    style: 'opacity',
+                    reverse: true,
+                }],
+            });
+
+            //menu button check
+            document.querySelector('#sideButton').addEventListener('touchstart', (event) => {
+                menu.slideTo(0);
+            });
+
+            //tap outside of menu to close check
+            document.querySelector('.SMFrame').addEventListener('touchstart', (event) => {
+                //MUST CHANGE TO REFLECT MENU SIZE
+                if (event.changedTouches[0].clientX > 0.7 * screen.width) {
+                    event.preventDefault();
+                    menu.slideTo(1);
+                }
+            });
     }).catch((err) => console.log(err));
 }
 

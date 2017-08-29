@@ -39,11 +39,13 @@ class SlideTabUI extends UIItem {
             slideSpeed: 300,
             snapBackSpeed: 200,
             ease: 'cubic-bezier(0.1, 0.57, 0.1, 1)',
+            //disable overflow scrolling
+            overflowScroll: false,
             //fancy indicators
             indicators: [{
                 element: document.querySelector('#menuLine'),
                 axis: 'x',
-                speedRatio: -0.25, //TODO: Dynamically scale bottom menu and calculate at runtime
+                speedRatio: -0.333, //TODO: Dynamically scale bottom menu and calculate at runtime
             },
             {
                 element: document.querySelector('#textWrap'),

@@ -175,9 +175,17 @@ return /******/ (function(modules) { // webpackBootstrap
                         //do style stuff to indicators as well
                         //if we maxed out sliding, only slide to max
                         var translateNum;
-                        if (obj.maxSlide && to < -frameWidth * obj.maxSlide) translateNum = -frameWidth * obj.maxSlide * obj.speedRatio;
-                        else translateNum = to * obj.speedRatio;
-                        if (obj.axis === 'x') obj.element.style[prefixes.transform] = 'translate3d(' + translateNum + 'px, 0, 0)';
+                        if(obj.reverse) {
+                            if (obj.maxSlide && to < -frameWidth * obj.maxSlide) translateNum = 0;
+                            else if (obj.maxSlide) translateNum = (frameWidth * obj.maxSlide - to) * obj.speedRatio;
+                            else translateNum = (to + frameWidth * (slides.length - 1)) * obj.speedRatio;
+                        }
+                        else {
+                            if (obj.maxSlide && to < -frameWidth * obj.maxSlide) translateNum = -frameWidth * obj.maxSlide * obj.speedRatio;
+                            else translateNum = to * obj.speedRatio;
+                        }
+                        if (obj.style) obj.element.style[obj.style] = translateNum;
+                        else if (obj.axis === 'x') obj.element.style[prefixes.transform] = 'translate3d(' + translateNum + 'px, 0, 0)';
                         else obj.element.style[prefixes.transform] = 'translate3d(0,' + translateNum + 'px,0)';
                     });
 	            } else {
@@ -188,12 +196,20 @@ return /******/ (function(modules) { // webpackBootstrap
                         //do style stuff to indicators as well
                         //if we maxed out sliding, only slide to max
                         var translateNum;
-                        if (obj.maxSlide && to < -frameWidth * obj.maxSlide) translateNum = -frameWidth * obj.maxSlide * obj.speedRatio;
-                        else translateNum = to * obj.speedRatio;
-                        if (obj.axis === 'x') obj.element.style[prefixes.transform] = 'translate(' + translateNum + 'px, 0)';
+                        if (obj.reverse) {
+                            if (obj.maxSlide && to < -frameWidth * obj.maxSlide) translateNum = 0;
+                            else if (obj.maxSlide) translateNum = (frameWidth * obj.maxSlide - to) * obj.speedRatio;
+                            else translateNum = (to + frameWidth * (slides.length - 1)) * obj.speedRatio;
+                        }
+                        else {
+                            if (obj.maxSlide && to < -frameWidth * obj.maxSlide) translateNum = -frameWidth * obj.maxSlide * obj.speedRatio;
+                            else translateNum = to * obj.speedRatio;
+                        }
+                        if (obj.style) obj.element.style[obj.style] = translateNum;
+                        else if (obj.axis === 'x') obj.element.style[prefixes.transform] = 'translate(' + translateNum + 'px, 0)';
                         else obj.element.style[prefixes.transform] = 'translate(0,' + translateNum + 'px)';
                     });
-	            }
+                }
 	        }
 	    }
 	
@@ -268,7 +284,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        if (classNameActiveSlide) {
 	            setActiveElement(slice.call(slides), index);
-	        }
+            }
+
+            //USER MOD
+            //disable pointer events on frame if active element is the noTouch one
+            if (options.noTouchIndex === index) frame.style.pointerEvents = 'none';
+            else if (options.noTouchIndex != -1) frame.style.pointerEvents = 'all';
 	
 	        dispatchSliderEvent('after', 'slide', {
 	            currentSlide: index
@@ -359,12 +380,10 @@ return /******/ (function(modules) { // webpackBootstrap
             else _slides = slice.call(slideContainer.children);
 
             slides = slice.call(_slides);
-	
+
 	        reset();
-	
-	        if (classNameActiveSlide) {
-	            setActiveElement(slides, index);
-	        }
+
+            slide(options.defaultIndex);
 	
 	        if (prevCtrl && nextCtrl) {
 	            prevCtrl.addEventListener('click', prev);
@@ -406,7 +425,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        if (rewindOnResize) {
-	            index = 0;
+	            index = _options5.defaultIndex;
 	        } else {
 	            ease = null;
 	            rewindSpeed = 0;
@@ -546,10 +565,11 @@ return /******/ (function(modules) { // webpackBootstrap
                 //are you kidding me
 	            isScrolling = !!(isScrolling || Math.abs(delta.x) < Math.abs(delta.y));
 	        }
-	
-	        if (!isScrolling && touchOffset) {
-	            event.preventDefault();
-	            translate(position.x + delta.x, 0, null);
+            if (!isScrolling && touchOffset) {
+                event.preventDefault();
+                //USER MOD
+                //disable overflow scrolling
+                if (options.overflowScroll || !(!index && delta.x > 0 || index === slides.length - 1 && delta.x < 0)) translate(position.x + delta.x, 0, null);    
 	        }
 	
 	        // may be
@@ -893,9 +913,10 @@ return /******/ (function(modules) { // webpackBootstrap
       rewindOnResize: true,
 
       /**
-       * Class names + axis of indicators to scroll across + translate multiply factor + maximum slide amount (in frame lengths)
-       * B/c I miss IScroll
-       * e.g. : [{element: getHTMLElement(), scrollAxis: 'x', speedRatio: 0.25, maxSlide: 1}]
+       * Class names + axis of indicators to scroll across + translate multiply factor +
+       * maximum slide amount (in frame lengths) + optionally the property to affect instead of position (axis will not matter in this case) +
+       * whether or not to do it in reverse
+       * e.g. : [{element: getHTMLElement(), scrollAxis: 'x', speedRatio: 0.25, maxSlide: 1, reverse: true, style: 'opacity'}]
        */
       indicators: [],
 
@@ -912,6 +933,25 @@ return /******/ (function(modules) { // webpackBootstrap
        * If classNameSLide is blank will grab every child at this depth and ignore parents
        */
       searchDepth: 0,
+
+      /**
+       * Whether or not to allow overflow scrolling
+       * will break infinite if enabled
+       */
+      overflowScroll: true,
+
+      /**
+       * I don't know how to make this portable, but this setting will disable touch input
+       * on the specified slide
+       * Only works for one slide atm
+       * -1 to disable
+       */
+      noTouchIndex: -1,
+
+      /**
+       * Set the default slide to start on
+       */
+      defaultIndex: 0,
 	};
 
 /***/ }
