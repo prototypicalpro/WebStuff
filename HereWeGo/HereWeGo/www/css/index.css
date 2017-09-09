@@ -80,8 +80,8 @@ body {
 
 /* Global Top Section Text CSS */
 
-/* Upper Text (A) */
-.upText {
+/* Background Text (A) */
+.backText {
     font-family: "BenjaminFont"; /* Benjamin, this is for you */
     color: white;
     font-size: 170vw;
@@ -99,8 +99,8 @@ body {
     left: 5vw;
 }
 
-/* Lower Text (Period 3) */
-.lowText {
+/* Period Text (Period 3) */
+.periodText {
     font-size: 8vh;
     font-weight: bold;
     color: white;
@@ -477,6 +477,32 @@ body {
     font-size: 4vw;
     margin-bottom: 0.5vh;
     margin-left: 4.5vw;
+}
+
+/**
+ * Imitation HTML Toast CSS
+ * Will serve as my error handler
+ * As opposed to bringing up a stack extange search every time
+ */
+
+.tHidden {
+    position: fixed;
+    top: 100vh;
+    width: 100vw;
+    height: 3vh;
+    background-color: #333;
+    padding: 3vh 4.5vw 2.65vh 4.5vw;
+    transition: transform 300ms cubic-bezier(0.1, 0.57, 0.1, 1);
+}
+
+.tShown {
+    transform: translateY(-8.65vh);
+}
+
+.tText {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2.5vh;
+    color: white;
 }
 
 /* Please remove */

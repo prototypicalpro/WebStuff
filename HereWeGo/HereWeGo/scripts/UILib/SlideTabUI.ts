@@ -3,30 +3,40 @@
  * takes a buncha HTML strings created from individual UIItems, horizontally flatmaps them,
  * and then displays them in android-style moving tab thingys
  * IDK how I'm going to handle touch and stuff yet
- * LOL NVM FUCK TOUCH LIBRARY HERE WE COME
+ * LOL NVM FUCK TOUCH. LIBRARY HERE WE COME
  */
 
-import UIItem = require('./UIItem');
+import UIUtil = require('./UIUtil');
 import HTMLMap = require('../HTMLMap');
 import lory = require('../lory');
 
-class SlideTabUI extends UIItem {
+class SlideTabUI implements UIUtil.UIItem {
     //wrapper template to make everything horizontally flatmapped
     private readonly wrapperTemplate: string = `<div class="js_slide content">{{stuff}}</div>`;
     //stored pages, to be flatmapped and shiz
-    private readonly pages: Array<UIItem>;
+    private readonly pages: Array<Array<UIUtil.UIItem>>;
     //fill them varlibles
-    constructor(pages: Array<UIItem>) {
-        super();
+    constructor(pages: Array<Array<UIUtil.UIItem>>) {
         this.pages = pages;
+    }
+    //get children method
+    //flatmap pages then return
+    getChildren() {
+        return UIUtil.findChildren([].concat.apply([], this.pages));
     }
     //and the getHTML
     getHTML(): Promise<string> {
         //get all the htmls in parellel
-        return Promise.all(this.pages.map((page) => { return page.getHTML(); })).then((strings: Array<string>) => {
+        //this chaining is gonna be beutiful
+        //for every array of pages
+        return Promise.all(this.pages.map((page) => {
+            //get the html from that array, and join it into a single string
+            return Promise.all(page.map((item) => { return item.getHTML(); })).then((htmls: Array<string>) => { return htmls.join(''); });
+            //for every page string
+        })).then((pages: Array<string>) => {
             //wrap each item,  join them all, and return the string
-            return strings.map((string) => { return this.templateEngine(this.wrapperTemplate, { stuff: string }); }).join('');
-        })
+            return pages.map((string) => { return UIUtil.templateEngine(this.wrapperTemplate, { stuff: string }); }).join('');
+        });
     }
     //and start up lory
     static startSliderUI() {

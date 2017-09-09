@@ -13,6 +13,7 @@ import GetLib = require('../GetLib/GetLib');
 import DataInterface = require('./DataInterface');
 import ScheduleUtil = require('./ScheduleUtil');
 import DBManage = require('../DBLib/DBManage');
+import ErrorUtil = require('../ErrorUtil');
 import { TIME_CACHE_KEY } from './CacheKeys';
 
 const URL: string = 'https://script.google.com/macros/s/AKfycbxyS4utDJEJ3bE2spSE4SIRlwj10M2Owbe7_XWrOFSobfniQjve/exec';
@@ -68,7 +69,7 @@ class DataManage {
             new Promise((resolve, reject) => {
                 //load last sync time from storage
                 let lastSync = localStorage.getItem(TIME_CACHE_KEY);
-                if (!lastSync) return reject("No stored last time");
+                if (!lastSync) throw ErrorUtil.code.NO_STORED;
                 this.lastSyncTime = parseInt(lastSync);
                 return resolve();
             }),
@@ -79,13 +80,12 @@ class DataManage {
 
     //starts up HTTP, in a seperate function so I can do stuff without cordova first
     //MUST CALL BEFORE ANY INTERNET STUFF
-    initHTTP(): boolean {
+    initHTTP(): void {
         this.http = new GetLib();
         if (!this.http.initAPI()) {
             console.log("http failed");
-            return false;
+            throw ErrorUtil.code.HTTP_FAIL;
         }
-        return true;
     }
 
     //gets new data and overwrited any old data

@@ -1,5 +1,6 @@
 ﻿/*
  * Native HTTP Client implementation
+ * TODO: Add Error handling
  */
 
 import GetInterface = require('./GetInterface');

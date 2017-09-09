@@ -4,13 +4,13 @@
  * I'll have to do some dynamic lazy loading nonsense to make it that way tho
  */
 
-import UIItem = require('./UIItem');
+import UIUtil = require('./UIUtil');
 import ScheduleUtil = require('../WHSLib/ScheduleUtil');
 import ColorUtil = require('./ColorUtil');
 import * as moment from 'moment';
 import { PeriodType } from '../WHSLib/ScheduleUtil';
 
-class ScheduleGraphic extends UIItem {
+class ScheduleGraphic implements UIUtil.UIItem {
     //storage schedule
     private sched: ScheduleUtil.Schedule;
     //I sorta have to include this due to the direct database
@@ -49,15 +49,17 @@ class ScheduleGraphic extends UIItem {
 
     //constructor with schedule
     constructor(sched: ScheduleUtil.Schedule) {
-        super();
         this.sched = sched;
+    }
+
+    //return self for getChildren
+    getChildren() {
+        return [this];
     }
 
     getHTML(): Promise<string> {
         //do all the construction stuff
-        //TODO: REMOVE THIS
-        //let index = schedule.getCurrentPeriodIndex(Date.now());
-        let index = 5;
+        const index = this.sched.getCurrentPeriodIndex(Date.now());
         const inv = 1.0 / (this.sched.getNumPeriods() - 1);
         //all parrellel b/c we're already async so why not
         let ray: Array<Promise<string>> = [];
@@ -73,7 +75,7 @@ class ScheduleGraphic extends UIItem {
             //now we have all the components, lets package them up and send it off to our display class
             let ret = strings.join('');
             //add the header
-            return this.templateEngine(this.tableTemplate, {
+            return UIUtil.templateEngine(this.tableTemplate, {
                 head: this.sched.getName() + ' Schedule',
                 sched: ret,
             });
@@ -89,7 +91,7 @@ class ScheduleGraphic extends UIItem {
             switch (period.getType()) {
                 case PeriodType.CLASS:
                 case PeriodType.LUNCH:
-                    return resolve(this.templateEngine(this.itemTemplate, {
+                    return resolve(UIUtil.templateEngine(this.itemTemplate, {
                         upTime: period.getStart().format('h:mm a'),
                         lowTime: period.getEnd().format('h:mm a'),
                         lineColor: ColorUtil.blendColors('#00ff00', '#004700', colorBlendFrac),

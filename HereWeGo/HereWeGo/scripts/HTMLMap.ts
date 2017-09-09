@@ -6,19 +6,21 @@
  */
 
 namespace HTMLMap {
-    export const bottomBarButton: Element = document.querySelector('.bar.fab');
-    export const bottomBarText: Element = document.querySelector('.timeText');
+    //export const bottomBarButton: Element = document.querySelector('.bar.fab');
+    export const timeText: Element = document.querySelector('.timeText');
 
     const menuBar: HTMLElement = document.querySelector('#menuBar') as HTMLElement;
     export const menuLine: HTMLElement = document.querySelector('#menuLine') as HTMLElement;
 
-    export const topUpText: Element = document.querySelector('.upText');
-    export const topLowText: Element = document.querySelector('.lowText');
+    export const backText: Element = document.querySelector('.backText');
+    export const periodText: Element = document.querySelector('.periodText');
 
     const scheduleTableObject: Node = document.querySelector('#schedule');
     const scheduleRowTemplate: HTMLElement = document.querySelector('#periodRow') as HTMLElement;
 
     export const content: HTMLElement = document.querySelector('#addStuff') as HTMLElement;
+
+    export const toastBox: HTMLElement = document.querySelector('#toast') as HTMLElement;
 
     //interface which holds the data for a schedule row in html, which I will convert into an html object
     export interface ScheduleRowData {

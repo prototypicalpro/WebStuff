@@ -6,9 +6,12 @@
 import * as moment from 'moment';
 import ScheduleUtil = require('./ScheduleUtil');
 import StoreSchedUtil = require('./StoreSchedUtil');
+import EventInterface = require('./EventInterface');
+import UIArgs = require('../UIArgs');
+import ErrorUtil = require('../ErrorUtil');
 
 //utility class, which is returned by the datamanage superclass
-class ScheduleData {
+class ScheduleData implements UIArgs.SchedHandle {
     //database pointer
     private readonly db: IDBDatabase;
     //database store name
@@ -51,16 +54,74 @@ class ScheduleData {
         return new ScheduleUtil.Schedule(schedule, data.key);
     }
 
-    getSchedule(key: string): Promise<ScheduleUtil.Schedule> {
-        //do a database query for the key
-        return new Promise((resolve, reject) => {
-            let req = this.db.transaction([this.name], 'readonly').objectStore(this.name).get(key);
-            req.onsuccess = resolve;
-            req.onerror = reject;
+    getSchedule(day: Date, events: UIArgs.EventHandle): Promise<ScheduleUtil.Schedule> {
+        //have the events get the schedule key for today
+        return events.getScheduleKey(new Date(day).setHours(0, 0, 0, 0)).then((key: string) => {
+            //do a database query for the key
+            return new Promise((resolve, reject) => {
+                let req = this.db.transaction([this.name], 'readonly').objectStore(this.name).get(key);
+                req.onsuccess = resolve;
+                req.onerror = reject;
+            });
         }).then((data: any) => {
             return this.scheduleFromCloudData(data.target.result);
         //if we don't find it or error, there's no school
-        }).catch((err) => { return ScheduleUtil.NoSchool; });
+        }).catch((err) => {
+            if (err != ErrorUtil.code.NO_SCHOOL) console.log(err);
+            throw ErrorUtil.code.NO_SCHOOL;
+        });
+    }
+
+    static eventFromSchedule(sched: ScheduleUtil.Schedule): EventInterface {
+        return {
+            title: sched.getName() + ' Schedule',
+            isAllDay: true,
+            startTime: sched.getPeriod(0).getStart().valueOf() as number,
+            endTime: sched.getPeriod(sched.getNumPeriods() - 1).getEnd.valueOf() as number,
+            schedule: true,
+            id: '',
+        };
+    }
+
+    //stupid UI stuff!
+    injectSched(objs: Array<UIArgs.SchedRecv>, event: UIArgs.EventHandle): Promise<any> {
+        //step one: figure out the quiries to make
+        //code moved to UIArgs file for (questionable) portability
+        let days: Object = UIArgs.deDupeDays('schedDay', objs);
+        //step two: get the relevant events
+        return Promise.all(Object.keys(days).map((dayKey) => {
+            //today plus whatever specified by object
+            let time = new Date().setHours(0, 0, 0, 0) + parseInt(dayKey) * 86400000;
+            return event.getScheduleKey(time).then((key: string) => {
+                //do a database query for the key
+                return new Promise((resolve, reject) => {
+                    let req = this.db.transaction([this.name], 'readonly').objectStore(this.name).get(key);
+                    req.onsuccess = resolve;
+                    req.onerror = reject;
+                }).catch((err) => {
+                    console.log(err);
+                    return null;
+                }).then((data: any) => {
+                    //if the data is null, fill with null and leave
+                    if(!data || !data.target.result) {
+                        //for every index of an object in the array in the object
+                        for(let i = 0, len = days[time].length; i < len; i++) objs[days[time][i]].schedule = null;
+                        return;
+                    }
+                    //for every index of an object in the array in the object
+                    for(let i = 0, len = days[time].length; i < len; i++) {
+                        //if the object wanted a specific property, give it to them
+                        let object = objs[days[time][i]];
+                        if(object.schedProps){
+                            if(Array.isArray(object.schedProps)) object.schedule = object.schedProps.map((prop) => { return data.target.result[prop] });
+                            else object.schedule = data.target.result[object.schedProps];
+                        }
+                        //else parse and give full schedule
+                        else object.schedule = this.scheduleFromCloudData(data.target.result);
+                    }
+                });
+            });
+        }));
     }
 }
 
