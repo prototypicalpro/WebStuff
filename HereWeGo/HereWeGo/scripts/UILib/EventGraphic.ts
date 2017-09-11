@@ -16,6 +16,8 @@ class EventGraphic extends UIUtil.UIItem {
     private readonly header: string;
     //whether or not to display schedule
     private readonly dispSched: boolean;
+    //storage schedule name
+    private schedName: string;
     //storage events for callback
     private eventObjs: Array<any> = [];
     //template for overall
@@ -54,15 +56,16 @@ class EventGraphic extends UIUtil.UIItem {
             <UIArgs.EventParams>{
                 type: UIArgs.RecvType.EVENTS,
                 storeEvent: this.storeEvent.bind(this),
-                eventDay: day,
+                day: day,
             },
         ];
         this.header = header;
         if(displaySchedule){
             this.onInitRecv.push(<UIArgs.SchedParams>{
                 type: UIArgs.RecvType.SCHEDULE,
-                schedDay: day,
+                day: day,
                 schedProps: ['key'],
+                storeSchedule: this.storeSchedule.bind(this),
             });
             this.onScheduleUpdateRecv = this.onInitRecv;
         }
@@ -74,14 +77,13 @@ class EventGraphic extends UIUtil.UIItem {
     onInitRecv: Array<UIArgs.RecvParams>; 
     //and the funtion itself!
     //we specify the contents of the args array in the varible above
-    onInit(args: Array<any>): string {
-        let areEvents: boolean = args[0];
-        //if there is a schedule title, it's in args[1]
+    onInit(): string {
+        //if there is a schedule title, it's in our storage member
         if(this.dispSched) {
             this.eventObjs.unshift({
                 modCl: 'evSmall',
                 time: this.allDayTime,
-                title: args[1] ? args[1] : 'No School',
+                title: this.schedName ? this.schedName : 'No School',
             })
         }
         //yay!
@@ -120,20 +122,25 @@ class EventGraphic extends UIUtil.UIItem {
         });
     }
 
+    //the thing that stores a schedule if there is one!
+    storeSchedule(sched: Array<string>) {
+        this.schedName = sched[0];
+    }
+
     //cache update stuff
     onEventUpdateRecv: Array<UIArgs.RecvParams>; //initialized in contructor
     //function to update!
     //its the same!
-    onEventUpdate(inj: Array<any>): void {
+    onEventUpdate(): void {
         //update graphic contents
-        document.querySelector('#' + this.id).innerHTML = this.onInit(inj);
+        document.querySelector('#' + this.id).innerHTML = this.onInit();
     }
 
     onScheduleUpdateRecv: Array<UIArgs.RecvParams>;
     //still the same!
     //except we check for a schedule and then update if so
-    onScheduleUpdate(inj: Array<any>) {
-        if(inj[1]) document.querySelector('#' + this.id).innerHTML = this.onInit(inj);
+    onScheduleUpdate() {
+        if (this.dispSched) document.querySelector('#' + this.id).innerHTML = this.onInit();
     }
 }
 

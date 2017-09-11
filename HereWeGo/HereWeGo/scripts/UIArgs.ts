@@ -11,13 +11,13 @@ import UIUtil = require('./UILib/UIUtil');
 
 namespace UIArgs {
     //enumeration to specify which triggers the element would like to be refreshed in
-    export const enum TRIGGERED {
+    export enum TRIGGERED {
         //called after the time needs updating
-        TIME_UPDATE,
+        onTimeUpdate,
         //called after a new event has changed the event cache
-        EVENT_UPDATE,
+        onEventUpdate,
         //called after a new type of schedule has changed the schedule cache
-        SCHEDULE_UPDATE
+        onScheduleUpdate
         //TODO: Interactivity
     }
     //enumeration for the type of recvParam
@@ -35,7 +35,7 @@ namespace UIArgs {
     export interface EventParams extends RecvParams {
         //which days we want events for
         //use a number, 0 being today, 1 being the next day, and so on
-        eventDay: number;
+        day: number;
         //whether or not to display schedule
         displaySched?: boolean;
         //database runs this function for every event, so this should store all the data you need 
@@ -47,13 +47,16 @@ namespace UIArgs {
         //need to specify the day we want the schedule on
         //use a number, 0 being today, 1 being the next day, and so on
         //also can request an array of multiple schedules
-        schedDay: number;
+        day: number;
         //isolated property or array of properties to only store about schedule (if we only need title or something)
         schedProps?: Array<string>;
+        //callback fn
+        storeSchedule(sched: ScheduleUtil.Schedule | Array<string>);
     }
 
     export interface DayParams extends RecvParams {
-        //huh
+        //callback fn
+        storeDay(day: Date);
     }
 
     //interfaces to describe handlers for the different things that need to be injected
@@ -67,12 +70,12 @@ namespace UIArgs {
 
     //schedule
     export interface SchedHandle {
-        getSched(objs: Array<SchedParams>, Event: UIArgs.EventHandle): Promise<Array<any>>;
+        getSched(objs: Array<SchedParams>, Event: UIArgs.EventHandle): Promise<void>;
     }
 
     //day
     export interface DayHandle {
-        getDay(obj: Array<DayParams>): Promise<Array<any>> | any;
+        getDay(obj: Array<DayParams>): Promise<void> | void;
     }
 
     //IDK where to put this, but a utility function to dedupe days is here

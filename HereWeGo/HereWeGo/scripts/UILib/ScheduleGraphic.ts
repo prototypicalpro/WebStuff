@@ -17,6 +17,8 @@ class ScheduleGraphic extends UIUtil.UIItem {
     private sched: ScheduleUtil.Schedule;
     //last green period store
     private lastIndex: number;
+    //stored date
+    private day: Date;
     //HTML Template
     //It's gonna be ugly, that's just how it is
     //schedule table template
@@ -61,7 +63,7 @@ class ScheduleGraphic extends UIUtil.UIItem {
             //and the schedule
             <UIArgs.SchedParams>{
                 type: UIArgs.RecvType.SCHEDULE,
-                schedDay: day,
+                day: day,
             }
         ];
         this.onScheduleUpdateRecv = this.onInitRecv;
@@ -70,17 +72,12 @@ class ScheduleGraphic extends UIUtil.UIItem {
     //init stuff
     onInitRecv: Array<UIArgs.RecvParams>;
     //function
-    onInit(inj: Array<any>): string {
-        //as specified in onInitRecv, the first arg is the day
-        let day: Date = inj[0];
-        //and second is schedule
-        let sched: ScheduleUtil.Schedule = inj[1];
-        this.sched = sched;
+    onInit(): string {
         //if there's no schedule, rip
-        if(!sched) throw ErrorUtil.code.NO_SCHOOL;
+        if(!this.sched) throw ErrorUtil.code.NO_SCHOOL;
         //do all the construction stuff
         let schedStr = '';
-        this.lastIndex = this.sched.getCurrentPeriodIndex(day.getTime());
+        this.lastIndex = this.sched.getCurrentPeriodIndex(this.day.getTime());
         const inv = 1.0 / (this.sched.getNumPeriods() - 1);
         //all parrellel b/c we're already async so why not
         for (let i = 0, len = this.sched.getNumPeriods(); i < len; i++) {
@@ -108,19 +105,19 @@ class ScheduleGraphic extends UIUtil.UIItem {
     //schedule cache update
     onScheduleUpdateRecv: Array<UIArgs.RecvParams>;
     //function
-    onScheduleUpdate(inj: Array<any>) {
+    onScheduleUpdate() {
         //if still no schedule, well shite
-        if(!inj[1]) throw ErrorUtil.code.NO_SCHOOL;
+        if (!this.sched) throw ErrorUtil.code.NO_SCHOOL;
         //replace the html with a newly updated one
-        document.querySelector('#' + this.id).innerHTML = this.onInit(inj);
+        document.querySelector('#' + this.id).innerHTML = this.onInit();
     }
 
     //time update
     onTimeUpdateRecv: Array<UIArgs.RecvParams> = [<UIArgs.DayParams>{ type: UIArgs.RecvType.DAY, }];
     //function
-    onTimeUpdate(inj: Array<Date>) {
+    onTimeUpdate() {
         //if nothing has changed, don't change anything
-        let currentIndex = this.sched.getCurrentPeriodIndex(inj[0].getTime());
+        let currentIndex = this.sched.getCurrentPeriodIndex(this.day.getTime());
         if(this.lastIndex === currentIndex) return;
         //else remove the color from the last index, assuming it's not a passing period
         if(this.lastIndex >= 0 && this.sched.getPeriod(this.lastIndex).getType() != ScheduleUtil.PeriodType.PASSING){
@@ -133,6 +130,16 @@ class ScheduleGraphic extends UIUtil.UIItem {
             if(current) current.style.backgroundColor = 'lightgreen';
         }
         //nice
+    }
+
+    //store schedule callback fn
+    storeSchedule(sched: ScheduleUtil.Schedule) {
+        this.sched = sched;
+    }
+
+    //store day callback fn
+    storeDay(day: Date) {
+        this.day = day;
     }
 }
 

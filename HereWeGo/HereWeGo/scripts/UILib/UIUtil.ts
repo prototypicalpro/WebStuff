@@ -52,20 +52,20 @@ namespace UIUtil {
         //the enum array or item for the onInit
         abstract onInitRecv: Array<UIArgs.RecvParams>;
         //build HTML
-        abstract onInit(inj: Array<any> | null): string;
+        abstract onInit(): string;
         //run every time the app state is changed(e.g. the time changes and we need to update the front)
         //the enum array or item for the onTimeUpdate
         onTimeUpdateRecv?: Array<UIArgs.RecvParams>;
-        //paremeters are based on the enumerated constant above
-        onTimeUpdate?(inj: Array<any> | null): void;
+        //out of date comment
+        onTimeUpdate?(): void;
         //the enum array or item for the onUpdate
         onEventUpdateRecv?: Array<UIArgs.RecvParams>;
-        //paremeters are based on the enumerated constant above
-        onEventUpdate?(inj: Array<any> | null): void;
+        //wohoo
+        onEventUpdate?(): void;
         //the enum array or item for the onUserRefresh
         onScheduleUpdateRecv?: UIArgs.RecvParams | Array<UIArgs.RecvParams>;
         //run only when the user triggers a refresh (includes the app coming in and out of focus)
-        onScheduleUpdateRefresh?(inj: Array<any> | null): void;
+        onScheduleUpdateRefresh?(): void;
     }
 }
 
