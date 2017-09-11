@@ -12,80 +12,67 @@ import UIUtil = require('./UILib/UIUtil');
 namespace UIArgs {
     //enumeration to specify which triggers the element would like to be refreshed in
     export const enum TRIGGERED {
-        //called at start
-        INIT,
         //called after the time needs updating
-        UPDATE,
-        //called after the user requests a refresh, or the app comes into focus
-        USER_REFRESH,
+        TIME_UPDATE,
+        //called after a new event has changed the event cache
+        EVENT_UPDATE,
+        //called after a new type of schedule has changed the schedule cache
+        SCHEDULE_UPDATE
         //TODO: Interactivity
     }
-    //enumeration to specify which properties can be injected
-    //kinda sad for now but hopefully expandable
-    export const enum ARGS {
+    //enumeration for the type of recvParam
+    export const enum RecvType {
         SCHEDULE,
-        EVENTS,
         DAY,
+        EVENTS,
     }
-    //the master interface, which holds the enumeration constants the master injector reads
-    //all other sub interfaces will implement this interface
-    export interface Recv extends UIUtil.UIItem {
-        //the enum array or item
-        recv: ARGS | Array<ARGS>;
-        //the enum array of the times to let the thing know to update
-        triggers: TRIGGERED | Array<TRIGGERED>;
-        //run every time the app state is changed(e.g. the time changes and we need to update the front)
-        onUpdate?(): void;
-        //run immediatly after the HTML is built
-        onInit?(): void;
-        //run only when the user triggers a refresh (includes the app coming in and out of focus)
-        onUserRefresh?(): void;
+    //base interface for an object which specifys how to inject
+    export interface RecvParams {
+        type: RecvType;
     }
     //interfaces enumerating the properties each object must have in order to recieve the data
     //only present due to weird database efficiency stuff
-    export interface EventRecv extends Recv {
+    export interface EventParams extends RecvParams {
         //which days we want events for
         //use a number, 0 being today, 1 being the next day, and so on
-        eventDay: number | Array<number>;
+        eventDay: number;
+        //whether or not to display schedule
+        displaySched?: boolean;
         //database runs this function for every event, so this should store all the data you need 
         //to do the thing
         storeEvent(event: EventInterface): void;
     }
 
-    export interface SchedRecv extends Recv {
+    export interface SchedParams extends RecvParams {
         //need to specify the day we want the schedule on
         //use a number, 0 being today, 1 being the next day, and so on
         //also can request an array of multiple schedules
-        readonly schedDay: number | Array<number>;
+        schedDay: number;
         //isolated property or array of properties to only store about schedule (if we only need title or something)
-        readonly schedProps?: string | Array<string>;
-        //the thing to put the data into, type depends on data asked for
-        schedule: ScheduleUtil.Schedule | Array<ScheduleUtil.Schedule> | any | Array<any>;
+        schedProps?: Array<string>;
     }
 
-    export interface DayRecv extends Recv {
-        //gets the current time
-        //uh, yeah
-        time: Date;
+    export interface DayParams extends RecvParams {
+        //huh
     }
 
     //interfaces to describe handlers for the different things that need to be injected
     //event data handler
-    export interface EventHandle extends Recv {
+    export interface EventHandle {
         //the injection method, which a thing will pass a buncha subclasses
-        injectEvent(objs: Array<EventRecv>): Promise<void>;
+        getEvents(objs: Array<EventParams>): Promise<void>;
         //also this bonus method b/c schedule getting is hard
         getScheduleKey(start: number): Promise<any>;
     }
 
     //schedule
     export interface SchedHandle {
-        injectSched(objs: Array<SchedRecv>, Event: UIArgs.EventHandle): Promise<void>;
+        getSched(objs: Array<SchedParams>, Event: UIArgs.EventHandle): Promise<Array<any>>;
     }
 
     //day
     export interface DayHandle {
-        injectDay(obj: Array<DayRecv>): Promise<void>;
+        getDay(obj: Array<DayParams>): Promise<Array<any>> | any;
     }
 
     //IDK where to put this, but a utility function to dedupe days is here

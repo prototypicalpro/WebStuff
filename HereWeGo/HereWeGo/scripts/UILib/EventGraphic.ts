@@ -10,29 +10,20 @@ import EventData = require('../WHSLib/EventData');
 import ColorUtil = require('./ColorUtil');
 import * as moment from 'moment';
 
-class EventGraphic implements UIArgs.EventRecv, UIArgs.SchedRecv {
-    //Recv globals
-    recv;
-    //we want to trigger init and user refresh
-    readonly triggers = [UIArgs.TRIGGERED.INIT, UIArgs.TRIGGERED.USER_REFRESH];
-    //Event recv globals
-    //stroage event day, follows guidlines set by EventRecv
-    readonly eventDay: number;
-    readonly schedDay: number;
+class EventGraphic extends UIUtil.UIItem {
     //other stuff
     //storage title
     private readonly header: string;
-    //storage events to be filled during callback
+    //whether or not to display schedule
+    private readonly dispSched: boolean;
+    //storage events for callback
     private eventObjs: Array<any> = [];
-    //storage schedule to be filled
-    readonly schedProps: string = 'key';
-    schedule: string;
-    //whether or not to display schedule for today
-    private readonly displaySched: boolean;
     //template for overall
     private readonly template: string = `
-        <p class="header">{{head}}</p>
-        {{stuff}}`
+        <div id="{{id}}">
+            <p class="header">{{head}}</p>
+            {{stuff}}
+        </div>`
     //and template for each item
     //100% certified unreadable
     //event item template
@@ -54,19 +45,66 @@ class EventGraphic implements UIArgs.EventRecv, UIArgs.SchedRecv {
 
     private readonly allDayTime: string = `
     <p class='leftUp' style='margin:0'>ALL DAY</p>`
+
     //constructor for teh evenents
     constructor(header: string, day: number, displaySchedule: boolean) {
+        super();
+        this.onInitRecv = [
+            //events
+            <UIArgs.EventParams>{
+                type: UIArgs.RecvType.EVENTS,
+                storeEvent: this.storeEvent.bind(this),
+                eventDay: day,
+            },
+        ];
         this.header = header;
-        this.eventDay = day;
-        this.schedDay = day;
-        this.displaySched = displaySchedule;
-        if(displaySchedule) this.recv = [UIArgs.ARGS.EVENTS, UIArgs.ARGS.SCHEDULE];
-        else this.recv = UIArgs.ARGS.EVENTS;
+        if(displaySchedule){
+            this.onInitRecv.push(<UIArgs.SchedParams>{
+                type: UIArgs.RecvType.SCHEDULE,
+                schedDay: day,
+                schedProps: ['key'],
+            });
+            this.onScheduleUpdateRecv = this.onInitRecv;
+        }
+        this.dispSched = displaySchedule;
+        this.onEventUpdateRecv = this.onInitRecv;
     }
-    //return self for getChildren
-    getChildren() {
-        return [this];   
+    //new callback api functions!
+    //setup init callback with onInitRecv
+    onInitRecv: Array<UIArgs.RecvParams>; 
+    //and the funtion itself!
+    //we specify the contents of the args array in the varible above
+    onInit(args: Array<any>): string {
+        let areEvents: boolean = args[0];
+        //if there is a schedule title, it's in args[1]
+        if(this.dispSched) {
+            this.eventObjs.unshift({
+                modCl: 'evSmall',
+                time: this.allDayTime,
+                title: args[1] ? args[1] : 'No School',
+            })
+        }
+        //yay!
+        if (this.eventObjs.length > 0) {
+            //do templating after so we can have line color fancyness
+            let eventStr = '';
+            let inv = 1.0 / (this.eventObjs.length - 1);
+            for (let i = 0, len = this.eventObjs.length; i < len; i++) {
+                if (this.eventObjs.length === 1) this.eventObjs[i].lineColor = '#00ff00';
+                else this.eventObjs[i].lineColor = ColorUtil.blendColors('#00ff00', '#004700', i * inv);
+                eventStr += UIUtil.templateEngine(this.eventTemplate, this.eventObjs[i]);
+            }
+            //reset eventObjs
+            this.eventObjs = [];
+            return UIUtil.templateEngine(this.template, {
+                head: this.header,
+                stuff: eventStr,
+                id: this.id,
+            });
+        }
+        return '';
     }
+
     //the thang that does the contruction!
     storeEvent(event: EventInterface) {
         this.eventObjs.push({
@@ -81,25 +119,21 @@ class EventGraphic implements UIArgs.EventRecv, UIArgs.SchedRecv {
             name: event.title,
         });
     }
-    //and finally, get all dat HTML
-    getHTML(): string {
-        if (this.eventObjs.length > 0) {
-            //do templating after so we can have line color fancyness
-            let eventStr = '';
-            const inv = 1.0 / (this.eventObjs.length - 1);
-            for (let i = 0, len = this.eventObjs.length; i < len; i++) {
-                if (this.eventObjs.length === 1) this.eventObjs[i].lineColor = '#00ff00';
-                else this.eventObjs[i].lineColor = ColorUtil.blendColors('#00ff00', '#004700', i * inv);
-                eventStr += UIUtil.templateEngine(this.eventTemplate, this.eventObjs[i]);
-            }
-            //reset eventObjs
-            this.eventObjs = [];
-            return UIUtil.templateEngine(this.template, {
-                head: this.header,
-                stuff: eventStr,
-            });
-        }
-        return '';
+
+    //cache update stuff
+    onEventUpdateRecv: Array<UIArgs.RecvParams>; //initialized in contructor
+    //function to update!
+    //its the same!
+    onEventUpdate(inj: Array<any>): void {
+        //update graphic contents
+        document.querySelector('#' + this.id).innerHTML = this.onInit(inj);
+    }
+
+    onScheduleUpdateRecv: Array<UIArgs.RecvParams>;
+    //still the same!
+    //except we check for a schedule and then update if so
+    onScheduleUpdate(inj: Array<any>) {
+        if(inj[1]) document.querySelector('#' + this.id).innerHTML = this.onInit(inj);
     }
 }
 

@@ -7,6 +7,8 @@
  * Will also include some templating-engine-esq utility functions
  */
 
+import UIArgs = require('../UIArgs');
+
 namespace UIUtil {
     //Varibles to put in template, in form of { name: value }
     //searches for strings in double curly beackets and replaces them (e.g. {{thing}})
@@ -32,15 +34,38 @@ namespace UIUtil {
         }
         return ray;
     };
+    //unique ID utility function, will just increment a number to ensure nothing is duplicated
+    var idCount: number = 0;
+    export const getUniqueId = (): number => {
+        return idCount++;
+    }
     //Interface to universalize UI Items (such as graphics)
     //should be implemented by anything that returns a string of HTML
-    export interface UIItem {
-        //TODO: Replace trickle update heirarchy with query heirarchy
-        //static makeStart and then more later? idk
-        //the return all the HTML that we want
-        getHTML(): Promise<string>;
+    export abstract class UIItem {
+        //automated unique ID generation
+        readonly id: number;
+        constructor() {
+            this.id = getUniqueId();
+        }
         //get all the child UIItems (or if it is at the bottom, don't implement this function)
         getChildren?(): Array<UIItem>;
+        //the enum array or item for the onInit
+        abstract onInitRecv: Array<UIArgs.RecvParams>;
+        //build HTML
+        abstract onInit(inj: Array<any> | null): string;
+        //run every time the app state is changed(e.g. the time changes and we need to update the front)
+        //the enum array or item for the onTimeUpdate
+        onTimeUpdateRecv?: Array<UIArgs.RecvParams>;
+        //paremeters are based on the enumerated constant above
+        onTimeUpdate?(inj: Array<any> | null): void;
+        //the enum array or item for the onUpdate
+        onEventUpdateRecv?: Array<UIArgs.RecvParams>;
+        //paremeters are based on the enumerated constant above
+        onEventUpdate?(inj: Array<any> | null): void;
+        //the enum array or item for the onUserRefresh
+        onScheduleUpdateRecv?: UIArgs.RecvParams | Array<UIArgs.RecvParams>;
+        //run only when the user triggers a refresh (includes the app coming in and out of focus)
+        onScheduleUpdateRefresh?(inj: Array<any> | null): void;
     }
 }
 

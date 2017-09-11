@@ -10,13 +10,14 @@ import UIUtil = require('./UIUtil');
 import HTMLMap = require('../HTMLMap');
 import lory = require('../lory');
 
-class SlideTabUI implements UIUtil.UIItem {
+class SlideTabUI extends UIUtil.UIItem {
     //wrapper template to make everything horizontally flatmapped
     private readonly wrapperTemplate: string = `<div class="js_slide content">{{stuff}}</div>`;
     //stored pages, to be flatmapped and shiz
     private readonly pages: Array<Array<UIUtil.UIItem>>;
     //fill them varlibles
     constructor(pages: Array<Array<UIUtil.UIItem>>) {
+        super();
         this.pages = pages;
     }
     //get children method
