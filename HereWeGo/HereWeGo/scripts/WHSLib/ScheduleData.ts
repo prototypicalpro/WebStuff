@@ -7,11 +7,11 @@ import * as moment from 'moment';
 import ScheduleUtil = require('./ScheduleUtil');
 import StoreSchedUtil = require('./StoreSchedUtil');
 import EventInterface = require('./EventInterface');
-import UIArgs = require('../UIArgs');
+import UIUtil = require('../UILib/UIUtil');
 import ErrorUtil = require('../ErrorUtil');
 
 //utility class, which is returned by the datamanage superclass
-class ScheduleData implements UIArgs.SchedHandle {
+class ScheduleData implements UIUtil.SchedHandle {
     //database pointer
     private readonly db: IDBDatabase;
     //database store name
@@ -54,7 +54,8 @@ class ScheduleData implements UIArgs.SchedHandle {
         return new ScheduleUtil.Schedule(schedule, data.key);
     }
 
-    getSchedule(day: Date, events: UIArgs.EventHandle): Promise<ScheduleUtil.Schedule> {
+    /*
+    getSchedule(day: Date, events: UIUtil.EventHandle): Promise<ScheduleUtil.Schedule> {
         //have the events get the schedule key for today
         return events.getScheduleKey(new Date(day).setHours(0, 0, 0, 0)).then((key: string) => {
             //do a database query for the key
@@ -71,6 +72,7 @@ class ScheduleData implements UIArgs.SchedHandle {
             throw ErrorUtil.code.NO_SCHOOL;
         });
     }
+    */
 
     static eventFromSchedule(sched: ScheduleUtil.Schedule): EventInterface {
         return {
@@ -84,42 +86,61 @@ class ScheduleData implements UIArgs.SchedHandle {
     }
 
     //stupid UI stuff!
-    injectSched(objs: Array<UIArgs.SchedRecv>, event: UIArgs.EventHandle): Promise<any> {
+    getSched(objs: Array<UIUtil.SchedParams>, event: UIUtil.EventHandle): Promise<any> {
         //step one: figure out the quiries to make
-        //code moved to UIArgs file for (questionable) portability
-        let days: Object = UIArgs.deDupeDays('schedDay', objs);
+        //sigh
+        interface dayObj {
+            day: number;
+            objs: Array<UIUtil.SchedParams>;
+        }
+        //create an object with all the data we need to get and run the thigs
+        let days: Array<dayObj> = [];
+        for (let i = 0, len = objs.length; i < len; i++) {
+            let index = days.findIndex((day) => { return day.day === objs[i].day; })
+            if (index === -1) {
+                days.push({
+                    day: objs[i].day,
+                    objs: [objs[i]],
+                });
+            }
+            else days[index].objs.push(objs[i]);
+        }
         //step two: get the relevant events
-        return Promise.all(Object.keys(days).map((dayKey) => {
+        return Promise.all(days.map((day: dayObj) => {
             //today plus whatever specified by object
-            let time = new Date().setHours(0, 0, 0, 0) + parseInt(dayKey) * 86400000;
+            let time = new Date().setHours(0, 0, 0, 0) + day.day * 86400000;
             return event.getScheduleKey(time).then((key: string) => {
                 //do a database query for the key
-                return new Promise((resolve, reject) => {
-                    let req = this.db.transaction([this.name], 'readonly').objectStore(this.name).get(key);
-                    req.onsuccess = resolve;
-                    req.onerror = reject;
-                }).catch((err) => {
-                    console.log(err);
-                    return null;
-                }).then((data: any) => {
-                    //if the data is null, fill with null and leave
-                    if(!data || !data.target.result) {
-                        //for every index of an object in the array in the object
-                        for(let i = 0, len = days[time].length; i < len; i++) objs[days[time][i]].schedule = null;
-                        return;
-                    }
-                    //for every index of an object in the array in the object
-                    for(let i = 0, len = days[time].length; i < len; i++) {
-                        //if the object wanted a specific property, give it to them
-                        let object = objs[days[time][i]];
-                        if(object.schedProps){
-                            if(Array.isArray(object.schedProps)) object.schedule = object.schedProps.map((prop) => { return data.target.result[prop] });
-                            else object.schedule = data.target.result[object.schedProps];
+                //if there is a key
+                if (key) {
+                    return new Promise((resolve, reject) => {
+                        let req = this.db.transaction([this.name], 'readonly').objectStore(this.name).get(key);
+                        req.onsuccess = resolve;
+                        req.onerror = reject;
+                    }).catch((err) => {
+                        console.log(err);
+                        return null;
+                    }).then((data: any) => {
+                        //if the data is null, fill with null and leave
+                        if (!data || !data.target.result) {
+                            //for every index of an object in the array in the object
+                            for (let i = 0, len = day.objs.length; i < len; i++) day.objs[i].storeSchedule(null);
+                            return;
                         }
-                        //else parse and give full schedule
-                        else object.schedule = this.scheduleFromCloudData(data.target.result);
-                    }
-                });
+                        //for every index of an object in the array in the object
+                        for (let i = 0, len = day.objs.length; i < len; i++) {
+                            //if the object wanted a specific property, give it to them
+                            if (day.objs[i].schedProps && day.objs[i].schedProps.length) day.objs[i].storeSchedule(day.objs[i].schedProps.map((prop) => { return data.target.result[prop] }));
+                            //else parse and give full schedule
+                            else day.objs[i].storeSchedule(this.scheduleFromCloudData(data.target.result));
+                        }
+                    });
+                }
+                //else return null
+                else {
+                    //for every index of an object in the array in the object
+                    for (let i = 0, len = day.objs.length; i < len; i++) day.objs[i].storeSchedule(null);
+                }
             });
         }));
     }

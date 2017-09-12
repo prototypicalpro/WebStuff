@@ -4,57 +4,63 @@
  * dependecy-injector type thing to simplify it
  */
 
-import UIArgs = require('./UIArgs');
 import UIUtil = require('./UILib/UIUtil');
 
 class UIData {
     //storage members!
     //the schedule handler
-    readonly sched: UIArgs.SchedHandle;
+    private readonly sched: UIUtil.SchedHandle;
     //the event handler
-    readonly events: UIArgs.EventHandle;
+    private readonly events: UIUtil.EventHandle;
     //the useful day handler
-    readonly day: UIArgs.DayHandle;
+    private readonly day: UIUtil.DayHandle;
     //the array of recievers
-    readonly recvs: Array<UIUtil.UIItem>;
+    private readonly recvs: Array<UIUtil.UIItem> = [];
     //constructor!
-    constructor(schedHandle: UIArgs.SchedHandle, eventHandle: UIArgs.EventHandle, dayHandle: UIArgs.DayHandle, recievers: Array<UIUtil.UIItem>) {
+    constructor(schedHandle: UIUtil.SchedHandle, eventHandle: UIUtil.EventHandle, dayHandle: UIUtil.DayHandle, recievers: Array<UIUtil.UIItem>) {
         this.sched = schedHandle;
         this.events = eventHandle;
+        this.day = dayHandle;
         //iterate through each item and it's children and filter out the ones that don't need any callbacks
-        this.recvs = (<Array<UIUtil.UIItem>>[].concat.apply([], recievers.map((item) => { return item.getChildren ? item.getChildren() : item; }))).filter((item) => { return item.onInitRecv || item.onScheduleUpdateRecv || item.onTimeUpdateRecv || item.onEventUpdateRecv; })
+        for (let i = 0, len = recievers.length; i < len; i++) {
+            if (recievers[i].getChildren) {
+                this.recvs = this.recvs.concat(recievers[i].getChildren());
+            }
+            this.recvs.push(recievers[i]);
+        }
     }
     
     //initialize the UIItems with all the data they need
-    initItems() {
-        //TODO: Fix this backend crap
-        //may need to rething frontend
+    initInject(): Promise<any> {
         //get all the things ww need to quire
         let params = this.getDataFromRecvArray('onInitRecv');
         //get all the things!
-        Promise.all([
-            this.sched.getSched(params[UIArgs.RecvType.SCHEDULE], this.events),
-            this.events.getEvents(params[UIArgs.RecvType.EVENTS]),
-            this.day.getDay(params[UIArgs.RecvType.DAY]),
-        ]).then(() => {
-            //run all the functions!
-            this.recvs.map((recv) => recv.onInit());
-        });
+        return Promise.all([
+            params[UIUtil.RecvType.SCHEDULE].length ? this.sched.getSched(params[UIUtil.RecvType.SCHEDULE], this.events) : null,
+            params[UIUtil.RecvType.EVENTS].length ? this.events.getEvents(params[UIUtil.RecvType.EVENTS]) : null,
+            params[UIUtil.RecvType.DAY].length ? this.day.getDay(params[UIUtil.RecvType.DAY]) : null,
+        ]);
+        //each UIItem will then ititialize itself (or something like that), we just inject the data
+    }
+
+    //run the initialization routine after the html has been made
+    initRun(): void {
+        for (let i = 0, len = this.recvs.length; i < len; i++) if (this.recvs[i].onInit) this.recvs[i].onInit();
     }
 
     //next, the triggers themselves
     //might as well use the enum
-    trigger(why: UIArgs.TRIGGERED) {
+    trigger(why: UIUtil.TRIGGERED) {
         //get all the parameters
-        let params = this.getDataFromRecvArray(UIArgs.TRIGGERED[why] + 'Recv');
+        let params = this.getDataFromRecvArray(UIUtil.TRIGGERED[why] + 'Recv');
         //inject all the things!
         Promise.all([
-            this.sched.getSched(params[UIArgs.RecvType.SCHEDULE], this.events),
-            this.events.getEvents(params[UIArgs.RecvType.EVENTS]),
-            this.day.getDay(params[UIArgs.RecvType.DAY]),
+            params[UIUtil.RecvType.SCHEDULE].length ? this.sched.getSched(params[UIUtil.RecvType.SCHEDULE], this.events) : null,
+            params[UIUtil.RecvType.EVENTS].length ? this.events.getEvents(params[UIUtil.RecvType.EVENTS]) : null,
+            params[UIUtil.RecvType.DAY].length ? this.day.getDay(params[UIUtil.RecvType.DAY]) : null,
         ]).then(() => {
             //run all the functions!
-            this.recvs.map((recv) => recv[UIArgs.TRIGGERED[why]]());
+            this.recvs.map((recv) => recv[UIUtil.TRIGGERED[why]]());
         });
     }
 
@@ -80,7 +86,7 @@ class UIData {
         let ret = [[], [], []]; //hehe
         for(let i = 0, len = this.recvs.length; i < len; i++) {
             //push every recv parameter to it's appropriate array, then return it
-            for (let o = 0, len1 = this.recvs[i][key].length; o < len1; o++) ret[this.recvs[i][key][o].type].push(this.recvs[i][key][o]);
+            if (this.recvs[i][key]) for (let o = 0, len1 = this.recvs[i][key].length; o < len1; o++) ret[this.recvs[i][key][o].type].push(this.recvs[i][key][o]);
         }
         return ret;
     }

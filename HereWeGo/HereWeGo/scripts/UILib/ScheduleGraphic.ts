@@ -5,7 +5,6 @@
  */
 
 import UIUtil = require('./UIUtil');
-import UIArgs = require('../UIArgs');
 import ErrorUtil = require('../ErrorUtil');
 import ScheduleUtil = require('../WHSLib/ScheduleUtil');
 import ColorUtil = require('./ColorUtil');
@@ -57,24 +56,26 @@ class ScheduleGraphic extends UIUtil.UIItem {
         super();
         this.onInitRecv = [
             //prolly want the day
-            <UIArgs.DayParams>{
-                type: UIArgs.RecvType.DAY,
+            <UIUtil.DayParams>{
+                type: UIUtil.RecvType.DAY,
+                storeDay: this.storeDay.bind(this),
             },
             //and the schedule
-            <UIArgs.SchedParams>{
-                type: UIArgs.RecvType.SCHEDULE,
+            <UIUtil.SchedParams>{
+                type: UIUtil.RecvType.SCHEDULE,
                 day: day,
+                storeSchedule: this.storeSchedule.bind(this),
             }
         ];
         this.onScheduleUpdateRecv = this.onInitRecv;
     }
 
     //init stuff
-    onInitRecv: Array<UIArgs.RecvParams>;
-    //function
-    onInit(): string {
+    onInitRecv: Array<UIUtil.RecvParams>;
+    //gethtml
+    getHTML(): string {
         //if there's no schedule, rip
-        if(!this.sched) throw ErrorUtil.code.NO_SCHOOL;
+        if (!this.sched) return '';
         //do all the construction stuff
         let schedStr = '';
         this.lastIndex = this.sched.getCurrentPeriodIndex(this.day.getTime());
@@ -100,20 +101,22 @@ class ScheduleGraphic extends UIUtil.UIItem {
             sched: schedStr,
             id: this.id,
         });
-    }
-
+    } 
     //schedule cache update
-    onScheduleUpdateRecv: Array<UIArgs.RecvParams>;
+    onScheduleUpdateRecv: Array<UIUtil.RecvParams>;
     //function
     onScheduleUpdate() {
         //if still no schedule, well shite
-        if (!this.sched) throw ErrorUtil.code.NO_SCHOOL;
+        if (!this.sched) return;
         //replace the html with a newly updated one
-        document.querySelector('#' + this.id).innerHTML = this.onInit();
+        (<HTMLElement>document.querySelector('#i' + this.id)).innerHTML = this.getHTML();
     }
 
     //time update
-    onTimeUpdateRecv: Array<UIArgs.RecvParams> = [<UIArgs.DayParams>{ type: UIArgs.RecvType.DAY, }];
+    onTimeUpdateRecv: Array<UIUtil.RecvParams> = [<UIUtil.DayParams>{
+        type: UIUtil.RecvType.DAY,
+        storeDay: this.storeDay.bind(this),
+    }];
     //function
     onTimeUpdate() {
         //if nothing has changed, don't change anything

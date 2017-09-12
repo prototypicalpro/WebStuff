@@ -4,9 +4,9 @@
 
 import EventInterface = require('./EventInterface');
 import ErrorUtil = require('../ErrorUtil');
-import UIArgs = require('../UIArgs');
+import UIUtil = require('../UILib/UIUtil');
 
-class EventData implements UIArgs.EventHandle {
+class EventData implements UIUtil.EventHandle {
     //db pointer
     private readonly db: IDBDatabase;
     //object store name
@@ -32,13 +32,14 @@ class EventData implements UIArgs.EventHandle {
             };
             req.onerror = reject;
         }).then((result) => {
-            if (!result) throw ErrorUtil.code.NO_SCHOOL;
+            if (!result) return null;
             else return result;
         });
     }
 
+    /*
     //start and end are Date.getTime() numbers
-    getEvents(start: number, end: number, cursorFunc: (event: EventInterface) => void): Promise<any> {
+    getEventsLeg(start: number, end: number, cursorFunc: (event: EventInterface) => void): Promise<any> {
         //this is where the db should pay off
         return new Promise((resolve) => {
             let req: IDBRequest = this.db.transaction([this.objName], "readonly").objectStore(this.objName).index('startTime').openCursor(IDBKeyRange.bound(start, end));
@@ -52,18 +53,32 @@ class EventData implements UIArgs.EventHandle {
             };
         });
     }
-
+    */
     //UI handler interface madness!
-    injectEvent(objs: Array<UIArgs.EventRecv>): Promise<any> {
+    getEvents(objs: Array<UIUtil.EventParams>): Promise<any> {
         //step one: figure out the quiries to make
-        //code moved to UIArgs file for (questionable) portability
-        let days: Object = UIArgs.deDupeDays('schedDay', objs);
+        //sigh
+        interface dayObj {
+            day: number;
+            objs: Array<UIUtil.EventParams>;
+        }
+        //create an object with all the data we need to get and run the thigs
+        let days: Array<dayObj> = [];
+        for (let i = 0, len = objs.length; i < len; i++) {
+            let index = days.findIndex((day) => { return day.day === objs[i].day; })
+            if (index === -1) {
+                days.push({
+                    day: objs[i].day,
+                    objs: [objs[i]],
+                });
+            }
+            else days[index].objs.push(objs[i]);
+        }
         //run the quiries!
         //first get all the days, then map them to promises with database info, inside of which we run the functions!
-        return Promise.all(Object.keys(days).map((dayKey: string) => {
-            console.log(dayKey)
+        return Promise.all(days.map((day: dayObj) => {
             //date stuff
-            let start = new Date().setHours(0, 0, 0, 0) + parseInt(dayKey) * 86400000;
+            let start = new Date().setHours(0, 0, 0, 0) + day.day * 86400000;
             //add one day minus one millisecond
             let end = start + 86399999;
             //db stuff!
@@ -73,8 +88,8 @@ class EventData implements UIArgs.EventHandle {
                     let cursor: IDBCursorWithValue = event.target.result;
                     if (cursor) {
                         if (!cursor.value.schedule) {
-                            let indexRay: Array<number> = days[start];
-                            for (let i = 0, len = indexRay.length; i < len; i++) objs[indexRay[i]].storeEvent(cursor.value);
+                            //run it bby
+                            for (let i = 0, len = day.objs.length; i < len; i++) day.objs[i].storeEvent(cursor.value);
                         }
                         cursor.continue();
                     }
