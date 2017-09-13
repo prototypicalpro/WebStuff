@@ -47,6 +47,8 @@ class EventGraphic extends UIUtil.UIItem {
     private readonly allDayTime: string = `
     <p class='leftUp' style='margin:0'>ALL DAY</p>`
 
+    private readonly charLineMax: number = 36;
+
     //constructor for teh evenents
     constructor(header: string, day: number, displaySchedule: boolean) {
         super();
@@ -91,8 +93,17 @@ class EventGraphic extends UIUtil.UIItem {
             let eventStr = '';
             let inv = 1.0 / (this.eventObjs.length - 1);
             for (let i = 0, len = this.eventObjs.length; i < len; i++) {
+                //set linecolor
                 if (this.eventObjs.length === 1) this.eventObjs[i].lineColor = '#00ff00';
                 else this.eventObjs[i].lineColor = ColorUtil.blendColors('#00ff00', '#004700', i * inv);
+                //add breakline tags to long titles
+                if (this.eventObjs[i].name.length >= this.charLineMax) {
+                    //work on the substring ending at the 64th char
+                    //starting at the 64th char, and work backwards until we find a space
+                    let breakPoint = (<string>this.eventObjs[i].name).slice(0, this.charLineMax).lastIndexOf(' ');
+                    //add a break tag to that space
+                    this.eventObjs[i].name = (<string>this.eventObjs[i].name).slice(0, breakPoint) + `<br/>` + (<string>this.eventObjs[i].name).slice(breakPoint + 1);
+                }
                 eventStr += UIUtil.templateEngine(this.eventTemplate, this.eventObjs[i]);
             }
             //reset eventObjs
@@ -123,7 +134,8 @@ class EventGraphic extends UIUtil.UIItem {
 
     //the thing that stores a schedule if there is one!
     storeSchedule(sched: Array<string>) {
-        this.schedName = sched[0];
+        if (sched) this.schedName = sched[0];
+        else this.schedName = null;
     }
 
     //cache update stuff
