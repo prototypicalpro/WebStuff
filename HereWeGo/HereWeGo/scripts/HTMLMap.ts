@@ -20,6 +20,9 @@ namespace HTMLMap {
 
     export const content: HTMLElement = document.querySelector('#addStuff') as HTMLElement;
 
+    export const sideMenu: HTMLElement = document.querySelector('#SMHere') as HTMLElement;
+    export const sideButton: HTMLElement = document.querySelector('#sideButton') as HTMLElement;
+
     export const toastBox: HTMLElement = document.querySelector('#toast') as HTMLElement;
 
     //interface which holds the data for a schedule row in html, which I will convert into an html object
@@ -37,6 +40,10 @@ namespace HTMLMap {
     //add HTML to the bottom section
     export const setSliderHTML = (html: string): void => {
         content.innerHTML = html;
+    }
+
+    export const setSideMenuHTML = (html: string): void => {
+        sideMenu.innerHTML = html;
     }
 }
 

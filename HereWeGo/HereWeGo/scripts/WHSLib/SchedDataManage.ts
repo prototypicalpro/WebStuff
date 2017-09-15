@@ -45,11 +45,15 @@ class SchedDataManage implements DataInterface {
     }
 
     //this update function is simple: if we got data, overwrite
-    updataData(db: IDBDatabase, data: any): void {
+    updataData(db: IDBDatabase, data: any): boolean {
         //cast
         data = data as Array<StoreSchedUtil.StoreSchedule>;
         //do marginal checking
-        if (data.length > 0) this.overwriteData(db, data);
+        if (data.length > 0) {
+            this.overwriteData(db, data);
+            return true;
+        }
+        return false;
     }
 
     //get the utility class and send it to the super class

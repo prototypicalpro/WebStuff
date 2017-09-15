@@ -18,7 +18,9 @@ namespace UIUtil {
         //called after a new event has changed the event cache
         onEventUpdate,
         //called after a new type of schedule has changed the schedule cache
-        onScheduleUpdate
+        onScheduleUpdate,
+        //trigger both schedule and event update
+        UPDATE_ALL_DATA,
         //TODO: Interactivity
     }
     //enumeration for the type of recvParam
@@ -159,6 +161,13 @@ namespace UIUtil {
         onScheduleUpdateRecv?: UIUtil.RecvParams | Array<UIUtil.RecvParams>;
         //run only when the user triggers a refresh (includes the app coming in and out of focus)
         onScheduleUpdateRefresh?(): void;
+    }
+    //didn't have a better place to put this :(
+    export interface ButtonParam {
+        text: string,
+        callback: () => void;
+        longPressCallback?: () => void;
+        icon?: string,
     }
 }
 

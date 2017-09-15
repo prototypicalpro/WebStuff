@@ -63,24 +63,30 @@ class TopUI extends UIUtil.UIItem {
             this.lastIndex = index;
             if (index === ScheduleUtil.PeriodType.BEFORE_START) {
                 //before start code
-                HTMLMap.timeText.innerHTML = "School starts " + moment().to(this.schedule.getPeriod(0).getStart());
-                HTMLMap.periodText.innerHTML = "";
+                HTMLMap.timeText.innerHTML = moment(this.day).to(this.schedule.getPeriod(0).getStart(), true) + " remaining";
+                HTMLMap.periodText.innerHTML = "Before School";
             }
             else if (index === ScheduleUtil.PeriodType.AFTER_END) {
                 //after end code
-                HTMLMap.timeText.innerHTML = moment().format('LT');
-                HTMLMap.periodText.innerHTML = "";
+                HTMLMap.timeText.innerHTML = moment(this.day).format('LT');
+                HTMLMap.periodText.innerHTML = "After School";
             }
             else {
                 //current period code
                 const period = this.schedule.getPeriod(index);
-                HTMLMap.timeText.innerHTML = moment().to(period.getEnd(), true) + " remaining";
+                HTMLMap.timeText.innerHTML = moment(this.day).to(period.getEnd(), true) + " remaining";
                 switch (period.getType()) {
                     case ScheduleUtil.PeriodType.CLASS:
                         HTMLMap.periodText.innerHTML = 'Period ' + period.getName();
                         break;
                     case ScheduleUtil.PeriodType.LUNCH:
                         HTMLMap.periodText.innerHTML = 'Lunch';
+                        break;
+                    case ScheduleUtil.PeriodType.TUTOR_TIME:
+                        HTMLMap.periodText.innerHTML = 'Tutor Time';
+                        break;
+                    case ScheduleUtil.PeriodType.ASSEMBLY:
+                        HTMLMap.periodText.innerHTML = 'Assembly';
                         break;
                     case ScheduleUtil.PeriodType.PASSING:
                         HTMLMap.periodText.innerHTML = 'Passing';
@@ -93,7 +99,8 @@ class TopUI extends UIUtil.UIItem {
     //do a light time update
     onTimeUpdateRecv: Array<UIUtil.RecvParams> = [
         <UIUtil.DayParams>{
-            type: UIUtil.RecvType.DAY
+            type: UIUtil.RecvType.DAY,
+            storeDay: this.storeDay.bind(this),
         }
     ];
     //fn
@@ -101,7 +108,11 @@ class TopUI extends UIUtil.UIItem {
         if (!this.schedule) HTMLMap.timeText.innerHTML = moment(this.day).format('LT');
         else {
             //if the period hasn't changed, just update the time remaining
-            if (this.schedule.getCurrentPeriodIndex(this.day.getTime()) === this.lastIndex) HTMLMap.timeText.innerHTML = moment().to(this.schedule.getPeriod(this.lastIndex).getEnd(), true) + " remaining";
+            if (this.schedule.getCurrentPeriodIndex(this.day.getTime()) === this.lastIndex) {
+                if (this.lastIndex === ScheduleUtil.PeriodType.BEFORE_START) HTMLMap.timeText.innerHTML = moment(this.day).to(this.schedule.getPeriod(0).getStart(), true) + " remaining";
+                else if (this.lastIndex === ScheduleUtil.PeriodType.AFTER_END) HTMLMap.timeText.innerHTML = moment(this.day).format('LT');
+                else HTMLMap.timeText.innerHTML = moment().to(this.schedule.getPeriod(this.lastIndex).getEnd(), true) + " remaining";
+            }
             //else rebuild
             else this.onInit();
         }

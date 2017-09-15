@@ -25,7 +25,7 @@ class CalDataManage implements DataInterface {
         keys: EVENT_KEYS
     }
 
-    updataData(db: IDBDatabase, data: any): void {
+    updataData(db: IDBDatabase, data: any): boolean {
         //if it's indexedDB, this should be pretty easy
         data = data as Array<EventInterface>;
         let objectStore = db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
@@ -62,6 +62,8 @@ class CalDataManage implements DataInterface {
             }
             return Promise.all(ray);
         }); 
+        //return if we got a data array
+        return data.length > 0;
     }
 
     overwriteData(db: IDBDatabase, data: any): void {

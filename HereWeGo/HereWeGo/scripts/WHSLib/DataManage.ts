@@ -44,9 +44,11 @@ class DataManage {
         });
     }
 
-    private updateData(data: Object): void {
-        for (let i = 0, len = this.dataObj.length; i < len; i++) 
-            if (this.dataObj[i].dataKey in data) this.dataObj[i].updataData(this.db, data[this.dataObj[i].dataKey]);
+    private updateData(data: Object): Array<boolean> {
+        let ret: Array<boolean> = [];
+        for (let i = 0, len = this.dataObj.length; i < len; i++)
+            if (this.dataObj[i].dataKey in data) ret.push(this.dataObj[i].updataData(this.db, data[this.dataObj[i].dataKey]));
+        return ret;
     }
 
     private overwriteData(data: Object): void {
@@ -93,7 +95,7 @@ class DataManage {
         return this.getNewDataFunc().then(this.overwriteData.bind(this));
     }
 
-    refreshData(): Promise<any> {
+    refreshData(): Promise<Array<boolean>> {
         return this.getData().then(this.updateData.bind(this));
     }
 

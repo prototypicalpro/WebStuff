@@ -11,6 +11,7 @@ namespace ScheduleUtil {
         LUNCH,
         PASSING,
         TUTOR_TIME,
+        ASSEMBLY,
         AFTER_END = -1
     }
 

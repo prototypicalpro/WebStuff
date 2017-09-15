@@ -12,7 +12,8 @@ interface DataInterface {
     //should be constant
     dataKey: string; 
     //update function, takes recieved data (using the key above) and updates the stored data
-    updataData(db: IDBDatabase, data: any): void;
+    //returns whether or not the data was updated
+    updataData(db: IDBDatabase, data: any): boolean;
     //overwrite function, deletes any existing data and replaces it with the passed data
     overwriteData(db: IDBDatabase, data: any): void;
     //and finally, return the data or utility class that our program wants

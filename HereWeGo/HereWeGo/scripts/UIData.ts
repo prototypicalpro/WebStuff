@@ -55,12 +55,13 @@ class UIData {
         let params = this.getDataFromRecvArray(UIUtil.TRIGGERED[why] + 'Recv');
         //inject all the things!
         Promise.all([
-            params[UIUtil.RecvType.SCHEDULE].length ? this.sched.getSched(params[UIUtil.RecvType.SCHEDULE], this.events) : null,
-            params[UIUtil.RecvType.EVENTS].length ? this.events.getEvents(params[UIUtil.RecvType.EVENTS]) : null,
-            params[UIUtil.RecvType.DAY].length ? this.day.getDay(params[UIUtil.RecvType.DAY]) : null,
+            (why === UIUtil.TRIGGERED.onScheduleUpdate || why === UIUtil.TRIGGERED.UPDATE_ALL_DATA) && params[UIUtil.RecvType.SCHEDULE].length ? this.sched.getSched(params[UIUtil.RecvType.SCHEDULE], this.events) : null,
+            (why === UIUtil.TRIGGERED.onEventUpdate || why === UIUtil.TRIGGERED.UPDATE_ALL_DATA) && params[UIUtil.RecvType.EVENTS].length ? this.events.getEvents(params[UIUtil.RecvType.EVENTS]) : null,
+            (why === UIUtil.TRIGGERED.onTimeUpdate || why === UIUtil.TRIGGERED.UPDATE_ALL_DATA) && params[UIUtil.RecvType.DAY].length ? this.day.getDay(params[UIUtil.RecvType.DAY]) : null,
         ]).then(() => {
             //run all the functions!
-            this.recvs.map((recv) => recv[UIUtil.TRIGGERED[why]]());
+            console.log(UIUtil.TRIGGERED[why]);
+            this.recvs.map((recv) => { if (recv[UIUtil.TRIGGERED[why]]) recv[UIUtil.TRIGGERED[why]](); });
         });
     }
 
