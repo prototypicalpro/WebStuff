@@ -7,10 +7,10 @@ import { DBInfoInterface } from '../DBLib/DBManage';
 
 interface DataInterface {
     //database info for the superclass to manage
-    dbInfo: DBInfoInterface;
+    readonly dbInfo: DBInfoInterface;
     //the key for the sync data this object will use (e.g. "calSyncData")
     //should be constant
-    dataKey: string; 
+    readonly dataKey: string; 
     //update function, takes recieved data (using the key above) and updates the stored data
     //returns whether or not the data was updated
     updataData(db: IDBDatabase, data: any): boolean;

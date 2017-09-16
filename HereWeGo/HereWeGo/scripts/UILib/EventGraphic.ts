@@ -108,6 +108,7 @@ class EventGraphic extends UIUtil.UIItem {
             }
             //reset eventObjs
             this.eventObjs = [];
+            //return!
             return UIUtil.templateEngine(this.template, {
                 head: this.header,
                 stuff: eventStr,

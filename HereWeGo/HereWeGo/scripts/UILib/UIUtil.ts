@@ -9,6 +9,7 @@
 
 import EventInterface = require('../WHSLib/EventInterface');
 import ScheduleUtil = require('../WHSLib/ScheduleUtil');
+import QuoteDataInterface = require('../WHSLib/QuoteDataInterface');
 
 namespace UIUtil {
     //enumeration to specify which triggers the element would like to be refreshed in
@@ -28,6 +29,7 @@ namespace UIUtil {
         SCHEDULE,
         DAY,
         EVENTS,
+        QUOTE,
     }
     //base interface for an object which specifys how to inject
     export interface RecvParams {
@@ -57,6 +59,10 @@ namespace UIUtil {
         //callback fn
         storeDay(day: Date);
     }
+    export interface QuoteParams extends RecvParams {
+        //just a callback
+        storeQuote(quote: QuoteDataInterface);
+    }
     //interfaces to describe handlers for the different things that need to be injected
     //event data handler
     export interface EventHandle {
@@ -72,6 +78,10 @@ namespace UIUtil {
     //day
     export interface DayHandle {
         getDay(obj: Array<DayParams>): Promise<any> | void;
+    }
+    //quote
+    export interface QuoteHandle {
+        getQuote(obj: Array<QuoteParams>): Promise<any>;
     }
     //IDK where to put this, but a utility function to dedupe days is here
     //this has a buncha confusing optimization stuff and is pretty much unreadable, but assume it

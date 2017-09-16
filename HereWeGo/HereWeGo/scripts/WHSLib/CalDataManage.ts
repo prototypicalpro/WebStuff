@@ -1,8 +1,7 @@
 ﻿/* 
  * API for storing and parsing the Calendar Data in a database
  * so that it actually performs well
- * By default will use an indexedDB, but if not will fallback to serializing things
- * with localforage
+ * By default will use an indexedDB
  */
 
 //TODO: update gscript to handle event cancellations
@@ -17,7 +16,7 @@ import DBManage = require('../DBLib/DBManage');
 const EVENT_KEYS = ['isAllDay', 'startTime', 'endTime', 'title', 'schedule'];
 
 class CalDataManage implements DataInterface {
-    dataKey: string = 'calSyncData';
+    readonly dataKey: string = 'calSyncData';
     //database info
     readonly dbInfo: DBManage.DBInfoInterface = {
         storeName: 'cal',

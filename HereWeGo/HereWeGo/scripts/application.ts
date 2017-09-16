@@ -9,6 +9,9 @@ import SchedDataManage = require('./WHSLib/SchedDataManage');
 import ScheduleData = require('./WHSLib/ScheduleData');
 import ScheduleUtil = require('./WHSLib/ScheduleUtil');
 import CalDataManage = require('./WHSLib/CalDataManage');
+import QuoteDataManage = require('./WHSLib/QuoteDataManage');
+import QuoteData = require('./WHSLib/QuoteData');
+import QuoteUI = require('./UILib/QuoteUI');
 import EventData = require('./WHSLib/EventData');
 import EventInterface = require('./WHSLib/EventInterface');
 import ScheduleGraphic = require('./UILib/ScheduleGraphic');
@@ -29,9 +32,10 @@ import DayHandler = require('./DayHandler');
 const enum DataIndex {
     EVENTS = 0,
     SCHED,
+    QUOTE,
 };
 
-var data: DataManage = new DataManage([new CalDataManage(), new SchedDataManage()]);
+var data: DataManage = new DataManage([new CalDataManage(), new SchedDataManage(), new QuoteDataManage()]);
 var toast: ToastUI = new ToastUI(HTMLMap.toastBox);
 var uiThing: UIData;
 
@@ -47,21 +51,23 @@ var menu: MenuUI = new MenuUI(
         {
             text: 'Map',
             icon: 'map.png',
-            callback: toastCallback('Map'),
+            callback: urlCallback('https://xkcd.com'),
         },
         {
             text: 'Student VUE',
             icon: 'grade.png',
-            callback: toastCallback('Student VUE'),
+            callback: urlCallback('https://parent-portland.cascadetech.org/portland/Login_Student_PXP.aspx'),
         },
     ]),
-    ButtonUI.Factory('SMItem', 'SMItemText', [
-        {
-            text: 'Settings',
-            icon: 'gear.png',
-            callback: toastCallback('Settings'),
-        },
-    ]),
+    (<Array<UIUtil.UIItem>>[new QuoteUI('quote', 32)]).concat(
+        ButtonUI.Factory('SMItem', 'SMItemText', [
+            {
+                text: 'Settings',
+                icon: 'gear.png',
+                callback: urlCallback('http://niceme.me/'),
+            },
+        ])
+    ),
 );
 var slide: SlideTabUI = new SlideTabUI([
     //first page 
@@ -89,19 +95,7 @@ function onDeviceReady(): void {
     let start: number = performance.now();
     const today = new Date();
     //grabby grabby
-    data.initData().then(() => {
-        //start up the early data stuff
-        const calData: EventData = data.returnData(DataIndex.EVENTS);
-        const schedData: ScheduleData = data.returnData(DataIndex.SCHED);
-        //give the top all the data it needs
-        uiThing = new UIData(schedData, calData, new DayHandler(), [top, slide, menu]);
-        return uiThing.initInject();
-    }).then(() => {
-        //set HTML
-        HTMLMap.setSliderHTML(slide.getHTML());
-        HTMLMap.setSideMenuHTML(menu.getHTML());
-        //then tell it to go!
-        uiThing.initRun();
+    data.initData().then(buildUI.bind(this)).then(() => {
         let end: number = performance.now();
         console.log("Init took: " + (end - start));
     }).catch((err) => {
@@ -112,16 +106,7 @@ function onDeviceReady(): void {
         //start up http
         data.initHTTP();
         //grab them datums
-        if (getNewDataVar) {
-            return data.getNewData().then(() => {
-                //start up the early data stuff, cuz it didn't happen before
-                const calData: EventData = data.returnData(DataIndex.EVENTS);
-                const schedData: ScheduleData = data.returnData(DataIndex.SCHED);
-                //give the top all the data it needs
-                uiThing = new UIData(schedData, calData, new DayHandler(), [top, slide, menu]);
-                return uiThing.initInject();
-            });
-        }
+        if (getNewDataVar) return data.getNewData().then(buildUI.bind(this));
         return data.refreshData();
     }).catch((err: any) => {
         if (err === ErrorUtil.code.HTTP_FAIL) setTimeout(toastError, 1000, "This phone is unsupported!");
@@ -141,10 +126,26 @@ function onDeviceReady(): void {
     });
 }
 
+function buildUI(): Promise<any> {
+    //start up the early data stuff
+    const calData: EventData = data.returnData(DataIndex.EVENTS);
+    const schedData: ScheduleData = data.returnData(DataIndex.SCHED);
+    const quoteData: QuoteData = data.returnData(DataIndex.QUOTE);
+    //give the top all the data it needs
+    uiThing = new UIData(schedData, calData, new DayHandler(), quoteData, [top, slide, menu]);
+    return uiThing.initInject().then(() => {
+        //set HTML
+        HTMLMap.setSliderHTML(slide.getHTML());
+        HTMLMap.setSideMenuHTML(menu.getHTML());
+        //then tell it to go!
+        uiThing.initRun();
+    });
+}
+
 function onPause(): void {
     // TODO: This application has been suspended. Save application state here.
     //kill updateTime
-    clearInterval(timeCallbackID);
+    clearTimeout(timeCallbackID);
 }
 
 function onResume(): void {
@@ -163,10 +164,10 @@ function updateTime(): void {
     timeCallbackID = setTimeout(updateTime, time.getTime() - Date.now() + 10);
 }
 
-function toastCallback(msg: string): () => void {
+function urlCallback(url: string): () => void {
     return () => {
         menu.closeMenu();
-        toastError(msg);
+        window.open(url, '_blank');
     };
 }
 

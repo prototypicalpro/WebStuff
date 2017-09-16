@@ -12,9 +12,9 @@ import ScheduleData = require('./ScheduleData');
 //class which takes all that raw nonsense and turns it into abstraction
 class SchedDataManage implements DataInterface {
     //data key for Web API
-    dataKey: string = 'schedSyncData';
+    readonly dataKey: string = 'schedSyncData';
     //database info
-    dbInfo: DBManage.DBInfoInterface = {
+    readonly dbInfo: DBManage.DBInfoInterface = {
         storeName: 'sched',
         keyPath: 'key',
         keys: StoreSchedUtil.SCHED_KEYS

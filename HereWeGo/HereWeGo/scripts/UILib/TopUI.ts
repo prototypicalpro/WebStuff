@@ -111,7 +111,7 @@ class TopUI extends UIUtil.UIItem {
             if (this.schedule.getCurrentPeriodIndex(this.day.getTime()) === this.lastIndex) {
                 if (this.lastIndex === ScheduleUtil.PeriodType.BEFORE_START) HTMLMap.timeText.innerHTML = moment(this.day).to(this.schedule.getPeriod(0).getStart(), true) + " remaining";
                 else if (this.lastIndex === ScheduleUtil.PeriodType.AFTER_END) HTMLMap.timeText.innerHTML = moment(this.day).format('LT');
-                else HTMLMap.timeText.innerHTML = moment().to(this.schedule.getPeriod(this.lastIndex).getEnd(), true) + " remaining";
+                else HTMLMap.timeText.innerHTML = moment(this.day).to(this.schedule.getPeriod(this.lastIndex).getEnd(), true) + " remaining";
             }
             //else rebuild
             else this.onInit();

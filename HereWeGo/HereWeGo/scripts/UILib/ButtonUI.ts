@@ -14,9 +14,9 @@ class ButtonUI extends UIUtil.UIItem {
     </div>`
     //perminant class members for animations
     private readonly touchClass: string = 'bTouch';
-    private readonly liftClass: string = 'bClick';
     private readonly longPressTime: number = 500;
     //storage stuff
+    private readonly disableAnim: boolean;
     private readonly callback: () => void;
     private readonly longPress: () => void;
     //storage string (we'll just go straight to a string since nothing we get needs data)
@@ -29,10 +29,11 @@ class ButtonUI extends UIUtil.UIItem {
     private touchStore: number; 
     private touchStart: number;
     //make that thing
-    constructor(wrapClass: string, textClass: string, text: string, callback: () => void, icon?: string, longPressCallback?: () => void) {
+    constructor(wrapClass: string, textClass: string, text: string, callback: () => void, icon?: string, longPressCallback?: () => void, disableAnim?: boolean) {
         super();
         this.callback = callback;
         this.longPress = longPressCallback;
+        this.disableAnim = disableAnim;
         this.strStore = UIUtil.templateEngine(this.template, {
             id: this.id,
             wrapClass: wrapClass,
@@ -43,8 +44,8 @@ class ButtonUI extends UIUtil.UIItem {
     }
 
     //make a whole buncha that thing
-    static Factory(wrapClass: string, textClass: string, params: Array<UIUtil.ButtonParam>): Array<ButtonUI> {
-        return params.map((param) => { return new ButtonUI(wrapClass, textClass, param.text, param.callback, param.icon, param.longPressCallback); });
+    static Factory(wrapClass: string, textClass: string, params: Array<UIUtil.ButtonParam>, disableAnim?: boolean): Array<ButtonUI> {
+        return params.map((param) => { return new ButtonUI(wrapClass, textClass, param.text, param.callback, param.icon, param.longPressCallback, disableAnim); });
     }
 
     //get dat HTML
@@ -74,8 +75,7 @@ class ButtonUI extends UIUtil.UIItem {
             e.preventDefault();
             this.touchStore = e.changedTouches.item(0).identifier;
             this.touchStart = Date.now();
-            this.buttonStore.classList.remove(this.liftClass);
-            this.buttonStore.classList.add(this.touchClass);
+            if (!this.disableAnim) this.buttonStore.classList.add(this.touchClass);
         }
     }
 
@@ -89,7 +89,7 @@ class ButtonUI extends UIUtil.UIItem {
         if (ourTouch.clientX < this.rectStore.left || ourTouch.clientX > this.rectStore.left + this.rectStore.width ||
             ourTouch.clientY < this.rectStore.top || ourTouch.clientY > this.rectStore.left + this.rectStore.height) {
             this.touchStore = null;
-            this.buttonStore.classList.remove(this.touchClass);
+            if (!this.disableAnim) this.buttonStore.classList.remove(this.touchClass);
         }
     }
 
@@ -101,8 +101,7 @@ class ButtonUI extends UIUtil.UIItem {
         //mine
         e.preventDefault();
         //click button!
-        this.buttonStore.classList.remove(this.touchClass);
-        this.buttonStore.classList.add(this.liftClass);
+        if (!this.disableAnim) this.buttonStore.classList.remove(this.touchClass);
         //clear touch cache
         this.touchStore = null;
         //run code!
@@ -118,7 +117,7 @@ class ButtonUI extends UIUtil.UIItem {
         //mine
         e.preventDefault();
         //clear cache and classes
-        this.buttonStore.classList.remove(this.touchClass);
+        if (!this.disableAnim) this.buttonStore.classList.remove(this.touchClass);
         this.touchStore = null;
     }
 

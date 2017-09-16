@@ -14,13 +14,16 @@ class UIData {
     private readonly events: UIUtil.EventHandle;
     //the useful day handler
     private readonly day: UIUtil.DayHandle;
+    //the thoughtful quote handler
+    private readonly quote: UIUtil.QuoteHandle;
     //the array of recievers
     private readonly recvs: Array<UIUtil.UIItem> = [];
     //constructor!
-    constructor(schedHandle: UIUtil.SchedHandle, eventHandle: UIUtil.EventHandle, dayHandle: UIUtil.DayHandle, recievers: Array<UIUtil.UIItem>) {
+    constructor(schedHandle: UIUtil.SchedHandle, eventHandle: UIUtil.EventHandle, dayHandle: UIUtil.DayHandle, quoteHandle: UIUtil.QuoteHandle, recievers: Array<UIUtil.UIItem>) {
         this.sched = schedHandle;
         this.events = eventHandle;
         this.day = dayHandle;
+        this.quote = quoteHandle;
         //iterate through each item and it's children and filter out the ones that don't need any callbacks
         for (let i = 0, len = recievers.length; i < len; i++) {
             if (recievers[i].getChildren) {
@@ -39,6 +42,7 @@ class UIData {
             params[UIUtil.RecvType.SCHEDULE].length ? this.sched.getSched(params[UIUtil.RecvType.SCHEDULE], this.events) : null,
             params[UIUtil.RecvType.EVENTS].length ? this.events.getEvents(params[UIUtil.RecvType.EVENTS]) : null,
             params[UIUtil.RecvType.DAY].length ? this.day.getDay(params[UIUtil.RecvType.DAY]) : null,
+            params[UIUtil.RecvType.QUOTE].length ? this.quote.getQuote(params[UIUtil.RecvType.QUOTE]) : null,
         ]);
         //each UIItem will then ititialize itself (or something like that), we just inject the data
     }
@@ -84,7 +88,7 @@ class UIData {
 
     //utility function to take an array of recievers and return the schedule and event days it needs
     private getDataFromRecvArray(key: string): Array<Array<any>> {
-        let ret = [[], [], []]; //hehe
+        let ret = [[], [], [], []]; //hehe
         for(let i = 0, len = this.recvs.length; i < len; i++) {
             //push every recv parameter to it's appropriate array, then return it
             if (this.recvs[i][key]) for (let o = 0, len1 = this.recvs[i][key].length; o < len1; o++) ret[this.recvs[i][key][o].type].push(this.recvs[i][key][o]);

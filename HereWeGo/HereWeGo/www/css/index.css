@@ -304,25 +304,26 @@ body {
 /* List of buttons in sidemenu CSS */
 /* Global item list CSS */
 .SMItems {
-    padding-left: 5vw;
     font-family: 'Open Sans', sans-serif;
 }
 
 /* Individual item CSS */
 .SMItem {
     background-size: 4vh 4vh;
+    background-position-x: 5vw;
     background-position-y: 1.5vh;
     background-repeat: no-repeat;
-    width: 65vw;
+    width: 70vw;
     min-height: 7vh;
     display: flex;
     align-items: center;
+    transition: background-color 250ms linear;
 }
 
 /* Text in individual item CSS */
 .SMItemText {
     font-size: 4vw;
-    margin-left: 14vw;
+    margin-left: 18vw;
 }
 
 /* Bottom section of menu CSS */
@@ -331,7 +332,9 @@ body {
     bottom: 0;
 }
 
+/* quote CSS */
 .quote {
+    margin-left: 4vw;
     color: gray;
     font-weight: 600;
     font-size: 3.5vw;
@@ -448,6 +451,15 @@ body {
     font-size: 4vw;
     margin-bottom: 0.5vh;
     margin-left: 4.5vw;
+}
+
+/**
+ * Global button effect CSS
+ */
+
+.bTouch {
+    transition: background-color 1s linear;
+    background-color: lightgrey;
 }
 
 /**
