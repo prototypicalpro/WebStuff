@@ -8,4 +8,4 @@ Eventually, I will write documentation in the wiki.
 
 # Screenshots
 
-![alt text](https://drive.google.com/a/koontzs.com/uc?id=0BxpTsJb9LFiVUDJjNlRic2RpNkE&export=download) ![alt text](https://drive.google.com/a/koontzs.com/uc?id=0BxpTsJb9LFiVdGp0TzJLQzQyZkU&export=download) ![alt text](https://drive.google.com/a/koontzs.com/uc?id=0BxpTsJb9LFiVUzRiSnZIYjdlRUU&export=download)
+![alt text](https://drive.google.com/a/koontzs.com/uc?id=0BxpTsJb9LFiVUDJjNlRic2RpNkE&export=download =200x) ![alt text](https://drive.google.com/a/koontzs.com/uc?id=0BxpTsJb9LFiVdGp0TzJLQzQyZkU&export=download) ![alt text](https://drive.google.com/a/koontzs.com/uc?id=0BxpTsJb9LFiVUzRiSnZIYjdlRUU&export=download)
