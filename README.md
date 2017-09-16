@@ -8,8 +8,4 @@ Eventually, I will write documentation in the wiki.
 
 # Screenshots
 
-<div style="display: flex; width: 100%">
-	<div style="width: 100%; margin: 5px 5px 5px 5px"> <img src="https://drive.google.com/a/koontzs.com/uc?id=0BxpTsJb9LFiVUDJjNlRic2RpNkE&export=download" style="width: 100%"> </div>
-	<div style="width: 100%; margin: 5px 5px 5px 5px"> <img src="https://drive.google.com/a/koontzs.com/uc?id=0BxpTsJb9LFiVdGp0TzJLQzQyZkU&export=download" style="width: 100%"> </div>
-	<div style="width: 100%; margin: 5px 5px 5px 5px"> <img src="https://drive.google.com/a/koontzs.com/uc?id=0BxpTsJb9LFiVUzRiSnZIYjdlRUU&export=download" style="width: 100%"> </div>
-</div>
+![alt text](https://drive.google.com/a/koontzs.com/uc?id=0BxpTsJb9LFiVUDJjNlRic2RpNkE&export=download) ![alt text](https://drive.google.com/a/koontzs.com/uc?id=0BxpTsJb9LFiVdGp0TzJLQzQyZkU&export=download) ![alt text](https://drive.google.com/a/koontzs.com/uc?id=0BxpTsJb9LFiVUzRiSnZIYjdlRUU&export=download)
