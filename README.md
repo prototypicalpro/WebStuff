@@ -8,7 +8,7 @@ Eventually, I will write documentation in the wiki.
 
 # Screenshots
 
-<img src="https://drive.google.com/a/koontzs.com/uc?id=0BxpTsJb9LFiVUDJjNlRic2RpNkE&export=download" width="20vw">
+<img src="https://drive.google.com/a/koontzs.com/uc?id=0BxpTsJb9LFiVUDJjNlRic2RpNkE&export=download" width="200">
 
 ![alt text](https://drive.google.com/a/koontzs.com/uc?id=0BxpTsJb9LFiVdGp0TzJLQzQyZkU&export=download)
 ![alt text](https://drive.google.com/a/koontzs.com/uc?id=0BxpTsJb9LFiVUzRiSnZIYjdlRUU&export=download)
