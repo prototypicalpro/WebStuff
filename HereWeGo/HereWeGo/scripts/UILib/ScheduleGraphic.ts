@@ -109,7 +109,7 @@ class ScheduleGraphic extends UIUtil.UIItem {
         //if still no schedule, well shite
         if (!this.sched) return;
         //replace the html with a newly updated one
-        (<HTMLElement>document.querySelector('#i' + this.id)).innerHTML = this.getHTML();
+        (<HTMLElement>document.querySelector('#' + this.id)).innerHTML = this.getHTML();
     }
 
     //time update
@@ -119,6 +119,8 @@ class ScheduleGraphic extends UIUtil.UIItem {
     }];
     //function
     onTimeUpdate() {
+        //if no schedule, do nothing
+        if (!this.sched) return;
         //if nothing has changed, don't change anything
         let currentIndex = this.sched.getCurrentPeriodIndex(this.day.getTime());
         if(this.lastIndex === currentIndex) return;

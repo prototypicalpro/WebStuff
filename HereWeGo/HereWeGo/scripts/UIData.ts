@@ -62,6 +62,7 @@ class UIData {
             (why === UIUtil.TRIGGERED.onScheduleUpdate || why === UIUtil.TRIGGERED.UPDATE_ALL_DATA) && params[UIUtil.RecvType.SCHEDULE].length ? this.sched.getSched(params[UIUtil.RecvType.SCHEDULE], this.events) : null,
             (why === UIUtil.TRIGGERED.onEventUpdate || why === UIUtil.TRIGGERED.UPDATE_ALL_DATA) && params[UIUtil.RecvType.EVENTS].length ? this.events.getEvents(params[UIUtil.RecvType.EVENTS]) : null,
             (why === UIUtil.TRIGGERED.onTimeUpdate || why === UIUtil.TRIGGERED.UPDATE_ALL_DATA) && params[UIUtil.RecvType.DAY].length ? this.day.getDay(params[UIUtil.RecvType.DAY]) : null,
+            (why === UIUtil.TRIGGERED.onQuoteUpdate || why === UIUtil.TRIGGERED.UPDATE_ALL_DATA) && params[UIUtil.RecvType.QUOTE].length ? this.day.getDay(params[UIUtil.RecvType.QUOTE]) : null,
         ]).then(() => {
             //run all the functions!
             console.log(UIUtil.TRIGGERED[why]);

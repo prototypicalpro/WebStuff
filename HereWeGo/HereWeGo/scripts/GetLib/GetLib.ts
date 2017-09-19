@@ -28,6 +28,10 @@ class GetLib {
     get(URL: string): Promise<Object> {
         return this.useClass.get(URL);
     }
+
+    getAsBlob(URL: string): Promise<Blob> {
+        return this.useClass.getAsBlob(URL);
+    }
 }
 
 export = GetLib;

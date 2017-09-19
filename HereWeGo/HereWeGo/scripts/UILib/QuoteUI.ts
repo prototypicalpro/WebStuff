@@ -12,6 +12,7 @@ class QuoteUI extends UIUtil.UIItem {
     //storage stuff
     private readonly className: string;
     private readonly maxLen: number;
+    private elem: HTMLElement;
     //callback quote storage
     private quoteStore: QuoteDataInterface;
     //make it shake it bake it
@@ -50,6 +51,14 @@ class QuoteUI extends UIUtil.UIItem {
         this.quoteStore = null;
         //return
         return ret;
+    }
+    //store document element
+    onInit() {
+        this.elem = document.querySelector('#' + this.id) as HTMLElement;
+    }
+    //fix quote on update
+    onQuoteUpdate() {
+        this.elem.innerHTML = this.getHTML();
     }
 }
 

@@ -20,6 +20,8 @@ namespace UIUtil {
         onEventUpdate,
         //called after a new type of schedule has changed the schedule cache
         onScheduleUpdate,
+        //called after a new quote has been added to the cache
+        onQuoteUpdate,
         //trigger both schedule and event update
         UPDATE_ALL_DATA,
         //TODO: Interactivity

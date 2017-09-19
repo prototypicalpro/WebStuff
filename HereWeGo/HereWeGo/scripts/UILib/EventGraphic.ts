@@ -47,7 +47,7 @@ class EventGraphic extends UIUtil.UIItem {
     private readonly allDayTime: string = `
     <p class='leftUp' style='margin:0'>ALL DAY</p>`
 
-    private readonly charLineMax: number = 36;
+    private readonly charLineMax: number = 34;
 
     //constructor for teh evenents
     constructor(header: string, day: number, displaySchedule: boolean) {
@@ -84,7 +84,7 @@ class EventGraphic extends UIUtil.UIItem {
             this.eventObjs.unshift({
                 modCl: 'evSmall',
                 time: this.allDayTime,
-                name: this.schedName ? this.schedName : 'No School',
+                name: this.schedName ? this.schedName + ' Schedule' : 'No School',
             })
         }
         //yay!
@@ -145,14 +145,14 @@ class EventGraphic extends UIUtil.UIItem {
     //its the same!
     onEventUpdate(): void {
         //update graphic contents
-        document.querySelector('#i' + this.id).innerHTML = this.getHTML();
+        document.querySelector('#' + this.id).innerHTML = this.getHTML();
     }
 
     onScheduleUpdateRecv: Array<UIUtil.RecvParams>;
     //still the same!
     //except we check for a schedule and then update if so
     onScheduleUpdate() {
-        if (this.dispSched) document.querySelector('#i' + this.id).innerHTML = this.getHTML();
+        if (this.dispSched) document.querySelector('#' + this.id).innerHTML = this.getHTML();
     }
 }
 
