@@ -14,6 +14,8 @@ class TopUI extends UIUtil.UIItem {
     private schedule: ScheduleUtil.Schedule;
     //storage day
     private day: Date;
+    //storage image url
+    private url: string;
     //actual members for optimization
     private lastIndex: number;
     //gethtml doesn't do anything since we already built the html for this component
@@ -77,6 +79,10 @@ class TopUI extends UIUtil.UIItem {
         <UIUtil.DayParams>{
             type: UIUtil.RecvType.DAY,
             storeDay: ((day) => { this.day = day; }).bind(this),
+        },
+        <UIUtil.ImageParams>{
+            type: UIUtil.RecvType.IMAGE,
+            storeImgURL: ((url) => { this.url = url; }).bind(this),
         }
     ];
     //the actual update callback

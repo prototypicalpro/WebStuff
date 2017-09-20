@@ -62,8 +62,9 @@ class DataManage {
      * Actual exposed functions
      */
 
-    constructor(dataThings: Array<DataInterface>) {
+    constructor(dataThings: Array<DataInterface>, http: GetLib) {
         this.dataObj = dataThings
+        this.http = http;
     }
 
     //attempts to load cached data, throw exception if any data is missing
@@ -80,16 +81,6 @@ class DataManage {
             DBManage.constructDB(this.dataObj.map((data) => { return data.dbInfo; })).then((db: IDBDatabase) => { this.db = db })
         ];
         return Promise.all(ray);
-    }
-
-    //starts up HTTP, in a seperate function so I can do stuff without cordova first
-    //MUST CALL BEFORE ANY INTERNET STUFF
-    initHTTP(): void {
-        this.http = new GetLib();
-        if (!this.http.initAPI()) {
-            console.log("http failed");
-            throw ErrorUtil.code.HTTP_FAIL;
-        }
     }
 
     //gets new data and overwrited any old data

@@ -16,16 +16,19 @@ class UIData {
     private readonly day: UIUtil.DayHandle;
     //the thoughtful quote handler
     private readonly quote: UIUtil.QuoteHandle;
+    //the heavy image heandler
+    private readonly image: UIUtil.ImageHandle;
     //the array of recv params, for quickness
-    private readonly recvParamList: Array<Array<any>> = [[], [], [], []]; //one for every type of update
+    private readonly recvParamList: Array<Array<any>> = [[], [], [], [], []]; //one for every type of update
     //the array of recievers, for callbacks
     private readonly recvs: Array<UIUtil.UIItem>;
     //constructor!
-    constructor(schedHandle: UIUtil.SchedHandle, eventHandle: UIUtil.EventHandle, dayHandle: UIUtil.DayHandle, quoteHandle: UIUtil.QuoteHandle, recievers: Array<UIUtil.UIItem>) {
+    constructor(schedHandle: UIUtil.SchedHandle, eventHandle: UIUtil.EventHandle, dayHandle: UIUtil.DayHandle, quoteHandle: UIUtil.QuoteHandle, imgHandle: UIUtil.ImageHandle, recievers: Array<UIUtil.UIItem>) {
         this.sched = schedHandle;
         this.events = eventHandle;
         this.day = dayHandle;
         this.quote = quoteHandle;
+        this.image = imgHandle;
         //iterate through each item and it's children and filter out the ones that don't need any callbacks
         for (let i = 0, len = recievers.length; i < len; i++) if (recievers[i].getChildren) recievers = recievers.concat(recievers[i].getChildren());
         //store that array
@@ -63,6 +66,7 @@ class UIData {
             this.events.getEvents(this.recvParamList[UIUtil.RecvType.EVENTS]),
             this.day.getDay(this.recvParamList[UIUtil.RecvType.DAY]),
             this.quote.getQuote(this.recvParamList[UIUtil.RecvType.QUOTE]),
+            this.image.getImage(this.recvParamList[UIUtil.RecvType.IMAGE]),
         ]);
         else {
             //check every type of update, and add if so
@@ -71,6 +75,7 @@ class UIData {
             if (why.indexOf(UIUtil.TRIGGERED.EVENT_UPDATE) != -1) ray.push(this.events.getEvents(this.recvParamList[UIUtil.RecvType.EVENTS]));
             if (why.indexOf(UIUtil.TRIGGERED.QUOTE_UPDATE) != -1) ray.push(this.quote.getQuote(this.recvParamList[UIUtil.RecvType.QUOTE]));
             if (why.indexOf(UIUtil.TRIGGERED.TIME_UPDATE) != -1) ray.push(this.day.getDay(this.recvParamList[UIUtil.RecvType.DAY]));
+            if (why.indexOf(UIUtil.TRIGGERED.IMAGE_UPDATE) != -1) ray.push(this.image.getImage(this.recvParamList[UIUtil.RecvType.IMAGE]));
             thing = Promise.all(ray);
         }
         //and the finishing touch

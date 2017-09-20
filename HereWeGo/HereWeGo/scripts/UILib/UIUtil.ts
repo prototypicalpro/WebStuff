@@ -22,6 +22,8 @@ namespace UIUtil {
         SCHEDULE_UPDATE,
         //called after a new quote has been added to the cache
         QUOTE_UPDATE,
+        //called after the image is refresed
+        IMAGE_UPDATE,
         //trigger both schedule and event update
         UPDATE_ALL_DATA,
         //TODO: Interactivity
@@ -32,6 +34,7 @@ namespace UIUtil {
         DAY,
         EVENTS,
         QUOTE,
+        IMAGE,
     }
     //base interface for an object which specifys how to inject
     export interface RecvParams {
@@ -65,6 +68,10 @@ namespace UIUtil {
         //just a callback
         storeQuote(quote: QuoteDataInterface);
     }
+    export interface ImageParams extends RecvParams {
+        //just a callback...
+        storeImgURL(url: string);
+    }
     //interfaces to describe handlers for the different things that need to be injected
     //event data handler
     export interface EventHandle {
@@ -84,6 +91,10 @@ namespace UIUtil {
     //quote
     export interface QuoteHandle {
         getQuote(obj: Array<QuoteParams>): Promise<any>;
+    }
+    //image
+    export interface ImageHandle {
+        getImage(obj: Array<ImageParams>): Promise<any>;
     }
     //IDK where to put this, but a utility function to dedupe days is here
     //this has a buncha confusing optimization stuff and is pretty much unreadable, but assume it

@@ -4,8 +4,8 @@
  */
 
 interface ImageInterface {
-    //the image number out of all the images stored in the cloud
-    index: number;
+    //the day (0-31) to show the image on
+    showDay: number;
     //the url to the image
     url: string;
 }

@@ -26,6 +26,8 @@ import ToastUI = require('./UILib/ToastUI');
 import UIData = require('./UIData');
 import TopUI = require('./UILib/TopUI');
 import DayHandler = require('./DayHandler');
+import ImageDataManage = require('./WHSLib/ImageDataManage');
+import GetLib = require('./GetLib/GetLib');
 
 "use strict";
 
@@ -33,9 +35,11 @@ const enum DataIndex {
     EVENTS = 0,
     SCHED,
     QUOTE,
+    IMAGE,
 };
 
-var data: DataManage = new DataManage([new CalDataManage(), new SchedDataManage(), new QuoteDataManage()]);
+var http: GetLib = new GetLib();
+var data: DataManage = new DataManage([new CalDataManage(), new SchedDataManage(), new QuoteDataManage(), new ImageDataManage(http)], http);
 var toast: ToastUI = new ToastUI(HTMLMap.toastBox);
 var uiThing: UIData;
 
@@ -104,7 +108,10 @@ function onDeviceReady(): void {
         else throw err;
     }).then((getNewDataVar: any): any => {
         //start up http
-        data.initHTTP();
+        if (!http.initAPI()) {
+            console.log("http failed");
+            throw ErrorUtil.code.HTTP_FAIL;
+        }
         //grab them datums
         if (getNewDataVar) return data.getNewData().then(buildUI.bind(this));
         return data.refreshData();
@@ -131,8 +138,9 @@ function buildUI(): Promise<any> {
     const calData: EventData = data.returnData(DataIndex.EVENTS);
     const schedData: ScheduleData = data.returnData(DataIndex.SCHED);
     const quoteData: QuoteData = data.returnData(DataIndex.QUOTE);
+    const myData: any = data.returnData(DataIndex.IMAGE);
     //give the top all the data it needs
-    uiThing = new UIData(schedData, calData, new DayHandler(), quoteData, [top, slide, menu]);
+    uiThing = new UIData(schedData, calData, new DayHandler(), quoteData, myData, [top, slide, menu]);
     return uiThing.initInject().then(() => {
         //set HTML
         HTMLMap.setSliderHTML(slide.getHTML());
