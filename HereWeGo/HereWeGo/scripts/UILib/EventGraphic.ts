@@ -7,7 +7,7 @@ import UIUtil = require('./UIUtil');
 import EventInterface = require('../WHSLib/EventInterface');
 import EventData = require('../WHSLib/EventData');
 import ColorUtil = require('./ColorUtil');
-import * as moment from 'moment';
+import moment = require('../moment');
 
 class EventGraphic extends UIUtil.UIItem {
     //other stuff

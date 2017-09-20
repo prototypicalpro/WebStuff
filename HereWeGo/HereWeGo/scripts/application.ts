@@ -2,7 +2,7 @@
 // http://go.microsoft.com/fwlink/?LinkID=397705
 // To debug code on page load in cordova-simulate or on Android devices/emulators: launch your app, set breakpoints, 
 // and then run "window.location.reload()" in the JavaScript Console.
-import * as moment from 'moment';
+import moment = require('./moment');
 import lory = require('./lory');
 import DataManage = require('./WHSLib/DataManage');
 import SchedDataManage = require('./WHSLib/SchedDataManage');

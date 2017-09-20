@@ -2,7 +2,7 @@
  * Library which makes schedule data semi-accesible
  */
 
-import * as moment from 'moment';
+import moment = require('../moment');
 
 namespace ScheduleUtil {
     export enum PeriodType {

@@ -8,7 +8,7 @@ import UIUtil = require('./UIUtil');
 import ErrorUtil = require('../ErrorUtil');
 import ScheduleUtil = require('../WHSLib/ScheduleUtil');
 import ColorUtil = require('./ColorUtil');
-import * as moment from 'moment';
+import moment = require('../moment');
 import { PeriodType } from '../WHSLib/ScheduleUtil';
 
 class ScheduleGraphic extends UIUtil.UIItem {

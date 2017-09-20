@@ -7,7 +7,7 @@
 import UIUtil = require('./UIUtil');
 import ScheduleUtil = require('../WHSLib/ScheduleUtil');
 import HTMLMap = require('../HTMLMap');
-import * as moment from 'moment';
+import moment = require('../moment');
 
 class TopUI extends UIUtil.UIItem {
     //storage schedule name
