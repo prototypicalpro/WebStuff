@@ -10,40 +10,12 @@ import HTMLMap = require('../HTMLMap');
 import * as moment from 'moment';
 
 class TopUI extends UIUtil.UIItem {
-    //copy all the init refrences and bind them to the other updating thingys
-    constructor() {
-        super();
-        this.onScheduleUpdateRecv = this.onInitRecv;
-        this.onScheduleUpdate = this.onInit;
-        this.onEventUpdateRecv = this.onInitRecv;
-        this.onEventUpdate = this.onInit;
-    }
     //storage schedule name
     private schedule: ScheduleUtil.Schedule;
-    //storage schedule callback
-    storeSched(sched: ScheduleUtil.Schedule) {
-        this.schedule = sched;
-    }
     //storage day
     private day: Date;
-    //day callback
-    storeDay(day: Date) {
-        this.day = day;
-    }
     //actual members for optimization
     private lastIndex: number;
-    //params for init
-    onInitRecv: Array<UIUtil.RecvParams> = [
-        <UIUtil.SchedParams>{
-            type: UIUtil.RecvType.SCHEDULE,
-            day: 0,
-            storeSchedule: this.storeSched.bind(this),
-        },
-        <UIUtil.DayParams>{
-            type: UIUtil.RecvType.DAY,
-            storeDay: this.storeDay.bind(this),
-        }
-    ];
     //gethtml doesn't do anything since we already built the html for this component
     getHTML(): string {
         return null;
@@ -96,32 +68,37 @@ class TopUI extends UIUtil.UIItem {
             HTMLMap.backText.innerHTML = this.schedule.getName()[0];
         }
     }
-    //do a light time update
-    onTimeUpdateRecv: Array<UIUtil.RecvParams> = [
+    recv: Array<UIUtil.RecvParams> = [
+        <UIUtil.SchedParams>{
+            type: UIUtil.RecvType.SCHEDULE,
+            day: 0,
+            storeSchedule: ((sched) => { this.schedule = sched; }).bind(this),
+        },
         <UIUtil.DayParams>{
             type: UIUtil.RecvType.DAY,
-            storeDay: this.storeDay.bind(this),
+            storeDay: ((day) => { this.day = day; }).bind(this),
         }
     ];
-    //fn
-    onTimeUpdate() {
-        if (!this.schedule) HTMLMap.timeText.innerHTML = moment(this.day).format('LT');
-        else {
-            //if the period hasn't changed, just update the time remaining
-            if (this.schedule.getCurrentPeriodIndex(this.day.getTime()) === this.lastIndex) {
-                if (this.lastIndex === ScheduleUtil.PeriodType.BEFORE_START) HTMLMap.timeText.innerHTML = moment(this.day).to(this.schedule.getPeriod(0).getStart(), true) + " remaining";
-                else if (this.lastIndex === ScheduleUtil.PeriodType.AFTER_END) HTMLMap.timeText.innerHTML = moment(this.day).format('LT');
-                else HTMLMap.timeText.innerHTML = moment(this.day).to(this.schedule.getPeriod(this.lastIndex).getEnd(), true) + " remaining";
+    //the actual update callback
+    onUpdate(why: Array<UIUtil.TRIGGERED>) {
+        //if update or update schedule, rebuild
+        if (why.indexOf(UIUtil.TRIGGERED.UPDATE_ALL_DATA) != -1 ||
+            why.indexOf(UIUtil.TRIGGERED.SCHEDULE_UPDATE) != -1) this.onInit();
+        //else if time update
+        else if (why.indexOf(UIUtil.TRIGGERED.TIME_UPDATE) != -1) {
+            if (!this.schedule) HTMLMap.timeText.innerHTML = moment(this.day).format('LT');
+            else {
+                //if the period hasn't changed, just update the time remaining
+                if (this.schedule.getCurrentPeriodIndex(this.day.getTime()) === this.lastIndex) {
+                    if (this.lastIndex === ScheduleUtil.PeriodType.BEFORE_START) HTMLMap.timeText.innerHTML = moment(this.day).to(this.schedule.getPeriod(0).getStart(), true) + " remaining";
+                    else if (this.lastIndex === ScheduleUtil.PeriodType.AFTER_END) HTMLMap.timeText.innerHTML = moment(this.day).format('LT');
+                    else HTMLMap.timeText.innerHTML = moment(this.day).to(this.schedule.getPeriod(this.lastIndex).getEnd(), true) + " remaining";
+                }
+                //else rebuild
+                else this.onInit();
             }
-            //else rebuild
-            else this.onInit();
         }
     }
-    //we wanna refresh for erethang, so we'll just copy all the parameters around in the constructor
-    onEventUpdateRecv;
-    onEventUpdate() { }
-    onScheduleUpdateRecv;
-    onScheduleUpdate() { }
 }
 
 export = TopUI;

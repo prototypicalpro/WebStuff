@@ -61,8 +61,6 @@ class MenuUI extends UIUtil.UIItem {
         });
     }
     //init all that js
-    //don't need any params (yet)
-    onInitRecv = [];
     onInit() {
         this.storly = lory.lory(HTMLMap.sideMenu, {
             //different naming scheme

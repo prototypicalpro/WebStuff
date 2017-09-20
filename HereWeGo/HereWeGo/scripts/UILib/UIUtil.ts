@@ -13,15 +13,15 @@ import QuoteDataInterface = require('../WHSLib/QuoteDataInterface');
 
 namespace UIUtil {
     //enumeration to specify which triggers the element would like to be refreshed in
-    export enum TRIGGERED {
+    export const enum TRIGGERED {
         //called after the time needs updating
-        onTimeUpdate,
+        TIME_UPDATE,
         //called after a new event has changed the event cache
-        onEventUpdate,
+        EVENT_UPDATE,
         //called after a new type of schedule has changed the schedule cache
-        onScheduleUpdate,
+        SCHEDULE_UPDATE,
         //called after a new quote has been added to the cache
-        onQuoteUpdate,
+        QUOTE_UPDATE,
         //trigger both schedule and event update
         UPDATE_ALL_DATA,
         //TODO: Interactivity
@@ -153,26 +153,16 @@ namespace UIUtil {
         }
         //get all the child UIItems (or if it is at the bottom, don't implement this function)
         getChildren?(): Array<UIItem>;
-        //the enum array or item for the onInit
-        abstract onInitRecv: Array<UIUtil.RecvParams>;
         //build html
         //thingys are always filled before calling this
         abstract getHTML(): string;
+        //the enum array descriping the objects to be updated on an update
+        //since db calls are async, it's better this way
+        recv?: Array<UIUtil.RecvParams>;
         //build javascript over html
         onInit?(): void;
-        //run every time the app state is changed(e.g. the time changes and we need to update the front)
-        //the enum array or item for the onTimeUpdate
-        onTimeUpdateRecv?: Array<UIUtil.RecvParams>;
-        //out of date comment
-        onTimeUpdate?(): void;
-        //the enum array or item for the onUpdate
-        onEventUpdateRecv?: Array<UIUtil.RecvParams>;
-        //wohoo
-        onEventUpdate?(): void;
-        //the enum array or item for the onUserRefresh
-        onScheduleUpdateRecv?: UIUtil.RecvParams | Array<UIUtil.RecvParams>;
-        //run only when the user triggers a refresh (includes the app coming in and out of focus)
-        onScheduleUpdateRefresh?(): void;
+        //and on any update
+        onUpdate?(type: Array<UIUtil.TRIGGERED>);
     }
     //didn't have a better place to put this :(
     export interface ButtonParam {

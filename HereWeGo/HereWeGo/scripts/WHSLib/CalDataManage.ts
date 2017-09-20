@@ -24,12 +24,12 @@ class CalDataManage implements DataInterface {
         keys: EVENT_KEYS
     }
 
-    updataData(db: IDBDatabase, data: any): boolean {
+    updataData(db: IDBDatabase, data: any): Promise<boolean> | false {
         //if it's indexedDB, this should be pretty easy
         data = data as Array<EventInterface>;
         let objectStore = db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
         //moar promises!
-        let thing: Promise<any> = new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             //iterate through all elements, removing the ones before today
             let nowDay: Date = new Date();
             nowDay.setHours(0, 0, 0, 0);
@@ -60,17 +60,16 @@ class CalDataManage implements DataInterface {
                 }));
             }
             return Promise.all(ray);
-        }); 
+        }).then(() => { return data.length > 0; }); 
         //return if we got a data array
-        return data.length > 0;
     }
 
-    overwriteData(db: IDBDatabase, data: any): void {
+    overwriteData(db: IDBDatabase, data: any): Promise<any> {
         //cast
         data = data as Array<EventInterface>;
         let objectStore: IDBObjectStore = db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
         //promises! yay!
-        let thing: Promise<any> = new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             //clear object store
             let req: IDBRequest = objectStore.clear();
             req.onsuccess = resolve;

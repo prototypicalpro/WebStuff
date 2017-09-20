@@ -8,6 +8,7 @@ import GetLib = require('../GetLib/GetLib');
 import ImageInterface = require('./ImageInterface');
 import { DBInfoInterface } from '../DBLib/DBManage';
 
+/*
 class ImageDataManage implements DataInterface {
     //database stuff
     readonly dbInfo: DBInfoInterface = {
@@ -66,3 +67,4 @@ class ImageDataManage implements DataInterface {
         }).catch((err) => { return null; });
     }
 }
+*/

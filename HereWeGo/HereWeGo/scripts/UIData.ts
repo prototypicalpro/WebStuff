@@ -16,8 +16,10 @@ class UIData {
     private readonly day: UIUtil.DayHandle;
     //the thoughtful quote handler
     private readonly quote: UIUtil.QuoteHandle;
-    //the array of recievers
-    private readonly recvs: Array<UIUtil.UIItem> = [];
+    //the array of recv params, for quickness
+    private readonly recvParamList: Array<Array<any>> = [[], [], [], []]; //one for every type of update
+    //the array of recievers, for callbacks
+    private readonly recvs: Array<UIUtil.UIItem>;
     //constructor!
     constructor(schedHandle: UIUtil.SchedHandle, eventHandle: UIUtil.EventHandle, dayHandle: UIUtil.DayHandle, quoteHandle: UIUtil.QuoteHandle, recievers: Array<UIUtil.UIItem>) {
         this.sched = schedHandle;
@@ -25,24 +27,23 @@ class UIData {
         this.day = dayHandle;
         this.quote = quoteHandle;
         //iterate through each item and it's children and filter out the ones that don't need any callbacks
-        for (let i = 0, len = recievers.length; i < len; i++) {
-            if (recievers[i].getChildren) {
-                this.recvs = this.recvs.concat(recievers[i].getChildren());
-            }
-            this.recvs.push(recievers[i]);
-        }
+        for (let i = 0, len = recievers.length; i < len; i++) if (recievers[i].getChildren) recievers = recievers.concat(recievers[i].getChildren());
+        //store that array
+        this.recvs = recievers;
+        //take that array and map it's parameters to arrays, which we store
+        for (let i = 0, len = recievers.length; i < len; i++)
+            //push every recv parameter to it's appropriate array
+            if (recievers[i].recv) for (let o = 0, len1 = recievers[i].recv.length; o < len1; o++) this.recvParamList[recievers[i].recv[o].type].push(recievers[i].recv[o]);
     }
     
     //initialize the UIItems with all the data they need
     initInject(): Promise<any> {
-        //get all the things ww need to quire
-        let params = this.getDataFromRecvArray('onInitRecv');
         //get all the things!
         return Promise.all([
-            params[UIUtil.RecvType.SCHEDULE].length ? this.sched.getSched(params[UIUtil.RecvType.SCHEDULE], this.events) : null,
-            params[UIUtil.RecvType.EVENTS].length ? this.events.getEvents(params[UIUtil.RecvType.EVENTS]) : null,
-            params[UIUtil.RecvType.DAY].length ? this.day.getDay(params[UIUtil.RecvType.DAY]) : null,
-            params[UIUtil.RecvType.QUOTE].length ? this.quote.getQuote(params[UIUtil.RecvType.QUOTE]) : null,
+            this.sched.getSched(this.recvParamList[UIUtil.RecvType.SCHEDULE], this.events),
+            this.events.getEvents(this.recvParamList[UIUtil.RecvType.EVENTS]),
+            this.day.getDay(this.recvParamList[UIUtil.RecvType.DAY]),
+            this.quote.getQuote(this.recvParamList[UIUtil.RecvType.QUOTE]),
         ]);
         //each UIItem will then ititialize itself (or something like that), we just inject the data
     }
@@ -54,19 +55,28 @@ class UIData {
 
     //next, the triggers themselves
     //might as well use the enum
-    trigger(why: UIUtil.TRIGGERED) {
-        //get all the parameters
-        let params = this.getDataFromRecvArray(UIUtil.TRIGGERED[why] + 'Recv');
+    trigger(why: Array<UIUtil.TRIGGERED>) {
         //inject all the things!
-        Promise.all([
-            (why === UIUtil.TRIGGERED.onScheduleUpdate || why === UIUtil.TRIGGERED.UPDATE_ALL_DATA) && params[UIUtil.RecvType.SCHEDULE].length ? this.sched.getSched(params[UIUtil.RecvType.SCHEDULE], this.events) : null,
-            (why === UIUtil.TRIGGERED.onEventUpdate || why === UIUtil.TRIGGERED.UPDATE_ALL_DATA) && params[UIUtil.RecvType.EVENTS].length ? this.events.getEvents(params[UIUtil.RecvType.EVENTS]) : null,
-            (why === UIUtil.TRIGGERED.onTimeUpdate || why === UIUtil.TRIGGERED.UPDATE_ALL_DATA) && params[UIUtil.RecvType.DAY].length ? this.day.getDay(params[UIUtil.RecvType.DAY]) : null,
-            (why === UIUtil.TRIGGERED.onQuoteUpdate || why === UIUtil.TRIGGERED.UPDATE_ALL_DATA) && params[UIUtil.RecvType.QUOTE].length ? this.day.getDay(params[UIUtil.RecvType.QUOTE]) : null,
-        ]).then(() => {
+        let thing: Promise<any>;
+        if (why.indexOf(UIUtil.TRIGGERED.UPDATE_ALL_DATA) != -1) thing = Promise.all([
+            this.sched.getSched(this.recvParamList[UIUtil.RecvType.SCHEDULE], this.events),
+            this.events.getEvents(this.recvParamList[UIUtil.RecvType.EVENTS]),
+            this.day.getDay(this.recvParamList[UIUtil.RecvType.DAY]),
+            this.quote.getQuote(this.recvParamList[UIUtil.RecvType.QUOTE]),
+        ]);
+        else {
+            //check every type of update, and add if so
+            let ray = [];
+            if (why.indexOf(UIUtil.TRIGGERED.SCHEDULE_UPDATE) != -1) ray.push(this.sched.getSched(this.recvParamList[UIUtil.RecvType.SCHEDULE], this.events));
+            if (why.indexOf(UIUtil.TRIGGERED.EVENT_UPDATE) != -1) ray.push(this.events.getEvents(this.recvParamList[UIUtil.RecvType.EVENTS]));
+            if (why.indexOf(UIUtil.TRIGGERED.QUOTE_UPDATE) != -1) ray.push(this.quote.getQuote(this.recvParamList[UIUtil.RecvType.QUOTE]));
+            if (why.indexOf(UIUtil.TRIGGERED.TIME_UPDATE) != -1) ray.push(this.day.getDay(this.recvParamList[UIUtil.RecvType.DAY]));
+            thing = Promise.all(ray);
+        }
+        //and the finishing touch
+        thing.then(() => {
             //run all the functions!
-            console.log(UIUtil.TRIGGERED[why]);
-            this.recvs.map((recv) => { if (recv[UIUtil.TRIGGERED[why]]) recv[UIUtil.TRIGGERED[why]](); });
+            for (let i = 0, len = this.recvs.length; i < len; i++) if (this.recvs[i].onUpdate) this.recvs[i].onUpdate(why);
         });
     }
 
@@ -85,16 +95,6 @@ class UIData {
             else if(days.indexOf(dayRay[i]) == -1) days.push(dayRay[i]);
         }
         return days;
-    }
-
-    //utility function to take an array of recievers and return the schedule and event days it needs
-    private getDataFromRecvArray(key: string): Array<Array<any>> {
-        let ret = [[], [], [], []]; //hehe
-        for(let i = 0, len = this.recvs.length; i < len; i++) {
-            //push every recv parameter to it's appropriate array, then return it
-            if (this.recvs[i][key]) for (let o = 0, len1 = this.recvs[i][key].length; o < len1; o++) ret[this.recvs[i][key][o].type].push(this.recvs[i][key][o]);
-        }
-        return ret;
     }
 }
 

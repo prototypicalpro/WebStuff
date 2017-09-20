@@ -59,7 +59,7 @@ var menu: MenuUI = new MenuUI(
             callback: urlCallback('https://parent-portland.cascadetech.org/portland/Login_Student_PXP.aspx'),
         },
     ]),
-    (<Array<UIUtil.UIItem>>[new QuoteUI('quote', 32)]).concat(
+    (<Array<UIUtil.UIItem>>[new QuoteUI('quote', 36)]).concat(
         ButtonUI.Factory('SMItem', 'SMItemText', [
             {
                 text: 'Settings',
@@ -114,7 +114,7 @@ function onDeviceReady(): void {
         else throw err;
     }).then((newData: any) => {
         //refresh all cuz might as well
-        uiThing.trigger(UIUtil.TRIGGERED.UPDATE_ALL_DATA);
+        uiThing.trigger([UIUtil.TRIGGERED.UPDATE_ALL_DATA]);
         //also start callback for every min to update time
         updateTime();
     }).then(() => {
@@ -157,7 +157,7 @@ function onResume(): void {
 //sixty second timeupdate callback
 function updateTime(): void {
     //triggered!
-    uiThing.trigger(UIUtil.TRIGGERED.onTimeUpdate);
+    uiThing.trigger([UIUtil.TRIGGERED.TIME_UPDATE]);
     //reset callback
     let time = new Date();
     time.setHours(time.getHours(), time.getMinutes() + 1, 0, 0);

@@ -21,31 +21,12 @@ class QuoteUI extends UIUtil.UIItem {
         this.className = className;
         this.maxLen = lineLen;
     }
-    //get dat quote
-    onInitRecv: Array<UIUtil.QuoteParams> = [
-        {
-            type: UIUtil.RecvType.QUOTE,
-            storeQuote: ((quote) => { this.quoteStore = quote; }).bind(this),
-        }
-    ];
     //getHTMLJESUS
     getHTML(): string {
-        let quotefix;
-        //add breaklines to quote so we don't overflow
-        if (this.quoteStore.length >= this.maxLen) {
-            //work on the substring ending at the 64th char
-            //starting at the 64th char, and work backwards until we find a space
-            let breakPoint = (<string>this.quoteStore.quote).slice(0, this.maxLen).lastIndexOf(' ');
-            //add a break tag to that space
-            quotefix = (<string>this.quoteStore.quote).slice(0, breakPoint) + `<br/>` + (<string>this.quoteStore.quote).slice(breakPoint + 1);
-        }
-        else quotefix = this.quoteStore.quote;
-        //add the author after another breakline
-        quotefix += `<br/>-` + this.quoteStore.author;
         let ret = UIUtil.templateEngine(this.template, {
             className: this.className,
             id: this.id,
-            text: quotefix,
+            text: this.makeQuote(),
         });
         //clear old data
         this.quoteStore = null;
@@ -56,9 +37,37 @@ class QuoteUI extends UIUtil.UIItem {
     onInit() {
         this.elem = document.querySelector('#' + this.id) as HTMLElement;
     }
+    //get dat quote
+    recv: Array<UIUtil.QuoteParams> = [
+        {
+            type: UIUtil.RecvType.QUOTE,
+            storeQuote: ((quote) => {
+                this.quoteStore = quote;
+            }).bind(this),
+        }
+    ];
     //fix quote on update
-    onQuoteUpdate() {
-        this.elem.innerHTML = this.getHTML();
+    onUpdate(why: Array<UIUtil.TRIGGERED>) {
+        if (this.quoteStore) this.elem.innerHTML = this.makeQuote();
+    }
+    //utility construct quote HTML function
+    private makeQuote(): string {
+        let quotefix = '';
+        let tempQuote: string = this.quoteStore.quote;
+        //add breaklines to quote so we don't overflow
+        while (tempQuote.length >= this.maxLen) {
+            //work on the substring ending at the 64th char
+            //starting at the 64th char, and work backwards until we find a space
+            let breakPoint = tempQuote.slice(0, this.maxLen).lastIndexOf(' ');
+            //add a break tag to that space
+            quotefix += tempQuote.slice(0, breakPoint) + `<br/>`;
+            tempQuote = tempQuote.slice(breakPoint + 1);
+        }
+        if (quotefix.length) quotefix += tempQuote;
+        else quotefix = tempQuote;
+        //add the author after another breakline
+        quotefix += `<br/>-` + this.quoteStore.author;
+        return quotefix;
     }
 }
 

@@ -10,9 +10,9 @@ class QuoteData implements UIUtil.QuoteHandle {
     //storage name
     private readonly name: string;
     //storage key
-    private readonly key: string;
+    private readonly key: number;
     //constructor
-    constructor(db: IDBDatabase, name: string, key: string) {
+    constructor(db: IDBDatabase, name: string, key: number) {
         this.db = db;
         this.name = name;
         this.key = key;

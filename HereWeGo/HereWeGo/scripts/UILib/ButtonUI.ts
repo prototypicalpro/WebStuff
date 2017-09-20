@@ -53,8 +53,6 @@ class ButtonUI extends UIUtil.UIItem {
         return this.strStore;
     }
 
-    //no data
-    onInitRecv = [];
     //init dat javascript
     onInit() {
         //add members

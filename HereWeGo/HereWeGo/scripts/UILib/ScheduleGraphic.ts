@@ -20,12 +20,11 @@ class ScheduleGraphic extends UIUtil.UIItem {
     private day: Date;
     //HTML Template
     //It's gonna be ugly, that's just how it is
+    private readonly wrap: string = `<div id="{{id}}">{{stuff}}</div>`;
     //schedule table template
     private readonly tableTemplate: string = `
-        <div id="{{id}}">
-            <p class="header">{{head}}</p>   
-            {{sched}}
-        </div>`;
+        <p class="header">{{head}}</p>   
+        {{sched}}`;
 
     //period item template
     private readonly itemTemplate: string = `
@@ -54,7 +53,7 @@ class ScheduleGraphic extends UIUtil.UIItem {
     //constructor with schedule
     constructor(day: number) {
         super();
-        this.onInitRecv = [
+        this.recv = [
             //prolly want the day
             <UIUtil.DayParams>{
                 type: UIUtil.RecvType.DAY,
@@ -65,15 +64,36 @@ class ScheduleGraphic extends UIUtil.UIItem {
                 type: UIUtil.RecvType.SCHEDULE,
                 day: day,
                 storeSchedule: this.storeSchedule.bind(this),
+            },
+            //but don't for get time
+            <UIUtil.DayParams>{
+                type: UIUtil.RecvType.DAY,
+                storeDay: this.storeDay.bind(this),
             }
         ];
-        this.onScheduleUpdateRecv = this.onInitRecv;
     }
 
-    //init stuff
-    onInitRecv: Array<UIUtil.RecvParams>;
+    //store schedule callback fn
+    storeSchedule(sched: ScheduleUtil.Schedule) {
+        this.sched = sched;
+    }
+
+    //store day callback fn
+    storeDay(day: Date) {
+        this.day = day;
+    }
+
+    //update params to get
+    recv: Array<UIUtil.RecvParams>;
     //gethtml
     getHTML(): string {
+        return UIUtil.templateEngine(this.wrap, {
+            id: this.id,
+            stuff: this.makeSchedule(),
+        });
+    }
+    //utility makeScheduleHTML
+    private makeSchedule(): string {
         //if there's no schedule, rip
         if (!this.sched) return '';
         //do all the construction stuff
@@ -99,52 +119,34 @@ class ScheduleGraphic extends UIUtil.UIItem {
         return UIUtil.templateEngine(this.tableTemplate, {
             head: this.sched.getName() + ' Schedule',
             sched: schedStr,
-            id: this.id,
         });
-    } 
-    //schedule cache update
-    onScheduleUpdateRecv: Array<UIUtil.RecvParams>;
-    //function
-    onScheduleUpdate() {
-        //if still no schedule, well shite
-        if (!this.sched) return;
-        //replace the html with a newly updated one
-        (<HTMLElement>document.querySelector('#' + this.id)).innerHTML = this.getHTML();
     }
-
-    //time update
-    onTimeUpdateRecv: Array<UIUtil.RecvParams> = [<UIUtil.DayParams>{
-        type: UIUtil.RecvType.DAY,
-        storeDay: this.storeDay.bind(this),
-    }];
-    //function
-    onTimeUpdate() {
+    //onUpdate function
+    //handles the updates
+    onUpdate(why: Array<UIUtil.TRIGGERED>) {
         //if no schedule, do nothing
         if (!this.sched) return;
-        //if nothing has changed, don't change anything
-        let currentIndex = this.sched.getCurrentPeriodIndex(this.day.getTime());
-        if(this.lastIndex === currentIndex) return;
-        //else remove the color from the last index, assuming it's not a passing period
-        if(this.lastIndex >= 0 && this.sched.getPeriod(this.lastIndex).getType() != ScheduleUtil.PeriodType.PASSING){
-            let last = document.querySelector('#p' + this.lastIndex) as HTMLElement;
-            if(last) last.style.backgroundColor = '';
+        //check for update all or schedule update
+        //cuz both of those mean update all
+        if (why.indexOf(UIUtil.TRIGGERED.UPDATE_ALL_DATA) != -1 ||
+            why.indexOf(UIUtil.TRIGGERED.SCHEDULE_UPDATE) != -1)
+            //replace the html with a newly updated one
+            (<HTMLElement>document.querySelector('#' + this.id)).innerHTML = this.makeSchedule();
+        else if (why.indexOf(UIUtil.TRIGGERED.TIME_UPDATE) != -1) {
+            //if nothing has changed, don't change anything
+            let currentIndex = this.sched.getCurrentPeriodIndex(this.day.getTime());
+            if (this.lastIndex === currentIndex) return;
+            //else remove the color from the last index, assuming it's not a passing period
+            if (this.lastIndex >= 0 && this.sched.getPeriod(this.lastIndex).getType() != ScheduleUtil.PeriodType.PASSING) {
+                let last = document.querySelector('#p' + this.lastIndex) as HTMLElement;
+                if (last) last.style.backgroundColor = '';
+            }
+            //and add it to the current period
+            if (currentIndex >= 0 && this.sched.getPeriod(currentIndex).getType() != ScheduleUtil.PeriodType.PASSING) {
+                let current = document.querySelector('#p' + currentIndex) as HTMLElement;
+                if (current) current.style.backgroundColor = 'lightgreen';
+            }
         }
-        //and add it to the current period
-        if(currentIndex >= 0 && this.sched.getPeriod(currentIndex).getType() != ScheduleUtil.PeriodType.PASSING) {
-            let current = document.querySelector('#p' + currentIndex) as HTMLElement;
-            if(current) current.style.backgroundColor = 'lightgreen';
-        }
-        //nice
-    }
-
-    //store schedule callback fn
-    storeSchedule(sched: ScheduleUtil.Schedule) {
-        this.sched = sched;
-    }
-
-    //store day callback fn
-    storeDay(day: Date) {
-        this.day = day;
     }
 }
 

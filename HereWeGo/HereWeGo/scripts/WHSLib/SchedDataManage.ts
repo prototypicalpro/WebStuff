@@ -21,11 +21,11 @@ class SchedDataManage implements DataInterface {
     };
 
     //same as update, but we don't do any checking
-    overwriteData(db: IDBDatabase, data: any): void {
+    overwriteData(db: IDBDatabase, data: any): Promise<any> {
         //cast
         data = data as Array<StoreSchedUtil.StoreSchedule>;
         let objectStore = db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
-        let thing: Promise<any> = new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             //delete the whole database
             let req = objectStore.clear();
             req.onsuccess = resolve;
@@ -45,14 +45,11 @@ class SchedDataManage implements DataInterface {
     }
 
     //this update function is simple: if we got data, overwrite
-    updataData(db: IDBDatabase, data: any): boolean {
+    updataData(db: IDBDatabase, data: any): Promise<boolean> | false {
         //cast
         data = data as Array<StoreSchedUtil.StoreSchedule>;
         //do marginal checking
-        if (data.length > 0) {
-            this.overwriteData(db, data);
-            return true;
-        }
+        if (data.length > 0) return this.overwriteData(db, data).then(() => { return true; });
         return false;
     }
 

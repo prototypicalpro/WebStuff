@@ -15,18 +15,18 @@ class QuoteDataManage implements DataInterface {
     readonly dbInfo: DBManage.DBInfoInterface = {
         storeName: 'quote',
         keyPath: 'key',
-        keys: ['quote', 'length', 'author'],
+        keys: ['quote', 'author'],
     }
     //single data key, cuz we only need one
-    private readonly key: string = 'huh';
+    private readonly key: number = 0;
 
     //data array is presumed to only have one entry
-    overwriteData(db: IDBDatabase, data: any): void {
+    overwriteData(db: IDBDatabase, data: any): Promise<any> {
         //add the key object to the data
         data.key = this.key;
         //overwrite the entire database with the data
         let objectStore = db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
-        let thing: Promise<any> = new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             //replace the whole database with what we recieved
             let req = objectStore.put(data);
             req.onsuccess = resolve;
@@ -35,9 +35,9 @@ class QuoteDataManage implements DataInterface {
     }
 
     //update data does same thing cuz I was lazy in the backend
-    updataData(db: IDBDatabase, data: any): boolean {
-        if (data && data.length > 0) this.overwriteData(db, data);
-        return data && data.length > 0;
+    updataData(db: IDBDatabase, data: any): Promise<boolean> | false {
+        if (!Array.isArray(data)) return this.overwriteData(db, data).then(() => { return true; });
+        return false; //I LOVE JAVASCRIPT
     }
 
     //get data returns the quoteData obj

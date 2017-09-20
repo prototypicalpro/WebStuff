@@ -19,12 +19,13 @@ class EventGraphic extends UIUtil.UIItem {
     private schedName: string;
     //storage events for callback
     private eventObjs: Array<any> = [];
+    //storage document item
+    private elem: HTMLElement;
     //template for overall
+    private readonly wrap: string = `<div id="{{id}}">{{stuff}}</div>`
     private readonly template: string = `
-        <div id="{{id}}">
             <p class="header">{{head}}</p>
-            {{stuff}}
-        </div>`
+            {{stuff}}`;
     //and template for each item
     //100% certified unreadable
     //event item template
@@ -52,7 +53,7 @@ class EventGraphic extends UIUtil.UIItem {
     //constructor for teh evenents
     constructor(header: string, day: number, displaySchedule: boolean) {
         super();
-        this.onInitRecv = [
+        this.recv = [
             //events
             <UIUtil.EventParams>{
                 type: UIUtil.RecvType.EVENTS,
@@ -62,25 +63,29 @@ class EventGraphic extends UIUtil.UIItem {
         ];
         this.header = header;
         if(displaySchedule){
-            this.onInitRecv.push(<UIUtil.SchedParams>{
+            this.recv.push(<UIUtil.SchedParams>{
                 type: UIUtil.RecvType.SCHEDULE,
                 day: day,
                 schedProps: ['key'],
                 storeSchedule: this.storeSchedule.bind(this),
             });
-            this.onScheduleUpdateRecv = this.onInitRecv;
         }
-        this.dispSched = displaySchedule;
-        this.onEventUpdateRecv = this.onInitRecv;
     }
     //new callback api functions!
-    //setup init callback with onInitRecv
-    onInitRecv: Array<UIUtil.RecvParams>; 
+    //setup update callbacks with recv
+    recv: Array<UIUtil.RecvParams>; 
     //and the funtion itself!
     //we specify the contents of the args array in the varible above
     getHTML(): string {
+        return UIUtil.templateEngine(this.wrap, {
+            id: this.id,
+            stuff: this.makeEventHTML(),
+        });
+    }
+
+    private makeEventHTML(): string {
         //if there is a schedule title, it's in our storage member
-        if(this.dispSched) {
+        if (this.dispSched) {
             this.eventObjs.unshift({
                 modCl: 'evSmall',
                 time: this.allDayTime,
@@ -112,10 +117,14 @@ class EventGraphic extends UIUtil.UIItem {
             return UIUtil.templateEngine(this.template, {
                 head: this.header,
                 stuff: eventStr,
-                id: this.id,
             });
         }
-        return '';
+        else return '';
+    }
+
+    //store document objects
+    onInit() {
+       this.elem = document.querySelector('#' + this.id) as HTMLElement;
     }
 
     //the thang that does the contruction!
@@ -139,20 +148,11 @@ class EventGraphic extends UIUtil.UIItem {
         else this.schedName = null;
     }
 
-    //cache update stuff
-    onEventUpdateRecv: Array<UIUtil.RecvParams>; //initialized in contructor
-    //function to update!
-    //its the same!
-    onEventUpdate(): void {
-        //update graphic contents
-        document.querySelector('#' + this.id).innerHTML = this.getHTML();
-    }
-
-    onScheduleUpdateRecv: Array<UIUtil.RecvParams>;
-    //still the same!
-    //except we check for a schedule and then update if so
-    onScheduleUpdate() {
-        if (this.dispSched) document.querySelector('#' + this.id).innerHTML = this.getHTML();
+    //master update func
+    //update if necessary
+    onUpdate(type: Array<UIUtil.TRIGGERED>) {
+        //if the event cahce has been populated
+        if (this.eventObjs.length > 0) this.elem.innerHTML = this.makeEventHTML();
     }
 }
 
