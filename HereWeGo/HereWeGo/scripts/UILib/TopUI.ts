@@ -7,7 +7,7 @@
 import UIUtil = require('./UIUtil');
 import ScheduleUtil = require('../WHSLib/ScheduleUtil');
 import HTMLMap = require('../HTMLMap');
-import moment = require('../moment');
+import TimeFormatUtil = require('../TimeFormatUtil');
 
 class TopUI extends UIUtil.UIItem {
     //storage schedule name
@@ -26,7 +26,7 @@ class TopUI extends UIUtil.UIItem {
     //we'll just operate in document quiries
     onInit(): void {
         if (!this.schedule) {
-            HTMLMap.timeText.innerHTML = moment(this.day).format('LT');
+            HTMLMap.timeText.innerHTML = TimeFormatUtil.asSmallTime(this.day);
             HTMLMap.backText.innerHTML = "";
             HTMLMap.periodText.innerHTML = "No School";
         }
@@ -37,18 +37,18 @@ class TopUI extends UIUtil.UIItem {
             this.lastIndex = index;
             if (index === ScheduleUtil.PeriodType.BEFORE_START) {
                 //before start code
-                HTMLMap.timeText.innerHTML = moment(this.day).to(this.schedule.getPeriod(0).getStart(), true) + " remaining";
+                HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(this.day, this.schedule.getPeriod(0).getStart()) + " remaining";
                 HTMLMap.periodText.innerHTML = "Before School";
             }
             else if (index === ScheduleUtil.PeriodType.AFTER_END) {
                 //after end code
-                HTMLMap.timeText.innerHTML = moment(this.day).format('LT');
+                HTMLMap.timeText.innerHTML = TimeFormatUtil.asSmallTime(this.day);
                 HTMLMap.periodText.innerHTML = "After School";
             }
             else {
                 //current period code
                 const period = this.schedule.getPeriod(index);
-                HTMLMap.timeText.innerHTML = moment(this.day).to(period.getEnd(), true) + " remaining";
+                HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(this.day, period.getEnd()) + " remaining";
                 switch (period.getType()) {
                     case ScheduleUtil.PeriodType.CLASS:
                         HTMLMap.periodText.innerHTML = 'Period ' + period.getName();
@@ -92,13 +92,13 @@ class TopUI extends UIUtil.UIItem {
             why.indexOf(UIUtil.TRIGGERED.SCHEDULE_UPDATE) != -1) this.onInit();
         //else if time update
         else if (why.indexOf(UIUtil.TRIGGERED.TIME_UPDATE) != -1) {
-            if (!this.schedule) HTMLMap.timeText.innerHTML = moment(this.day).format('LT');
+            if (!this.schedule) HTMLMap.timeText.innerHTML = TimeFormatUtil.asSmallTime(this.day);
             else {
                 //if the period hasn't changed, just update the time remaining
                 if (this.schedule.getCurrentPeriodIndex(this.day.getTime()) === this.lastIndex) {
-                    if (this.lastIndex === ScheduleUtil.PeriodType.BEFORE_START) HTMLMap.timeText.innerHTML = moment(this.day).to(this.schedule.getPeriod(0).getStart(), true) + " remaining";
-                    else if (this.lastIndex === ScheduleUtil.PeriodType.AFTER_END) HTMLMap.timeText.innerHTML = moment(this.day).format('LT');
-                    else HTMLMap.timeText.innerHTML = moment(this.day).to(this.schedule.getPeriod(this.lastIndex).getEnd(), true) + " remaining";
+                    if (this.lastIndex === ScheduleUtil.PeriodType.BEFORE_START) HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(this.day, this.schedule.getPeriod(0).getStart()) + " remaining";
+                    else if (this.lastIndex === ScheduleUtil.PeriodType.AFTER_END) HTMLMap.timeText.innerHTML = TimeFormatUtil.asSmallTime(this.day);
+                    else HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(this.day, this.schedule.getPeriod(this.lastIndex).getEnd()) + " remaining";
                 }
                 //else rebuild
                 else this.onInit();

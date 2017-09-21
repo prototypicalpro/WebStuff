@@ -2,7 +2,7 @@
 // http://go.microsoft.com/fwlink/?LinkID=397705
 // To debug code on page load in cordova-simulate or on Android devices/emulators: launch your app, set breakpoints, 
 // and then run "window.location.reload()" in the JavaScript Console.
-import moment = require('./moment');
+import TimeFormatUtil = require('./TimeFormatUtil');
 import lory = require('./lory');
 import DataManage = require('./WHSLib/DataManage');
 import SchedDataManage = require('./WHSLib/SchedDataManage');
@@ -79,7 +79,7 @@ var slide: SlideTabUI = new SlideTabUI([
         new ScheduleGraphic(0),
         new EventGraphic('Today', 0, false),
         new EventGraphic('Tomorrow', 1, true),
-        new EventGraphic(moment(new Date().setDate(new Date().getDate() + 2)).format('dddd'), 2, true),
+        new EventGraphic(TimeFormatUtil.asFullDayText(new Date().getDay() + 2), 2, true),
     ]
     //second page?
     //naw

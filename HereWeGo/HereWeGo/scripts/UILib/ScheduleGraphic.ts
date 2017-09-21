@@ -8,7 +8,7 @@ import UIUtil = require('./UIUtil');
 import ErrorUtil = require('../ErrorUtil');
 import ScheduleUtil = require('../WHSLib/ScheduleUtil');
 import ColorUtil = require('./ColorUtil');
-import moment = require('../moment');
+import TimeFormatUtil = require('../TimeFormatUtil');
 import { PeriodType } from '../WHSLib/ScheduleUtil';
 
 class ScheduleGraphic extends UIUtil.UIItem {
@@ -107,8 +107,8 @@ class ScheduleGraphic extends UIUtil.UIItem {
             //make a buncha row templates
             if (period.getType() >= 0 && period.getType() != ScheduleUtil.PeriodType.PASSING) {
                 schedStr += UIUtil.templateEngine(this.itemTemplate, {
-                    upTime: period.getStart().format('h:mm a'),
-                    lowTime: period.getEnd().format('h:mm a'),
+                    upTime: TimeFormatUtil.asSmallTime(period.getStart()),
+                    lowTime: TimeFormatUtil.asSmallTime(period.getEnd()),
                     lineColor: ColorUtil.blendColors('#00ff00', '#004700', i * inv),
                     name: period.getName(),
                     backColor: this.lastIndex === i ? 'lightgreen' : '',

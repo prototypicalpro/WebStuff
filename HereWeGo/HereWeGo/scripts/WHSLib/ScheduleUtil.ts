@@ -17,12 +17,13 @@ namespace ScheduleUtil {
 
     //classes to simplify information acess
     export class Period {
-        private startTime: any; //moment
-        private endTime: any; //moment
+        private startTime: number; //moment
+        private endTime: number; //moment
         private type: PeriodType;
         private name: string;
 
-        constructor(startTime, endTime, type: PeriodType, name: string) {
+        constructor(startTime: string, endTime: string, type: PeriodType, name: string) {
+            
             this.startTime = startTime;
             this.endTime = endTime;
             this.type = type;
@@ -79,6 +80,13 @@ namespace ScheduleUtil {
 
     //schedule constant
     export const NoSchool = new Schedule([], "No School");
+
+    //data conversion func (9:55pm => number respresenting time)
+    const timeFromCloudData = (timeString: string): number => {
+        let hrs;
+        if (timeString[1] == ':') hrs = parseInt(timeString[0]);
+        else hrs = parseInt(timeString.slice(0, 2));
+    }
 }
 
 export = ScheduleUtil;

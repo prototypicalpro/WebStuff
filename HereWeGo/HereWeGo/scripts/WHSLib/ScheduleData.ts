@@ -3,7 +3,7 @@
  * Designed to be returned from the DataManage superclass
  */
 
-import moment = require('../moment');
+import TimeFormatUtil = require('../TimeFormatUtil');
 import ScheduleUtil = require('./ScheduleUtil');
 import StoreSchedUtil = require('./StoreSchedUtil');
 import EventInterface = require('./EventInterface');

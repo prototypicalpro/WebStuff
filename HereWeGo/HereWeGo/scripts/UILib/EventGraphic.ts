@@ -4,10 +4,10 @@
  */
 
 import UIUtil = require('./UIUtil');
+import TimeUtil = require('../TimeFormatUtil');
 import EventInterface = require('../WHSLib/EventInterface');
 import EventData = require('../WHSLib/EventData');
 import ColorUtil = require('./ColorUtil');
-import moment = require('../moment');
 
 class EventGraphic extends UIUtil.UIItem {
     //other stuff
@@ -133,8 +133,8 @@ class EventGraphic extends UIUtil.UIItem {
             //if it isn't all day, do templating, else use ALL DAY template instead
             //beware nested conditional
             time: !event.isAllDay ? UIUtil.templateEngine(this.normalTime, {
-                start: moment(event.startTime).format('LT'),
-                end: moment(event.endTime).format('LT'),
+                start: TimeUtil.asSmallTime(event.startTime),
+                end: TimeUtil.asSmallTime(event.endTime),
             }) : this.allDayTime,
             //add extra modifier class if it's all day as well
             modCl: !event.isAllDay ? '' : 'evSmall',
