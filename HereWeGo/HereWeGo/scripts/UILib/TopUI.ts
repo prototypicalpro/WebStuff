@@ -31,13 +31,15 @@ class TopUI extends UIUtil.UIItem {
             HTMLMap.periodText.innerHTML = "No School";
         }
         else {
+            //cache today time
+            let todayTime = new Date(this.day).setHours(0, 0, 0, 0); 
             //get current period
-            const index = this.schedule.getCurrentPeriodIndex(this.day.getTime());
+            const index = this.schedule.getCurrentPeriodIndex(this.day);
             //store it so we can check it later
             this.lastIndex = index;
             if (index === ScheduleUtil.PeriodType.BEFORE_START) {
                 //before start code
-                HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(this.day, this.schedule.getPeriod(0).getStart()) + " remaining";
+                HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(this.day, this.schedule.getPeriod(0).getStart(todayTime)) + " remaining";
                 HTMLMap.periodText.innerHTML = "Before School";
             }
             else if (index === ScheduleUtil.PeriodType.AFTER_END) {
@@ -48,7 +50,7 @@ class TopUI extends UIUtil.UIItem {
             else {
                 //current period code
                 const period = this.schedule.getPeriod(index);
-                HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(this.day, period.getEnd()) + " remaining";
+                HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(this.day, period.getEnd(todayTime)) + " remaining";
                 switch (period.getType()) {
                     case ScheduleUtil.PeriodType.CLASS:
                         HTMLMap.periodText.innerHTML = 'Period ' + period.getName();
@@ -94,11 +96,13 @@ class TopUI extends UIUtil.UIItem {
         else if (why.indexOf(UIUtil.TRIGGERED.TIME_UPDATE) != -1) {
             if (!this.schedule) HTMLMap.timeText.innerHTML = TimeFormatUtil.asSmallTime(this.day);
             else {
+                //cache today time
+                let todayTime = new Date(this.day).setHours(0, 0, 0, 0); 
                 //if the period hasn't changed, just update the time remaining
-                if (this.schedule.getCurrentPeriodIndex(this.day.getTime()) === this.lastIndex) {
-                    if (this.lastIndex === ScheduleUtil.PeriodType.BEFORE_START) HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(this.day, this.schedule.getPeriod(0).getStart()) + " remaining";
+                if (this.schedule.getCurrentPeriodIndex(this.day) === this.lastIndex) {
+                    if (this.lastIndex === ScheduleUtil.PeriodType.BEFORE_START) HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(this.day, this.schedule.getPeriod(0).getStart(todayTime)) + " remaining";
                     else if (this.lastIndex === ScheduleUtil.PeriodType.AFTER_END) HTMLMap.timeText.innerHTML = TimeFormatUtil.asSmallTime(this.day);
-                    else HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(this.day, this.schedule.getPeriod(this.lastIndex).getEnd()) + " remaining";
+                    else HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(this.day, this.schedule.getPeriod(this.lastIndex).getEnd(todayTime)) + " remaining";
                 }
                 //else rebuild
                 else this.onInit();

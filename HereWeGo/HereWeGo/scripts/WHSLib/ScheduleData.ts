@@ -26,8 +26,8 @@ class ScheduleData implements UIUtil.SchedHandle {
     //utility functions for conversion
     private periodFromCloudData(data: Array<string>): ScheduleUtil.Period {
         return new ScheduleUtil.Period(
-            moment(data[StoreSchedUtil.IndexName.START_TIME], StoreSchedUtil.fmt),
-            moment(data[StoreSchedUtil.IndexName.END_TIME], StoreSchedUtil.fmt),
+            data[StoreSchedUtil.IndexName.START_TIME],
+            data[StoreSchedUtil.IndexName.END_TIME],
             ScheduleUtil.PeriodType[data[StoreSchedUtil.IndexName.PERIOD_TYPE]],
             data[StoreSchedUtil.IndexName.NAME]
         );
@@ -44,9 +44,9 @@ class ScheduleData implements UIUtil.SchedHandle {
         for (let i = 0, len = schedule.length; i < len - 1; i++ , o++) {
             //if the end time for the first is not equal to the start time for the last
             //eg there is a time gap
-            if (!schedule[o].getEnd().isSame(schedule[o + 1].getStart())) {
+            if (schedule[o].getStartStr() != schedule[o + 1].getEndStr()) {
                 //fill the gap with a passing time
-                schedule.splice(o + 1, 0, new ScheduleUtil.Period(schedule[o].getEnd(), schedule[o + 1].getStart(), ScheduleUtil.PeriodType.PASSING, ""));
+                schedule.splice(o + 1, 0, new ScheduleUtil.Period(schedule[o].getEndStr(), schedule[o + 1].getStartStr(), ScheduleUtil.PeriodType.PASSING, ""));
                 //increment index so we skip over the element we just made
                 o++;
             }
@@ -54,32 +54,13 @@ class ScheduleData implements UIUtil.SchedHandle {
         return new ScheduleUtil.Schedule(schedule, data.key);
     }
 
-    /*
-    getSchedule(day: Date, events: UIUtil.EventHandle): Promise<ScheduleUtil.Schedule> {
-        //have the events get the schedule key for today
-        return events.getScheduleKey(new Date(day).setHours(0, 0, 0, 0)).then((key: string) => {
-            //do a database query for the key
-            return new Promise((resolve, reject) => {
-                let req = this.db.transaction([this.name], 'readonly').objectStore(this.name).get(key);
-                req.onsuccess = resolve;
-                req.onerror = reject;
-            });
-        }).then((data: any) => {
-            return this.scheduleFromCloudData(data.target.result);
-        //if we don't find it or error, there's no school
-        }).catch((err) => {
-            if (err != ErrorUtil.code.NO_SCHOOL) console.log(err);
-            throw ErrorUtil.code.NO_SCHOOL;
-        });
-    }
-    */
-
     static eventFromSchedule(sched: ScheduleUtil.Schedule): EventInterface {
+
         return {
             title: sched.getName() + ' Schedule',
             isAllDay: true,
-            startTime: sched.getPeriod(0).getStart().valueOf() as number,
-            endTime: sched.getPeriod(sched.getNumPeriods() - 1).getEnd.valueOf() as number,
+            startTime: 0,
+            endTime: 0,
             schedule: true,
             id: '',
         };

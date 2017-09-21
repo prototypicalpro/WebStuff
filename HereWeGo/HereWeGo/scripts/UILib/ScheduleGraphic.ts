@@ -98,17 +98,19 @@ class ScheduleGraphic extends UIUtil.UIItem {
         if (!this.sched) return '';
         //do all the construction stuff
         let schedStr = '';
-        this.lastIndex = this.sched.getCurrentPeriodIndex(this.day.getTime());
+        this.lastIndex = this.sched.getCurrentPeriodIndex(this.day);
         const inv = 1.0 / (this.sched.getNumPeriods() - 1);
         //all parrellel b/c we're already async so why not
+        //cache today
+        let today = new Date(this.day).setHours(0, 0, 0, 0);
         for (let i = 0, len = this.sched.getNumPeriods(); i < len; i++) {
             //if it's not passing or whatever, we display it
             let period: ScheduleUtil.Period = this.sched.getPeriod(i);
             //make a buncha row templates
             if (period.getType() >= 0 && period.getType() != ScheduleUtil.PeriodType.PASSING) {
                 schedStr += UIUtil.templateEngine(this.itemTemplate, {
-                    upTime: TimeFormatUtil.asSmallTime(period.getStart()),
-                    lowTime: TimeFormatUtil.asSmallTime(period.getEnd()),
+                    upTime: period.getStartStr(),
+                    lowTime: period.getEndStr(),
                     lineColor: ColorUtil.blendColors('#00ff00', '#004700', i * inv),
                     name: period.getName(),
                     backColor: this.lastIndex === i ? 'lightgreen' : '',
@@ -134,7 +136,7 @@ class ScheduleGraphic extends UIUtil.UIItem {
             (<HTMLElement>document.querySelector('#' + this.id)).innerHTML = this.makeSchedule();
         else if (why.indexOf(UIUtil.TRIGGERED.TIME_UPDATE) != -1) {
             //if nothing has changed, don't change anything
-            let currentIndex = this.sched.getCurrentPeriodIndex(this.day.getTime());
+            let currentIndex = this.sched.getCurrentPeriodIndex(this.day);
             if (this.lastIndex === currentIndex) return;
             //else remove the color from the last index, assuming it's not a passing period
             if (this.lastIndex >= 0 && this.sched.getPeriod(this.lastIndex).getType() != ScheduleUtil.PeriodType.PASSING) {

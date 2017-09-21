@@ -8,8 +8,14 @@ namespace TimeFormatUtil {
     export const asSmallTime = (time: Date | number): string => {
         if (!(time instanceof Date)) time = new Date(time);
         let hours = time.getHours();
-        if (hours > 12) return (hours - 12) + ':' + time.getMinutes() + ' pm';
-        return hours + ':' + time.getMinutes() + ' am';
+        let outStr;
+        if (hours > 12) hours -= 12;
+        if (hours >= 12) outStr = ' PM';
+        else outStr = ' AM';
+        if (hours === 0) hours = 12;
+        let min = time.getMinutes();
+        if (min > 9) return hours + ':' + min + outStr;
+        return hours + ':0' + min + outStr;
     };
     //weekday enum cuz
     enum Days {
@@ -33,12 +39,11 @@ namespace TimeFormatUtil {
         //threshholds for calling something an hour vs. a minuete
         //and so on
         const mm = 3 * 60000; //min to a few min
-        const m = 45 * 60000; //min to hour
-        const mh = 15 * 60000; //half an hour to hour
+        const m = 30 * 60000; //min to hour
         //typecheck and subtract to get the duration of time we're talking about
         let duration = (end instanceof Date ? end.getTime() : end) - (start instanceof Date ? start.getTime() : start);
         //if duration is greater than an hour
-        if (duration >= m) {
+        if (duration > m) {
             //if duration is greater than an hour and a half, display multiple hours
             if (duration >= 3600000 + m) {
                 //count full hours
@@ -48,14 +53,11 @@ namespace TimeFormatUtil {
                     duration -= 3600000;
                 }
                 //add partial hours
-                let half = false;
-                if (duration >= m) hrCnt++;
-                else if (duration >= mh) half = true;
+                if (duration > m) hrCnt++;
                 //else there aren't any
-                return hrCnt + (half ? ' and a half' : '') + ' hours';
+                return hrCnt + ' hours';
             }
-            //else if duration is 'hour and a half'
-            else if (duration >= 3600000 + mh) return 'An hour and a half';
+            //else if duration is 'an hour'
             else return 'An hour';
         }
         //else show minuetes
