@@ -121,10 +121,10 @@ function onDeviceReady(): void {
         else throw err;
     }).then((newData: any) => {
         //refresh all cuz might as well
-        uiThing.trigger([UIUtil.TRIGGERED.UPDATE_ALL_DATA]);
+        return uiThing.trigger([UIUtil.TRIGGERED.UPDATE_ALL_DATA]);
+    }).then(() => {
         //also start callback for every min to update time
         updateTime();
-    }).then(() => {
         let end = performance.now();
         console.log("Second init took: " + (end - start));
     }).catch((err) => {

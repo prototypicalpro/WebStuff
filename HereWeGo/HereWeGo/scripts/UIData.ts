@@ -58,7 +58,7 @@ class UIData {
 
     //next, the triggers themselves
     //might as well use the enum
-    trigger(why: Array<UIUtil.TRIGGERED>) {
+    trigger(why: Array<UIUtil.TRIGGERED>): Promise<any> {
         //inject all the things!
         let thing: Promise<any>;
         if (why.indexOf(UIUtil.TRIGGERED.UPDATE_ALL_DATA) != -1) thing = Promise.all([
@@ -79,7 +79,7 @@ class UIData {
             thing = Promise.all(ray);
         }
         //and the finishing touch
-        thing.then(() => {
+        return thing.then(() => {
             //run all the functions!
             for (let i = 0, len = this.recvs.length; i < len; i++) if (this.recvs[i].onUpdate) this.recvs[i].onUpdate(why);
         });
