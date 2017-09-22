@@ -27,6 +27,7 @@ class ImageData implements UIUtil.ImageHandle {
             req.onerror = reject;
         }).then((data: any) => {
             //TODO: FIX WHEN WE DON'T AHVE AN IMAGE
+            console.log(data.result);
             if (!data.url) throw ErrorUtil.code.NO_STORED;
             let url = URL.createObjectURL(data.image);
             for (let i = 0, len = obj.length; i < len; i++) obj[i].storeImgURL(url);

@@ -9,9 +9,9 @@ namespace TimeFormatUtil {
         if (!(time instanceof Date)) time = new Date(time);
         let hours = time.getHours();
         let outStr;
-        if (hours > 12) hours -= 12;
-        if (hours >= 12) outStr = ' PM';
+        if(hours >= 12) outStr = ' PM';
         else outStr = ' AM';
+        if (hours > 12) hours -= 12;
         if (hours === 0) hours = 12;
         let min = time.getMinutes();
         if (min > 9) return hours + ':' + min + outStr;

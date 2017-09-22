@@ -29,6 +29,7 @@ class FetchGet implements GetInterface {
             console.log(err);
             throw ErrorUtil.code.NO_INTERNET;
         }).then((response: Response) => {
+            console.log(response);
             if (!response.ok) {
                 console.log("Fetch error: " + response.statusText);
                 throw ErrorUtil.code.BAD_RESPONSE;

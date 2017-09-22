@@ -9,6 +9,7 @@
   <preference name="windows-target-version" value="10.0" />
   <preference name="DisallowOverscroll" value="true" />
   <access origin="*" />
+  <allow-navigation href="*"/>
   <allow-intent href="http://*/*" />
   <allow-intent href="https://*/*" />
   <allow-intent href="tel:*" />

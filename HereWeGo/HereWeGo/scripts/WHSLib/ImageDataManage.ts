@@ -20,7 +20,7 @@ class ImageDataManage implements DataInterface {
         keyPath: 'showDay',
     };
     //the key for our database
-    readonly dataKey = 'imgs';
+    readonly dataKey = 'imgData';
     //storage members
     //we need to grab the images, so we need http
     private readonly http: GetLib;
@@ -33,8 +33,8 @@ class ImageDataManage implements DataInterface {
         //check database if we already have any of the images
         //and if we don't add it
         //also delete old ones
-        let objStore: IDBObjectStore = db.transaction([this.dataKey], "readwrite").objectStore(this.dbInfo.storeName);
         return new Promise((resolve, reject) => {
+            let objStore: IDBObjectStore = db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
             let req: IDBRequest = objStore.openCursor();
             req.onsuccess = (event: any) => {
                 let cursor: IDBCursorWithValue = event.target.result;
@@ -57,21 +57,19 @@ class ImageDataManage implements DataInterface {
             };
             req.onerror = reject;
         }).then(() => {
-            return this.getAndStoreImagesFromArray(objStore, data);
+            return this.getAndStoreImagesFromArray(db, data);
         }).then(() => {
-            console.log("here");
             return data.length > 0;
         }).catch((err) => { return null; });
     }
     //overwriteData func
     overwriteData(db: IDBDatabase, data: any): Promise<any> {
-        let objStore: IDBObjectStore = db.transaction([this.dataKey], "readwrite").objectStore(this.dbInfo.storeName);
         return new Promise((resolve, reject) => {
-            let req = objStore.clear();
+            let req = db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName).clear();
             req.onsuccess = resolve;
             req.onerror = reject;
         }).then(() => {
-            return this.getAndStoreImagesFromArray(objStore, data);
+            return this.getAndStoreImagesFromArray(db, data);
         });
     }
 
@@ -79,18 +77,19 @@ class ImageDataManage implements DataInterface {
         return new ImageData(db, this.dbInfo.storeName);
     }
 
-    private getAndStoreImagesFromArray(objStore: IDBObjectStore, imgs: Array<ImageInterface>): Promise<any> {
+    private getAndStoreImagesFromArray(db: IDBDatabase, imgs: Array<ImageInterface>): Promise<any> {
         let fetchArray = [];
+        console.log(imgs);
         //any leftover items in data will not have been found in the database, which means we gotta fetch em and then add em to the database
         for (let i = 0, len = imgs.length; i < len; i++) {
             console.log(imgs[i].url);
             fetchArray.push(this.http.getAsBlob(imgs[i].url).then((blob: Blob) => {
-                let req = objStore.add({
+                let objStore: IDBObjectStore = db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
+                objStore.add({
                     image: blob,
-                    showDay: imgs[i].showDay,
+                    showDay: (<any>imgs[i]).index,
                 });
-                req.onsuccess = Promise.resolve;
-                req.onerror = Promise.reject;
+                return Promise.resolve();
             }));
         }
         return Promise.all(fetchArray);
