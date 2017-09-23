@@ -30,6 +30,7 @@ namespace TimeFormatUtil {
     //format as day of the week text (Tuesday)
     export const asFullDayText = (weekDay: Date | number): string => {
         if (typeof weekDay != 'number') weekDay = weekDay.getDay();
+        if (weekDay > 6) weekDay -= 7;
         //hahaha the string literals, enums are the best
         return Days[weekDay];
     }
