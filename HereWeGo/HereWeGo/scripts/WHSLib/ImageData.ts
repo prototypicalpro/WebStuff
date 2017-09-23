@@ -12,19 +12,22 @@ class ImageData implements UIUtil.ImageHandle {
     //db pointer
     private readonly db: IDBDatabase;
     private readonly name: string;
-    private readonly fs: Promise<DirectoryEntry>;
+    private lastDay: number;
     //constructor
-    constructor(db: IDBDatabase, name: string, fs: Promise<DirectoryEntry>) {
+    constructor(db: IDBDatabase, name: string) {
         this.db = db;
         this.name = name;
-        this.fs = fs;
     }
     //aaand the magic
-    getImage(obj: Array<UIUtil.ImageParams>): Promise<any> {
+    getImage(obj: Array<UIUtil.ImageParams>): Promise<any> | void {
+        //check and see if the day is new
+        let day = new Date().getDate();
+        if (day === this.lastDay) return;
+        this.lastDay = day;
         //search database for todays time
         return new Promise((resolve, reject) => {
             //get todays image
-            let req = this.db.transaction([this.name], "readonly").objectStore(this.name).get(new Date().getDate());
+            let req = this.db.transaction([this.name], "readonly").objectStore(this.name).get(day);
             let image;
             req.onsuccess = resolve;
             req.onerror = reject;
@@ -34,19 +37,9 @@ class ImageData implements UIUtil.ImageHandle {
                 console.log("no data");
                 return;
             }
-            let img: ImageInterface = data.target.result;
-            //read file
-            return this.fs.then((fs: DirectoryEntry) => {
-                return new Promise((resolve, reject) => {
-                    fs.getFile(img.showDay + '.imc', { create: false }, (file) => {
-                        //loop through all the objs to inject
-                        let fileStr = file.toURL();
-                        console.log(fileStr);
-                        for (let i = 0, len = obj.length; i < len; i++) obj[i].storeImgURL(fileStr);
-                        return resolve();
-                    }, reject);
-                });
-            });
+            let url = URL.createObjectURL(data.target.result.image);
+            //fill all the objects
+            for (let i = 0, len = obj.length; i < len; i++) obj[i].storeImgURL(url);
         });
     }
 }

@@ -94,7 +94,7 @@ namespace UIUtil {
     }
     //image
     export interface ImageHandle {
-        getImage(obj: Array<ImageParams>): Promise<any>;
+        getImage(obj: Array<ImageParams>): Promise<any> | void;
     }
     //IDK where to put this, but a utility function to dedupe days is here
     //this has a buncha confusing optimization stuff and is pretty much unreadable, but assume it

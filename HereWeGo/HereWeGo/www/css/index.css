@@ -59,10 +59,11 @@ body {
 }
 
 /* Background Image */
-.background.image {
-    /*background-image: url("../images/background.jpg");*/
-    z-index: -1;
-}
+    .background.image {
+        /*background-image: url("../images/background.jpg");*/
+        /*background-image: url('https://imgur.com/download/YjfZHY1');*/
+        z-index: -1;
+    }
 
 /* Background Trancperency Gradient */
 .background.shader {

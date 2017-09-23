@@ -8,6 +8,8 @@ interface ImageInterface {
     showDay: number;
     //the url to the image
     url: string;
+    //the image blob, only present if gotten from database
+    image?: Blob;
 }
 
 export = ImageInterface;

@@ -55,7 +55,7 @@ var menu: MenuUI = new MenuUI(
         {
             text: 'Map',
             icon: 'map.png',
-            callback: urlCallback('https://xkcd.com'),
+            callback: urlCallback('images/map.pdf'),
         },
         {
             text: 'Student VUE',
@@ -99,7 +99,7 @@ function onDeviceReady(): void {
     let start: number = performance.now();
     const today = new Date();
     //grabby grabby
-    data.initData().then(buildUI.bind(this)).then(() => {
+    data.initData().then(buildObjs).then(buildUI).then(() => {
         let end: number = performance.now();
         console.log("Init took: " + (end - start));
     }).catch((err) => {
@@ -113,7 +113,7 @@ function onDeviceReady(): void {
             throw ErrorUtil.code.HTTP_FAIL;
         }
         //grab them datums
-        if (getNewDataVar) return data.getNewData().then(buildUI.bind(this));
+        if (getNewDataVar) return data.getNewData().then(buildObjs).then(buildUI.bind(this));
         return data.refreshData();
     }).catch((err: any) => {
         if (err === ErrorUtil.code.HTTP_FAIL) setTimeout(toastError, 1000, "This phone is unsupported!");
@@ -133,7 +133,7 @@ function onDeviceReady(): void {
     });
 }
 
-function buildUI(): Promise<any> {
+function buildObjs(): void {
     //start up the early data stuff
     const calData: EventData = data.returnData(DataIndex.EVENTS);
     const schedData: ScheduleData = data.returnData(DataIndex.SCHED);
@@ -141,6 +141,9 @@ function buildUI(): Promise<any> {
     const myData: any = data.returnData(DataIndex.IMAGE);
     //give the top all the data it needs
     uiThing = new UIData(schedData, calData, new DayHandler(), quoteData, myData, [top, slide, menu]);
+}
+
+function buildUI(): Promise<any> {
     return uiThing.initInject().then(() => {
         //set HTML
         HTMLMap.setSliderHTML(slide.getHTML());
@@ -175,7 +178,7 @@ function updateTime(): void {
 function urlCallback(url: string): () => void {
     return () => {
         menu.closeMenu();
-        window.open(url, '_blank');
+        window.open(url, '_blank', 'location=no');
     };
 }
 

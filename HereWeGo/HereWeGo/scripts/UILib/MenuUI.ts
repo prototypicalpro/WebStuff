@@ -91,7 +91,7 @@ class MenuUI extends UIUtil.UIItem {
         });
 
         //tap outside of menu to close check
-        document.querySelector('#' + this.id).addEventListener('touchstart', (event) => {
+        document.querySelector('#' + this.id).addEventListener('touchend', (event) => {
             //MUST CHANGE TO REFLECT MENU SIZE
             if (event.changedTouches[0].clientX > 0.7 * screen.width) {
                 event.preventDefault();
