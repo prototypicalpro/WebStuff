@@ -60,7 +60,7 @@ body {
 
 /* Background Image */
 .background.image {
-    background-image: url("../images/background.jpg");
+    /*background-image: url("../images/background.jpg");*/
     z-index: -1;
 }
 

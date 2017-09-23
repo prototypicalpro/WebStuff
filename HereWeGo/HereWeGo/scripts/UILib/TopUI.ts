@@ -25,6 +25,8 @@ class TopUI extends UIUtil.UIItem {
     //callback for init
     //we'll just operate in document quiries
     onInit(): void {
+        //set background image
+        HTMLMap.setBackImg(this.url);
         if (!this.schedule) {
             HTMLMap.timeText.innerHTML = TimeFormatUtil.asSmallTime(this.day);
             HTMLMap.backText.innerHTML = "";

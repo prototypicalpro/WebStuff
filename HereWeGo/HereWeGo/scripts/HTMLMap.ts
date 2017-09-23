@@ -6,6 +6,8 @@
  */
 
 namespace HTMLMap {
+    export const backImg: HTMLElement = document.querySelector('#img') as HTMLElement;
+
     //export const bottomBarButton: Element = document.querySelector('.bar.fab');
     export const timeText: Element = document.querySelector('.timeText');
 
@@ -44,6 +46,10 @@ namespace HTMLMap {
 
     export const setSideMenuHTML = (html: string): void => {
         sideMenu.innerHTML = html;
+    }
+
+    export const setBackImg = (url: string): void => {
+        backImg.style.backgroundImage = 'url("' + url + '")';
     }
 }
 

@@ -9,7 +9,7 @@
   <preference name="windows-target-version" value="10.0" />
   <preference name="DisallowOverscroll" value="true" />
   <access origin="*" />
-  <allow-navigation href="*"/>
+  <allow-navigation href="*" />
   <allow-intent href="http://*/*" />
   <allow-intent href="https://*/*" />
   <allow-intent href="tel:*" />
@@ -99,4 +99,5 @@
   <engine name="android" spec="5.2.1" />
   <engine name="ios" spec="4.2.0" />
   <engine name="windows" spec="4.4.2" />
+  <plugin name="cordova-plugin-file" spec="~4.3.3" />
 </widget>

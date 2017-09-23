@@ -47,6 +47,7 @@ class UIData {
             this.events.getEvents(this.recvParamList[UIUtil.RecvType.EVENTS]),
             this.day.getDay(this.recvParamList[UIUtil.RecvType.DAY]),
             this.quote.getQuote(this.recvParamList[UIUtil.RecvType.QUOTE]),
+            this.image.getImage(this.recvParamList[UIUtil.RecvType.IMAGE]),
         ]);
         //each UIItem will then ititialize itself (or something like that), we just inject the data
     }
