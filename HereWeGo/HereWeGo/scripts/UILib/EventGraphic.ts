@@ -48,7 +48,7 @@ class EventGraphic extends UIUtil.UIItem {
     private readonly allDayTime: string = `
     <p class='leftUp' style='margin:0'>ALL DAY</p>`
 
-    private readonly charLineMax: number = 34;
+    private readonly charLineMax: number = 32;
 
     //constructor for teh evenents
     constructor(header: string, day: number, displaySchedule: boolean) {
@@ -62,7 +62,8 @@ class EventGraphic extends UIUtil.UIItem {
             },
         ];
         this.header = header;
-        if(displaySchedule){
+        if (displaySchedule) {
+            this.dispSched = true;
             this.recv.push(<UIUtil.SchedParams>{
                 type: UIUtil.RecvType.SCHEDULE,
                 day: day,

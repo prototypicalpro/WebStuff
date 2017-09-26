@@ -44,6 +44,7 @@ var toast: ToastUI = new ToastUI(HTMLMap.toastBox);
 var uiThing: UIData;
 
 var timeCallbackID;
+var browserTabWorks: boolean;
 
 //UI!
 //frontpage graphic
@@ -55,13 +56,28 @@ var menu: MenuUI = new MenuUI(
         {
             text: 'Map',
             icon: 'map.png',
-            callback: urlCallback('images/map.pdf'),
+            callback: urlCallback('https://docs.google.com/viewerng/viewer?url=https://www.pps.net//cms/lib/OR01913224/Centricity/Domain/760/Wilson_Building_Map.pdf'),
         },
         {
             text: 'Student VUE',
             icon: 'grade.png',
             callback: urlCallback('https://parent-portland.cascadetech.org/portland/Login_Student_PXP.aspx'),
         },
+        {
+            text: 'Daily Bulletin',
+            icon: 'list.png',
+            callback: urlCallback('https://script.google.com/a/koontzs.com/macros/s/AKfycbxyS4utDJEJ3bE2spSE4SIRlwj10M2Owbe7_XWrOFSobfniQjve/exec?bul="glorified bookmark"'),
+        },
+        {
+            text: 'Naviance',
+            icon: 'university.png',
+            callback: urlCallback('https://connection.naviance.com/family-connection/auth/login/?hsid=wilsonor'),
+        },
+        {
+            text: 'Website',
+            icon: 'share.png',
+            callback: urlCallback('https://www.pps.net/Domain/162'),
+        }
     ]),
     (<Array<UIUtil.UIItem>>[new QuoteUI('quote', 36)]).concat(
         ButtonUI.Factory('SMItem', 'SMItemText', [
@@ -83,7 +99,7 @@ var slide: SlideTabUI = new SlideTabUI([
     ]
     //second page?
     //naw
-]);
+], ['Home', 'Schedule', 'Credit']);
 
 export function initialize(): void {
     document.addEventListener('deviceready', onDeviceReady, false);
@@ -95,6 +111,12 @@ function onDeviceReady(): void {
     console.log("device ready: " + performance.now());
     document.addEventListener('pause', onPause, false);
     document.addEventListener('resume', onResume, false);
+
+    //inappbrowser
+    if ((<any>cordova).InAppBrowser) window.open = (<any>cordova).InAppBrowser.open;
+
+    //browsertab
+    (<any>cordova).plugins.browsertab.isAvailable((result) => browserTabWorks = result);
 
     let start: number = performance.now();
     const today = new Date();
@@ -114,14 +136,11 @@ function onDeviceReady(): void {
         }
         //grab them datums
         if (getNewDataVar) return data.getNewData().then(buildObjs).then(buildUI.bind(this));
-        return data.refreshData();
+        return data.refreshData().then(() => { return uiThing.trigger([UIUtil.TRIGGERED.UPDATE_ALL_DATA]); });
     }).catch((err: any) => {
         if (err === ErrorUtil.code.HTTP_FAIL) setTimeout(toastError, 1000, "This phone is unsupported!");
         else if (err === ErrorUtil.code.NO_INTERNET || err === ErrorUtil.code.BAD_RESPONSE) setTimeout(toastError, 1000, "No Internet available!");
         else throw err;
-    }).then((newData: any) => {
-        //refresh all cuz might as well
-        return uiThing.trigger([UIUtil.TRIGGERED.UPDATE_ALL_DATA]);
     }).then(() => {
         //also start callback for every min to update time
         updateTime();
@@ -178,7 +197,8 @@ function updateTime(): void {
 function urlCallback(url: string): () => void {
     return () => {
         menu.closeMenu();
-        window.open(url, '_blank', 'location=no');
+        if (browserTabWorks) (<any>cordova).plugins.browsertab.openUrl(url);
+        else window.open(url, '_blank', 'location=yes');
     };
 }
 

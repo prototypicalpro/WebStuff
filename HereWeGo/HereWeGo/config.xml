@@ -92,12 +92,12 @@
   <preference name="Fullscreen" value="False" />
   <plugin name="cordova-plugin-compat" spec="~1.0.0" />
   <plugin name="cordova-plugin-fetch" spec="git+https://github.com/aporat/cordova-plugin-fetch.git" />
-  <plugin name="cordova-plugin-inappbrowser" spec="~1.7.1" />
   <plugin name="cordova-plugin-statusbar" spec="^2.2.3" />
   <plugin name="cordova-plugin-whitelist" spec="git+https://github.com/apache/cordova-plugin-whitelist.git" />
   <vs:toolsetVersion>6.3.1</vs:toolsetVersion>
   <engine name="android" spec="5.2.1" />
   <engine name="ios" spec="4.2.0" />
   <engine name="windows" spec="4.4.2" />
-  <plugin name="cordova-plugin-file" spec="~4.3.3" />
+  <plugin name="cordova-plugin-inappbrowser" spec="~1.7.1" />
+  <plugin name="cordova-plugin-browsertab" spec="~0.2.0" />
 </widget>

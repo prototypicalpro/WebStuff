@@ -9,6 +9,46 @@
          url('../fonts/geometricslabserif703boldbt.svg#geometricslabserif703boldbt5942f8f8b47f4') format('svg');
 }
 
+@font-face {
+    font-family: 'Open Sans';
+    src: url('../fonts/OpenSans-Regular.eot');
+    src: url('../fonts/OpenSans-Regular.eot?#iefix') format('embedded-opentype'), url('../fonts/OpenSans-Regular.woff') format('woff'), url('../fonts/OpenSans-Regular.ttf') format('truetype'), url('../fonts/OpenSans-Regular.svg#OpenSans-Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    src: url('../fonts/OpenSans-SemiBold.eot');
+    src: url('../fonts/OpenSans-SemiBold.eot?#iefix') format('embedded-opentype'), url('../fonts/OpenSans-SemiBold.woff') format('woff'), url('../fonts/OpenSans-SemiBold.ttf') format('truetype'), url('../fonts/OpenSans-SemiBold.svg#OpenSans-SemiBold') format('svg');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url('../fonts/Montserrat-ExtraLight.eot');
+    src: url('../fonts/Montserrat-ExtraLight.eot?#iefix') format('embedded-opentype'), url('../fonts/Montserrat-ExtraLight.woff') format('woff'), url('../fonts/Montserrat-ExtraLight.ttf') format('truetype'), url('../fonts/Montserrat-ExtraLight.svg#Montserrat-ExtraLight') format('svg');
+    font-weight: 200;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url('../fonts/Montserrat-Regular.eot');
+    src: url('../fonts/Montserrat-Regular.eot?#iefix') format('embedded-opentype'), url('../fonts/Montserrat-Regular.woff') format('woff'), url('../fonts/Montserrat-Regular.ttf') format('truetype'), url('../fonts/Montserrat-Regular.svg#Montserrat-Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url('../fonts/Montserrat-SemiBold.eot');
+    src: url('../fonts/Montserrat-SemiBold.eot?#iefix') format('embedded-opentype'), url('../fonts/Montserrat-SemiBold.woff') format('woff'), url('../fonts/Montserrat-SemiBold.ttf') format('truetype'), url('../fonts/Montserrat-SemiBold.svg#Montserrat-SemiBold') format('svg');
+    font-weight: 600;
+    font-style: normal;
+}
+
 p {
     margin: 0;
 }
@@ -47,30 +87,29 @@ body {
  * Making the top of the app all pretty pretty
  */
 
-/* Global Background CSS */
-.background {
+/* Background Image CSS */
+.image {
     position: fixed;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     height: 100vh;
     width: 100vw;
-    transition: height 600ms cubic-bezier(0.215, 0.61, 0.355, 1);
+    z-index: -1;
+    /*background-image: url("../images/background.jpg");*/
+    /*background-image: url('https://imgur.com/download/YjfZHY1');*/
 }
 
-/* Background Image */
-    .background.image {
-        /*background-image: url("../images/background.jpg");*/
-        /*background-image: url('https://imgur.com/download/YjfZHY1');*/
-        z-index: -1;
-    }
-
 /* Background Trancperency Gradient */
-.background.shader {
+.shader {
+    position: fixed;
+    top: 50vh;
+    width: 100vw;
+    height: 43vh;
     /* TODO: Replace with image
     background-image: url("../images/gradient.png");
     */
-    background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.4));
+    background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.5));
 }
 
 /*
@@ -103,7 +142,7 @@ body {
 /* Period Text (Period 3) */
 .periodText {
     font-size: 8vh;
-    font-weight: bold;
+    font-weight: 600;
     color: white;
     margin-bottom: 0.5vh;
 }
@@ -166,7 +205,9 @@ body {
 }
 
 /* Text stuff */
-.menuRow {
+.menu {
+    display: table-cell;
+    vertical-align: middle;
     text-align: center;
 }
 

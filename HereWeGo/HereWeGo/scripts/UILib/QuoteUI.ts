@@ -28,8 +28,6 @@ class QuoteUI extends UIUtil.UIItem {
             id: this.id,
             text: this.makeQuote(),
         });
-        //clear old data
-        this.quoteStore = null;
         //return
         return ret;
     }
@@ -41,9 +39,7 @@ class QuoteUI extends UIUtil.UIItem {
     recv: Array<UIUtil.QuoteParams> = [
         {
             type: UIUtil.RecvType.QUOTE,
-            storeQuote: ((quote) => {
-                this.quoteStore = quote;
-            }).bind(this),
+            storeQuote: ((quote) => { this.quoteStore = quote; }).bind(this),
         }
     ];
     //fix quote on update
@@ -67,6 +63,9 @@ class QuoteUI extends UIUtil.UIItem {
         else quotefix = tempQuote;
         //add the author after another breakline
         quotefix += `<br/>-` + (this.quoteStore.author ? this.quoteStore.author : 'Unknown');
+        //delete quoteStore
+        this.quoteStore = null;
+        //return!
         return quotefix;
     }
 }

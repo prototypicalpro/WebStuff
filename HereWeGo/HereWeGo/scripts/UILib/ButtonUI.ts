@@ -9,15 +9,16 @@ import UIUtil = require('./UIUtil');
 class ButtonUI extends UIUtil.UIItem {
     //main html! pretty simple, just a lot of varibles
     private readonly template: string = `
-    <div class="{{wrapClass}}" id="{{id}}" style="background-image: url('./images/{{image}}')">
+    <div class="{{wrapClass}}" id="{{id}}" style="{{image}}">
         <p class="{{textClass}}">{{text}}</p>
     </div>`
+    private readonly imgTemplate: string = `background-image: url('./images/{{image}}')`;
     //perminant class members for animations
     private readonly touchClass: string = 'bTouch';
     private readonly longPressTime: number = 500;
     //storage stuff
     private readonly disableAnim: boolean;
-    private readonly callback: () => void;
+    private readonly callback: () => void; //TODO: make protected
     private readonly longPress: () => void;
     //storage string (we'll just go straight to a string since nothing we get needs data)
     private readonly strStore: string;
@@ -39,7 +40,7 @@ class ButtonUI extends UIUtil.UIItem {
             wrapClass: wrapClass,
             textClass: textClass,
             text: text,
-            image: icon ? icon : '',
+            image: icon ? UIUtil.templateEngine(this.imgTemplate, { image: icon }) : '',
         });
     }
 
@@ -85,7 +86,7 @@ class ButtonUI extends UIUtil.UIItem {
         e.preventDefault();
         //check to make sure the pointer is still within the button
         if (ourTouch.clientX < this.rectStore.left || ourTouch.clientX > this.rectStore.left + this.rectStore.width ||
-            ourTouch.clientY < this.rectStore.top || ourTouch.clientY > this.rectStore.left + this.rectStore.height) {
+            ourTouch.clientY < this.rectStore.top || ourTouch.clientY > this.rectStore.top + this.rectStore.height) {
             this.touchStore = null;
             if (!this.disableAnim) this.buttonStore.classList.remove(this.touchClass);
         }

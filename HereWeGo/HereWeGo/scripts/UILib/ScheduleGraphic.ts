@@ -65,11 +65,6 @@ class ScheduleGraphic extends UIUtil.UIItem {
                 day: day,
                 storeSchedule: this.storeSchedule.bind(this),
             },
-            //but don't for get time
-            <UIUtil.DayParams>{
-                type: UIUtil.RecvType.DAY,
-                storeDay: this.storeDay.bind(this),
-            }
         ];
     }
 

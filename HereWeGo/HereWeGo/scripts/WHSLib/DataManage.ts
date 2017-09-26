@@ -47,14 +47,14 @@ class DataManage {
     private updateData(data: Object): Promise<Array<boolean>> {
         let ret: Array<Promise<boolean> | false> = [];
         for (let i = 0, len = this.dataObj.length; i < len; i++)
-            if (this.dataObj[i].dataKey in data) ret.push(this.dataObj[i].updataData(this.db, data[this.dataObj[i].dataKey]));
+            ret.push(this.dataObj[i].updataData(this.db, data[this.dataObj[i].dataKey]));
         return Promise.all(ret);
     }
 
     private overwriteData(data: Object): Promise<Array<any>> {
         let ret: Array<Promise<any>> = [];
         for (let i = 0, len = this.dataObj.length; i < len; i++)
-            if (this.dataObj[i].dataKey in data) ret.push(this.dataObj[i].overwriteData(this.db, data[this.dataObj[i].dataKey]));
+            ret.push(this.dataObj[i].overwriteData(this.db, data[this.dataObj[i].dataKey]));
         return Promise.all(ret);
     }
 

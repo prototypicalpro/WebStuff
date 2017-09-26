@@ -7,15 +7,7 @@ namespace TimeFormatUtil {
     //format as 9:36 am
     export const asSmallTime = (time: Date | number): string => {
         if (!(time instanceof Date)) time = new Date(time);
-        let hours = time.getHours();
-        let outStr;
-        if(hours >= 12) outStr = ' PM';
-        else outStr = ' AM';
-        if (hours > 12) hours -= 12;
-        if (hours === 0) hours = 12;
-        let min = time.getMinutes();
-        if (min > 9) return hours + ':' + min + outStr;
-        return hours + ':0' + min + outStr;
+        return time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
     };
     //weekday enum cuz
     enum Days {
@@ -65,6 +57,12 @@ namespace TimeFormatUtil {
         if (duration >= mm) return Math.floor(duration / 60000) + ' minutes';
         return 'A few minutes';
     }
+    //format as human readable day of year
+    //e.g. Sunday, September 2
+    export const asLongDayMonthText = (day: Date | number): string => {
+        if (typeof day == 'number') day = new Date(day);
+        return day.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+    };
 }
 
 export = TimeFormatUtil;
