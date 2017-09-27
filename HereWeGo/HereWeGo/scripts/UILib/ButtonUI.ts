@@ -58,7 +58,6 @@ class ButtonUI extends UIUtil.UIItem {
     onInit() {
         //add members
         this.buttonStore = document.querySelector('#' + this.id) as HTMLElement;
-        this.rectStore = this.buttonStore.getBoundingClientRect();
         //register callbacks
         this.buttonStore.addEventListener('touchstart', this.onTouchStart.bind(this));
         this.buttonStore.addEventListener('touchmove', this.onTouchMove.bind(this));
@@ -72,6 +71,9 @@ class ButtonUI extends UIUtil.UIItem {
         //start the touch and hold animation for the button, but only if it's the first touch
         if (!this.touchStore) {
             e.preventDefault();
+            //store the client rect of the button
+            this.rectStore = this.buttonStore.getBoundingClientRect();
+            //store the touch
             this.touchStore = e.changedTouches.item(0).identifier;
             this.touchStart = Date.now();
             if (!this.disableAnim) this.buttonStore.classList.add(this.touchClass);

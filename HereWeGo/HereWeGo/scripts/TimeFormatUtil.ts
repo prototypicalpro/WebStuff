@@ -31,8 +31,8 @@ namespace TimeFormatUtil {
     export const asTimeTo = (start: Date | number, end: Date | number): string => {
         //threshholds for calling something an hour vs. a minuete
         //and so on
-        const mm = 3 * 60000; //min to a few min
-        const m = 30 * 60000; //min to hour
+        const mm = 1 * 60000; //min to a few seconds
+        const m = 45 * 60000; //min to hour
         //typecheck and subtract to get the duration of time we're talking about
         let duration = (end instanceof Date ? end.getTime() : end) - (start instanceof Date ? start.getTime() : start);
         //if duration is greater than an hour
@@ -54,8 +54,8 @@ namespace TimeFormatUtil {
             else return 'An hour';
         }
         //else show minuetes
-        if (duration >= mm) return Math.floor(duration / 60000) + ' minutes';
-        return 'A few minutes';
+        if (duration > mm) return Math.ceil(duration / 60000) + ' minutes';
+        return 'A minute';
     }
     //format as human readable day of year
     //e.g. Sunday, September 2
