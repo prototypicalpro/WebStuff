@@ -92,4 +92,4 @@ interface UrlUtil {
 declare var cordova: Cordova;
 
 //cordova fetch hack
-declare var cordovaFetch: any;
+declare var cordovaHTTP: any;
