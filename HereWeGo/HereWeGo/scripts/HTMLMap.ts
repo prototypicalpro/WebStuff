@@ -7,6 +7,7 @@
 
 namespace HTMLMap {
     export const backImg: HTMLElement = document.querySelector('#img') as HTMLElement;
+    export const backThumb: HTMLElement = document.querySelector('#lowRes') as HTMLElement;
 
     export const timeText: Element = document.querySelector('.timeText');
 
@@ -36,6 +37,10 @@ namespace HTMLMap {
 
     export const setBackImg = (url: string): void => {
         backImg.style.backgroundImage = 'url("' + url + '")';
+    }
+
+    export const setBackLowRes = (url: string): void => {
+        backThumb.style.backgroundImage = 'url("' + url + '")';
     }
 }
 

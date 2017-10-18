@@ -11,13 +11,15 @@ interface DataInterface {
     //the key for the sync data this object will use (e.g. "calSyncData")
     //should be constant
     readonly dataKey: string;
+    //function called at begining to give the data objects a pointer to the database
+    setDB(db: IDBDatabase): void;
     //update function, takes recieved data (using the key above) and updates the stored data
     //returns whether or not the data was updated
-    updataData(db: IDBDatabase, data: any): Promise<boolean> | false;
+    updataData(data: any): Promise<boolean> | false;
     //overwrite function, deletes any existing data and replaces it with the passed data
-    overwriteData(db: IDBDatabase, data: any): Promise<any>;
+    overwriteData(data: any): Promise<any>;
     //and finally, return the data or utility class that our program wants
-    getData(db: IDBDatabase): any;
+    getData(): any;
 }
 
 export = DataInterface;

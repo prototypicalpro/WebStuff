@@ -21,7 +21,6 @@ const URL: string = 'https://script.google.com/macros/s/AKfycbxyS4utDJEJ3bE2spSE
 class DataManage {
     private http: GetLib;
     private dataObj: Array<DataInterface>;
-    private db: IDBDatabase;
     private lastSyncTime: number;
     /*
      * Stupid promise chaining functions
@@ -47,14 +46,14 @@ class DataManage {
     private updateData(data: Object): Promise<Array<boolean>> {
         let ret: Array<Promise<boolean> | false> = [];
         for (let i = 0, len = this.dataObj.length; i < len; i++)
-            ret.push(this.dataObj[i].updataData(this.db, data[this.dataObj[i].dataKey]));
+            ret.push(this.dataObj[i].updataData(data[this.dataObj[i].dataKey]));
         return Promise.all(ret);
     }
 
     private overwriteData(data: Object): Promise<Array<any>> {
         let ret: Array<Promise<any>> = [];
         for (let i = 0, len = this.dataObj.length; i < len; i++)
-            ret.push(this.dataObj[i].overwriteData(this.db, data[this.dataObj[i].dataKey]));
+            ret.push(this.dataObj[i].overwriteData(data[this.dataObj[i].dataKey]));
         return Promise.all(ret);
     }
 
@@ -63,7 +62,7 @@ class DataManage {
      */
 
     constructor(dataThings: Array<DataInterface>, http: GetLib) {
-        this.dataObj = dataThings
+        this.dataObj = dataThings;
         this.http = http;
     }
 
@@ -78,7 +77,9 @@ class DataManage {
                 this.lastSyncTime = parseInt(lastSync);
                 return resolve();
             }),
-            DBManage.constructDB(this.dataObj.map((data) => { return data.dbInfo; })).then((db: IDBDatabase) => { this.db = db })
+            DBManage.constructDB(this.dataObj.map((data) => { return data.dbInfo; })).then((db: IDBDatabase) => {
+                for (let i = 0, len = this.dataObj.length; i < len; i++) this.dataObj[i].setDB(db);
+            })
         ];
         return Promise.all(ray);
     }
@@ -94,8 +95,8 @@ class DataManage {
 
     //returns the subclasses defined by each module, where the application can then acess the data
     returnData(index: number = -1): Array<any> | any {
-        if (index === -1) return this.dataObj.map((sub) => { return sub.getData(this.db) });
-        else return this.dataObj[index].getData(this.db);
+        if (index === -1) return this.dataObj.map((sub) => { return sub.getData() });
+        else return this.dataObj[index].getData();
     }
 }
 

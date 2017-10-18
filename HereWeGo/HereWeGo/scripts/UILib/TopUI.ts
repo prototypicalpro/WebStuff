@@ -30,11 +30,16 @@ class TopUI extends UIUtil.UIItem {
     onInit(): void {
         if (!this.bigURL) {
             //set background image
-            HTMLMap.setBackImg(this.url);
+            HTMLMap.setBackLowRes(this.url);
+            console.log("thumb! " + performance.now());
+            console.log(this.picPromise);
             this.picPromise.then((url: string) => {
                 //and promise to set the real image once its loaded
                 HTMLMap.setBackImg(url);
                 this.bigURL = url;
+                let now = performance.now();
+                console.log("pic! " + now);
+                return;
             });
         }
         else HTMLMap.setBackImg(this.bigURL);
@@ -98,7 +103,7 @@ class TopUI extends UIUtil.UIItem {
         },
         <UIUtil.ImageParams>{
             type: UIUtil.RecvType.IMAGE,
-            storeImgURL: ((url, picPromise) => { this.url = url; this.picPromise = picPromise; }).bind(this),
+            storeImgURL: ((url, picPromise) => { this.url = url; this.picPromise = picPromise; console.log(this.picPromise); }).bind(this),
         }
     ];
     //the actual update callback

@@ -19,12 +19,15 @@ class SchedDataManage implements DataInterface {
         keyPath: 'key',
         keys: StoreSchedUtil.SCHED_KEYS
     };
-
+    //database
+    private db: IDBDatabase;
+    //setDB func
+    setDB(db: IDBDatabase) { this.db = db; }
     //same as update, but we don't do any checking
-    overwriteData(db: IDBDatabase, data: any): Promise<any> {
+    overwriteData(data: any): Promise<any> {
         //cast
         data = data as Array<StoreSchedUtil.StoreSchedule>;
-        let objectStore = db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
+        let objectStore = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
         return new Promise((resolve, reject) => {
             //delete the whole database
             let req = objectStore.clear();
@@ -45,16 +48,16 @@ class SchedDataManage implements DataInterface {
     }
 
     //this update function is simple: if we got data, overwrite
-    updataData(db: IDBDatabase, data: any): Promise<boolean> | false {
+    updataData(data: any): Promise<boolean> | false {
         //cast
         data = data as Array<StoreSchedUtil.StoreSchedule>;
         //do marginal checking
-        if (data.length > 0) return this.overwriteData(db, data).then(() => { return true; });
+        if (data.length > 0) return this.overwriteData(data).then(() => { return true; });
         return false;
     }
 
     //get the utility class and send it to the super class
-    getData(db: IDBDatabase): ScheduleData { return new ScheduleData(db, this.dbInfo.storeName); }
+    getData(): ScheduleData { return new ScheduleData(this.db, this.dbInfo.storeName); }
 }
 
 export = SchedDataManage;
