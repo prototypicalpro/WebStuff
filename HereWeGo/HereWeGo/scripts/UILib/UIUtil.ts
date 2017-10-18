@@ -70,7 +70,7 @@ namespace UIUtil {
     }
     export interface ImageParams extends RecvParams {
         //just a callback...
-        storeImgURL(url: string);
+        storeImgURL(thumbUrl: string, picPromise: Promise<string>);
     }
     //interfaces to describe handlers for the different things that need to be injected
     //event data handler

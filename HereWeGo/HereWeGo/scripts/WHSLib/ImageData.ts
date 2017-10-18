@@ -12,11 +12,13 @@ class ImageData implements UIUtil.ImageHandle {
     //db pointer
     private readonly db: IDBDatabase;
     private readonly name: string;
+    private readonly picPromise: Promise<any>;
     private lastDay: number;
     //constructor
-    constructor(db: IDBDatabase, name: string) {
+    constructor(db: IDBDatabase, name: string, picPromise: Promise<any>) {
         this.db = db;
         this.name = name;
+        this.picPromise = picPromise;
     }
     //aaand the magic
     getImage(obj: Array<UIUtil.ImageParams>): Promise<any> | void {
@@ -37,9 +39,25 @@ class ImageData implements UIUtil.ImageHandle {
                 console.log("no data");
                 return;
             }
-            let url = URL.createObjectURL(data.target.result.image);
+            let url = URL.createObjectURL(data.target.result.thumb);
             //fill all the objects
-            for (let i = 0, len = obj.length; i < len; i++) obj[i].storeImgURL(url);
+            for (let i = 0, len = obj.length; i < len; i++) obj[i].storeImgURL(
+                url,
+                new Promise((resolve, reject) => {
+                    return this.picPromise;
+                }).then(() => {
+                    //search database for todays time
+                    return new Promise((resolve, reject) => {
+                        //get todays image
+                        let req = this.db.transaction([this.name], "readonly").objectStore(this.name).get(day);
+                        let image;
+                        req.onsuccess = resolve;
+                        req.onerror = reject;
+                    });
+                }).then((img: ImageInterface) => {
+                    return URL.createObjectURL(img.image);
+                })
+            );
         });
     }
 }

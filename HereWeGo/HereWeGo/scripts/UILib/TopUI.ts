@@ -16,6 +16,9 @@ class TopUI extends UIUtil.UIItem {
     private day: Date;
     //storage image url
     private url: string;
+    //storage promise with the real image url
+    private picPromise: Promise<string>;
+    private bigURL: string;
     //actual members for optimization
     private lastIndex: number;
     //gethtml doesn't do anything since we already built the html for this component
@@ -25,8 +28,17 @@ class TopUI extends UIUtil.UIItem {
     //callback for init
     //we'll just operate in document quiries
     onInit(): void {
-        //set background image
-        HTMLMap.setBackImg(this.url);
+        if (!this.bigURL) {
+            //set background image
+            HTMLMap.setBackImg(this.url);
+            this.picPromise.then((url: string) => {
+                //and promise to set the real image once its loaded
+                HTMLMap.setBackImg(url);
+                this.bigURL = url;
+            });
+        }
+        else HTMLMap.setBackImg(this.bigURL);
+
         if (!this.schedule) {
             HTMLMap.timeText.innerHTML = TimeFormatUtil.asSmallTime(this.day);
             HTMLMap.backText.innerHTML = "";
@@ -86,7 +98,7 @@ class TopUI extends UIUtil.UIItem {
         },
         <UIUtil.ImageParams>{
             type: UIUtil.RecvType.IMAGE,
-            storeImgURL: ((url) => { this.url = url; }).bind(this),
+            storeImgURL: ((url, picPromise) => { this.url = url; this.picPromise = picPromise; }).bind(this),
         }
     ];
     //the actual update callback

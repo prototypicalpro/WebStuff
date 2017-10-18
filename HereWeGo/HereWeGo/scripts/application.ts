@@ -116,7 +116,7 @@ function onDeviceReady(): void {
     if ((<any>cordova).InAppBrowser) window.open = (<any>cordova).InAppBrowser.open;
 
     //browsertab
-    (<any>cordova).plugins.browsertab.isAvailable((result) => browserTabWorks = result);
+    //(<any>cordova).plugins.browsertab.isAvailable((result) => browserTabWorks = result);
 
     let start: number = performance.now();
     const today = new Date();
@@ -149,6 +149,7 @@ function onDeviceReady(): void {
     }).catch((err) => {
         console.log(ErrorUtil.code[err]);
         console.log(err);
+        throw err;
     });
 }
 
