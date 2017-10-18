@@ -23,11 +23,15 @@ class CalDataManage implements DataInterface {
         keyPath: 'id',
         keys: EVENT_KEYS
     }
-
-    updataData(db: IDBDatabase, data: any): Promise<boolean> | false {
+    //database
+    private db: IDBDatabase;
+    //setDB func
+    setDB(db: IDBDatabase) { this.db = db; }
+    //yeah
+    updataData(data: any): Promise<boolean> | false {
         //if it's indexedDB, this should be pretty easy
         data = data as Array<EventInterface>;
-        let objectStore = db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
+        let objectStore = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
         //moar promises!
         return new Promise((resolve, reject) => {
             //iterate through all elements, removing the ones before today
@@ -64,10 +68,10 @@ class CalDataManage implements DataInterface {
         //return if we got a data array
     }
 
-    overwriteData(db: IDBDatabase, data: any): Promise<any> {
+    overwriteData(data: any): Promise<any> {
         //cast
         data = data as Array<EventInterface>;
-        let objectStore: IDBObjectStore = db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
+        let objectStore: IDBObjectStore = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
         //promises! yay!
         return new Promise((resolve, reject) => {
             //clear object store
@@ -90,7 +94,7 @@ class CalDataManage implements DataInterface {
     }
 
     //return that database thingymajigger
-    getData(db: IDBDatabase) { return new EventData(db, this.dbInfo.storeName); }
+    getData() { return new EventData(this.db, this.dbInfo.storeName); }
 }
 
 export = CalDataManage;

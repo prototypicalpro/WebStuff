@@ -138,6 +138,7 @@ function onDeviceReady(): void {
         if (getNewDataVar) return data.getNewData().then(buildObjs).then(buildUI.bind(this));
         return data.refreshData().then(() => { return uiThing.trigger([UIUtil.TRIGGERED.UPDATE_ALL_DATA]); });
     }).catch((err: any) => {
+        console.log(err);
         if (err === ErrorUtil.code.HTTP_FAIL) setTimeout(toastError, 1000, "This phone is unsupported!");
         else if (err === ErrorUtil.code.NO_INTERNET || err === ErrorUtil.code.BAD_RESPONSE) setTimeout(toastError, 1000, "No Internet available!");
         else throw err;
