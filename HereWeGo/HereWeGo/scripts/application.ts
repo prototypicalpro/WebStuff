@@ -46,60 +46,12 @@ var uiThing: UIData;
 var timeCallbackID;
 var browserTabWorks: boolean;
 
-//UI!
 //frontpage graphic
 var top: TopUI = new TopUI();
 //sidemenu
-var menu: MenuUI = new MenuUI(
-    //top menu section buttons
-    ButtonUI.Factory('SMItem', 'SMItemText', [
-        {
-            text: 'Map',
-            icon: 'map.png',
-            callback: urlCallback('https://docs.google.com/viewerng/viewer?url=https://www.pps.net//cms/lib/OR01913224/Centricity/Domain/760/Wilson_Building_Map.pdf'),
-        },
-        {
-            text: 'Student VUE',
-            icon: 'grade.png',
-            callback: urlCallback('https://parent-portland.cascadetech.org/portland/Login_Student_PXP.aspx'),
-        },
-        {
-            text: 'Daily Bulletin',
-            icon: 'list.png',
-            callback: urlCallback('https://script.google.com/a/koontzs.com/macros/s/AKfycbxyS4utDJEJ3bE2spSE4SIRlwj10M2Owbe7_XWrOFSobfniQjve/exec?bul="glorified bookmark"'),
-        },
-        {
-            text: 'Naviance',
-            icon: 'university.png',
-            callback: urlCallback('https://connection.naviance.com/family-connection/auth/login/?hsid=wilsonor'),
-        },
-        {
-            text: 'Website',
-            icon: 'share.png',
-            callback: urlCallback('https://www.pps.net/Domain/162'),
-        }
-    ]),
-    (<Array<UIUtil.UIItem>>[new QuoteUI('quote', 36)]).concat(
-        ButtonUI.Factory('SMItem', 'SMItemText', [
-            {
-                text: 'Settings',
-                icon: 'gear.png',
-                callback: urlCallback('http://niceme.me/'),
-            },
-        ])
-    ),
-);
-var slide: SlideTabUI = new SlideTabUI([
-    //first page 
-    [
-        new ScheduleGraphic(0),
-        new EventGraphic('Today', 0, false),
-        new EventGraphic('Tomorrow', 1, true),
-        new EventGraphic(TimeFormatUtil.asFullDayText(new Date().getDay() + 2), 2, true),
-    ]
-    //second page?
-    //naw
-], ['Home', 'Schedule', 'Credit']);
+var menu: MenuUI;
+//slider thingy
+var slide: SlideTabUI;
 
 export function initialize(): void {
     document.addEventListener('deviceready', onDeviceReady, false);
@@ -121,7 +73,7 @@ function onDeviceReady(): void {
     let start: number = performance.now();
     const today = new Date();
     //grabby grabby
-    data.initData().then(buildObjs).then(buildUI).then(() => {
+    data.initData().then(earlyInit).then(buildUI).then(() => {
         let end: number = performance.now();
         console.log("Init took: " + (end - start));
     }).catch((err) => {
@@ -135,7 +87,7 @@ function onDeviceReady(): void {
             throw ErrorUtil.code.HTTP_FAIL;
         }
         //grab them datums
-        if (getNewDataVar) return data.getNewData().then(buildObjs).then(buildUI.bind(this));
+        if (getNewDataVar) return data.getNewData().then(buildUI);
         return data.refreshData().then(() => { return uiThing.trigger([UIUtil.TRIGGERED.UPDATE_ALL_DATA]); });
     }).catch((err: any) => {
         console.log(err);
@@ -154,7 +106,71 @@ function onDeviceReady(): void {
     });
 }
 
-function buildObjs(): void {
+function earlyInit(): Promise<any> {
+    //start up the early data stuff
+    const calData: EventData = data.returnData(DataIndex.EVENTS);
+    const schedData: ScheduleData = data.returnData(DataIndex.SCHED);
+    const quoteData: QuoteData = data.returnData(DataIndex.QUOTE);
+    const myData: any = data.returnData(DataIndex.IMAGE);
+    //give the top all the data it needs
+    uiThing = new UIData(schedData, calData, new DayHandler(), quoteData, myData, [top]);
+    //power up!
+    return uiThing.initInject().then(uiThing.initRun.bind(uiThing));
+}
+
+function buildUI(): Promise<any> {
+    //contruct menu
+    menu = new MenuUI(
+        //top menu section buttons
+        ButtonUI.Factory('SMItem', 'SMItemText', [
+            {
+                text: 'Map',
+                icon: 'map.png',
+                callback: urlCallback('https://docs.google.com/viewerng/viewer?url=https://www.pps.net//cms/lib/OR01913224/Centricity/Domain/760/Wilson_Building_Map.pdf'),
+            },
+            {
+                text: 'Student VUE',
+                icon: 'grade.png',
+                callback: urlCallback('https://parent-portland.cascadetech.org/portland/Login_Student_PXP.aspx'),
+            },
+            {
+                text: 'Daily Bulletin',
+                icon: 'list.png',
+                callback: urlCallback('https://script.google.com/a/koontzs.com/macros/s/AKfycbxyS4utDJEJ3bE2spSE4SIRlwj10M2Owbe7_XWrOFSobfniQjve/exec?bul="glorified bookmark"'),
+            },
+            {
+                text: 'Naviance',
+                icon: 'university.png',
+                callback: urlCallback('https://connection.naviance.com/family-connection/auth/login/?hsid=wilsonor'),
+            },
+            {
+                text: 'Website',
+                icon: 'share.png',
+                callback: urlCallback('https://www.pps.net/Domain/162'),
+            }
+        ]),
+        (<Array<UIUtil.UIItem>>[new QuoteUI('quote', 36)]).concat(
+            ButtonUI.Factory('SMItem', 'SMItemText', [
+                {
+                    text: 'Settings',
+                    icon: 'gear.png',
+                    callback: urlCallback('http://niceme.me/'),
+                },
+            ])
+        ),
+    );
+    //and slider tab thingy
+    slide = new SlideTabUI([
+        //first page 
+        [
+            new ScheduleGraphic(0),
+            new EventGraphic('Today', 0, false),
+            new EventGraphic('Tomorrow', 1, true),
+            new EventGraphic(TimeFormatUtil.asFullDayText(new Date().getDay() + 2), 2, true),
+        ]
+        //second page?
+        //naw
+    ], ['Home', 'Schedule', 'Credit']);
     //start up the early data stuff
     const calData: EventData = data.returnData(DataIndex.EVENTS);
     const schedData: ScheduleData = data.returnData(DataIndex.SCHED);
@@ -162,15 +178,15 @@ function buildObjs(): void {
     const myData: any = data.returnData(DataIndex.IMAGE);
     //give the top all the data it needs
     uiThing = new UIData(schedData, calData, new DayHandler(), quoteData, myData, [top, slide, menu]);
-}
-
-function buildUI(): Promise<any> {
+    //init
     return uiThing.initInject().then(() => {
         //set HTML
         HTMLMap.setSliderHTML(slide.getHTML());
         HTMLMap.setSideMenuHTML(menu.getHTML());
         //then tell it to go!
         uiThing.initRun();
+        //and finish with the cherry on top
+        top.useBetterImage();
     });
 }
 

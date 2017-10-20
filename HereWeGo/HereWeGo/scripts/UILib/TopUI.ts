@@ -28,22 +28,6 @@ class TopUI extends UIUtil.UIItem {
     //callback for init
     //we'll just operate in document quiries
     onInit(): void {
-        if (!this.bigURL) {
-            //set background image
-            HTMLMap.setBackLowRes(this.url);
-            console.log("thumb! " + performance.now());
-            console.log(this.picPromise);
-            this.picPromise.then((url: string) => {
-                //and promise to set the real image once its loaded
-                HTMLMap.setBackImg(url);
-                this.bigURL = url;
-                let now = performance.now();
-                console.log("pic! " + now);
-                return;
-            });
-        }
-        else HTMLMap.setBackImg(this.bigURL);
-
         if (!this.schedule) {
             HTMLMap.timeText.innerHTML = TimeFormatUtil.asSmallTime(this.day);
             HTMLMap.backText.innerHTML = "";
@@ -90,6 +74,9 @@ class TopUI extends UIUtil.UIItem {
             }
             HTMLMap.backText.innerHTML = this.schedule.getName()[0];
         }
+        //background image
+        if (this.bigURL) HTMLMap.setBackImg(this.bigURL);
+        else HTMLMap.setBackImg(this.url);
     }
     recv: Array<UIUtil.RecvParams> = [
         <UIUtil.SchedParams>{
@@ -103,7 +90,7 @@ class TopUI extends UIUtil.UIItem {
         },
         <UIUtil.ImageParams>{
             type: UIUtil.RecvType.IMAGE,
-            storeImgURL: ((url, picPromise) => { this.url = url; this.picPromise = picPromise; console.log(this.picPromise); }).bind(this),
+            storeImgURL: ((url, picPromise) => { this.url = url; this.picPromise = picPromise; }).bind(this),
         }
     ];
     //the actual update callback
@@ -127,6 +114,26 @@ class TopUI extends UIUtil.UIItem {
                 else this.onInit();
             }
         }
+    }
+
+    //tell topUI to start using the non-thumbnail
+    useBetterImage(): void {
+        //background image
+        if (!this.bigURL) {
+            //set background image
+            HTMLMap.setBackLowRes(this.url);
+            console.log("thumb! " + performance.now());
+            this.picPromise.then((url: string) => {
+                //and promise to set the real image once its loaded
+                //it's funny b/c the image actually loads too fast: I need to stagger it before there's a performance benefit
+                setTimeout(HTMLMap.setBackImg, 50, url);
+                this.bigURL = url;
+                let now = performance.now();
+                console.log("pic! " + now);
+                return;
+            });
+        }
+        else HTMLMap.setBackImg(this.bigURL);
     }
 }
 

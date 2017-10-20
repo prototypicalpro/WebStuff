@@ -10,8 +10,7 @@ import { DBInfoInterface } from '../DBLib/DBManage';
 import UIUtil = require('../UILib/UIUtil');
 import ErrorUtil = require('../ErrorUtil');
 
-const PIC_URL: string = 'https://drive.google.com/a/koontzs.com/uc?id=';
-const THUMB_URL: string = 'https://drive.google.com/thumbnail?authuser=0&sz=w180&id='; 
+const THUMB_URL: string = 'https://drive.google.com/thumbnail?authuser=0&sz=h{{height}}&id={{id}}'; 
 
 class ImageDataManage implements DataInterface, UIUtil.ImageHandle {
     //database stuff
@@ -136,11 +135,10 @@ class ImageDataManage implements DataInterface, UIUtil.ImageHandle {
     private getAndStoreImagesFromArray(imgs: Array<ImageInterface>): Promise<any> {
         let fetchArray = [];
         let picArray = [];
-        console.log(imgs);
         //any leftover items in data will not have been found in the database, which means we gotta fetch em and then add em to the database
         for (let i = 0, len = imgs.length; i < len; i++) {
-            //fetch thumnails and store them
-            fetchArray.push(this.http.getAsBlob(THUMB_URL + imgs[i].id).then((blob: Blob) => {
+            //fetch half width thumnails and store them
+            fetchArray.push(this.http.getAsBlob(UIUtil.templateEngine(THUMB_URL, { height: Math.floor(screen.height / 2), id: imgs[i].id })).then((blob: Blob) => {
                 return new Promise((resolve, reject) => {
                     let put = imgs[i];
                     //save the image
@@ -151,7 +149,7 @@ class ImageDataManage implements DataInterface, UIUtil.ImageHandle {
                 });
             }));
             //async start fetching the real pictures
-            picArray.push(this.http.getAsBlob(PIC_URL + imgs[i].id).then((blob: Blob) => {
+            picArray.push(this.http.getAsBlob(UIUtil.templateEngine(THUMB_URL, { height: screen.height, id: imgs[i].id })).then((blob: Blob) => {
                 //get the existing object
                 return new Promise((resolve, reject) => {
                     let req = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName).get(imgs[i].showDay);
@@ -170,9 +168,9 @@ class ImageDataManage implements DataInterface, UIUtil.ImageHandle {
             }));
         }
         //setup pic promise
-        console.log("picpromise");
-        this.picPromise = Promise.all(picArray).then((() => { this.picPromise = null; }).bind(this));
-        return Promise.all(fetchArray);
+        return Promise.all(fetchArray).then(() => {
+            this.picPromise = Promise.all(picArray);
+        }).then((() => { this.picPromise = null; }).bind(this));;
     }
 }
 
