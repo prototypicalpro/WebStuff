@@ -68,7 +68,7 @@ function onDeviceReady(): void {
     if ((<any>cordova).InAppBrowser) window.open = (<any>cordova).InAppBrowser.open;
 
     //browsertab
-    //(<any>cordova).plugins.browsertab.isAvailable((result) => browserTabWorks = result);
+    (<any>cordova).plugins.browsertab.isAvailable((result) => browserTabWorks = result);
 
     let start: number = performance.now();
     const today = new Date();
@@ -115,7 +115,7 @@ function earlyInit(): Promise<any> {
     //give the top all the data it needs
     uiThing = new UIData(schedData, calData, new DayHandler(), quoteData, myData, [top]);
     //power up!
-    return uiThing.initInject().then(uiThing.initRun.bind(uiThing));
+    return uiThing.initInject().then(uiThing.initRun.bind(uiThing)).then(navigator.splashscreen.hide);
 }
 
 function buildUI(): Promise<any> {

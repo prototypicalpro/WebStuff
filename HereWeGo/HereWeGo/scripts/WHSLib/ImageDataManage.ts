@@ -133,44 +133,46 @@ class ImageDataManage implements DataInterface, UIUtil.ImageHandle {
     }
 
     private getAndStoreImagesFromArray(imgs: Array<ImageInterface>): Promise<any> {
-        let fetchArray = [];
-        let picArray = [];
         //any leftover items in data will not have been found in the database, which means we gotta fetch em and then add em to the database
-        for (let i = 0, len = imgs.length; i < len; i++) {
-            //fetch half width thumnails and store them
-            fetchArray.push(this.http.getAsBlob(UIUtil.templateEngine(THUMB_URL, { height: Math.floor(screen.height / 2), id: imgs[i].id })).then((blob: Blob) => {
+        //fetch half width thumnails and store them
+        let fetchArray = imgs.map((img) => {
+            return this.http.getAsBlob(UIUtil.templateEngine(THUMB_URL, { height: Math.floor(screen.height / 2), id: img.id })).then((blob: Blob) => {
                 return new Promise((resolve, reject) => {
-                    let put = imgs[i];
+                    let put = img;
                     //save the image
                     put.thumb = blob;
                     let req = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName).put(put);
                     req.onsuccess = resolve;
                     req.onerror = reject;
                 });
-            }));
-            //async start fetching the real pictures
-            picArray.push(this.http.getAsBlob(UIUtil.templateEngine(THUMB_URL, { height: screen.height, id: imgs[i].id })).then((blob: Blob) => {
-                //get the existing object
-                return new Promise((resolve, reject) => {
-                    let req = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName).get(imgs[i].showDay);
-                    req.onsuccess = resolve;
-                    req.onerror = reject;
-                }).then((event: any) => {
-                    //update, then store the new object with the image
-                    let old: ImageInterface = event.target.result;
-                    old.image = blob;
+            });
+        });
+
+        //setup pic promise
+        this.picPromise = Promise.all(fetchArray).then(() => {
+            return Promise.all(imgs.map((img) => {
+                //async start fetching the real pictures
+                return this.http.getAsBlob(UIUtil.templateEngine(THUMB_URL, { height: screen.height, id: img.id })).then((blob: Blob) => {
+                    //get the existing object
                     return new Promise((resolve, reject) => {
-                        let req = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName).put(old);
+                        let req = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName).get(img.showDay);
                         req.onsuccess = resolve;
                         req.onerror = reject;
+                    }).then((event: any) => {
+                        //update, then store the new object with the image
+                        let old: ImageInterface = event.target.result;
+                        old.image = blob;
+                        return new Promise((resolve, reject) => {
+                            let req = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName).put(old);
+                            req.onsuccess = resolve;
+                            req.onerror = reject;
+                        });
                     });
                 });
             }));
-        }
-        //setup pic promise
-        return Promise.all(fetchArray).then(() => {
-            this.picPromise = Promise.all(picArray);
         }).then((() => { this.picPromise = null; }).bind(this));;
+        //dooo eet
+        return Promise.all(fetchArray);
     }
 }
 
