@@ -51,7 +51,7 @@ class QuoteUI extends UIUtil.UIItem {
         let quotefix = '';
         let tempQuote: string = this.quoteStore.quote;
         //add breaklines to quote so we don't overflow
-        while (tempQuote.length >= this.maxLen) {
+        while (tempQuote.length > this.maxLen) {
             //work on the substring ending at the 64th char
             //starting at the 64th char, and work backwards until we find a space
             let breakPoint = tempQuote.slice(0, this.maxLen).lastIndexOf(' ');

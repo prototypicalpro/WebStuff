@@ -79,6 +79,7 @@ function onDeviceReady(): void {
     }).catch((err) => {
         console.log(err);
         if (err === ErrorUtil.code.NO_STORED) return true;
+        if (err === ErrorUtil.code.NO_IMAGE) return true;
         else throw err;
     }).then((getNewDataVar: any): any => {
         //start up http
@@ -88,7 +89,7 @@ function onDeviceReady(): void {
         }
         //grab them datums
         if (getNewDataVar) return data.getNewData().then(buildUI);
-        return data.refreshData().then(() => { return uiThing.trigger([UIUtil.TRIGGERED.UPDATE_ALL_DATA]); });
+        return data.refreshData().then(() => { return uiThing.trigger([UIUtil.TRIGGERED.UPDATE_ALL_DATA]); }).catch(() => { return data.getNewData().then(buildUI); });
     }).catch((err: any) => {
         console.log(err);
         if (err === ErrorUtil.code.HTTP_FAIL) setTimeout(toastError, 1000, "This phone is unsupported!");
@@ -187,6 +188,7 @@ function buildUI(): Promise<any> {
         uiThing.initRun();
         //and finish with the cherry on top
         top.useBetterImage();
+        navigator.splashscreen.hide();
     });
 }
 

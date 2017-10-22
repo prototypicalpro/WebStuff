@@ -77,8 +77,13 @@ class DataManage {
                 this.lastSyncTime = parseInt(lastSync);
                 return resolve();
             }),
-            DBManage.constructDB(this.dataObj.map((data) => { return data.dbInfo; })).then((db: IDBDatabase) => {
+            DBManage.constructDB(this.dataObj.map((data) => { return data.dbInfo; })).then((dbThings: IDBDatabase | Array<IDBDatabase | boolean>) => {
+                let db: IDBDatabase;
+                if (Array.isArray(dbThings)) db = <IDBDatabase>dbThings[0];
+                else db = <IDBDatabase>dbThings;
                 for (let i = 0, len = this.dataObj.length; i < len; i++) this.dataObj[i].setDB(db);
+                //check for no stored
+                if (Array.isArray(dbThings) && dbThings[1]) throw ErrorUtil.code.NO_STORED;
             })
         ];
         return Promise.all(ray);

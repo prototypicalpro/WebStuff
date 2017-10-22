@@ -107,10 +107,7 @@ class ImageDataManage implements DataInterface, UIUtil.ImageHandle {
             req.onerror = reject;
         }).then((data: any) => {
             //TODO: FIX WHEN WE DON'T AHVE AN IMAGE
-            if (!data.target.result) {
-                console.log("no data");
-                return;
-            }
+            if (!data.target.result) throw ErrorUtil.code.NO_IMAGE;
             //fill all the objects
             for (let i = 0, len = obj.length; i < len; i++) obj[i].storeImgURL(
                 URL.createObjectURL(data.target.result.thumb),
@@ -129,6 +126,8 @@ class ImageDataManage implements DataInterface, UIUtil.ImageHandle {
                     }));
                 })
             );
+        }).catch(() => {
+            throw ErrorUtil.code.NO_IMAGE;
         });
     }
 
