@@ -116,7 +116,7 @@ function earlyInit(): Promise<any> {
     //give the top all the data it needs
     uiThing = new UIData(schedData, calData, new DayHandler(), quoteData, myData, [top]);
     //power up!
-    return uiThing.initInject().then(uiThing.initRun.bind(uiThing)).then(navigator.splashscreen.hide);
+    return uiThing.initInject().then(uiThing.initRun.bind(uiThing)).then(() => setTimeout(navigator.splashscreen.hide, 50));
 }
 
 function buildUI(): Promise<any> {

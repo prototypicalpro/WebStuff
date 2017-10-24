@@ -135,7 +135,7 @@ class ImageDataManage implements DataInterface, UIUtil.ImageHandle {
         //any leftover items in data will not have been found in the database, which means we gotta fetch em and then add em to the database
         //fetch half width thumnails and store them
         let fetchArray = imgs.map((img) => {
-            return this.http.getAsBlob(UIUtil.templateEngine(THUMB_URL, { height: Math.floor(screen.height / 2), id: img.id })).then((blob: Blob) => {
+            return this.http.getAsBlob(UIUtil.templateEngine(THUMB_URL, { height: Math.floor(screen.height / 4), id: img.id })).then((blob: Blob) => {
                 return new Promise((resolve, reject) => {
                     let put = img;
                     //save the image
