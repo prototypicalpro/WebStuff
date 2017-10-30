@@ -122,6 +122,11 @@ class TopUI extends UIUtil.UIItem {
         if (!this.bigURL) {
             //set background image
             HTMLMap.setBackLowRes(this.url);
+            //and set the splashscreen to hide after it finishes
+            let load = new Image();
+            load.onload = navigator.splashscreen.hide;
+            load.src = this.url;
+
             console.log("thumb! " + performance.now());
             this.picPromise.then((url: string) => {
                 //and promise to set the real image once its loaded
