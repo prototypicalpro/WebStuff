@@ -89,7 +89,9 @@ class ScheduleData implements UIUtil.SchedHandle {
         //step two: get the relevant events
         return Promise.all(days.map((day: dayObj) => {
             //today plus whatever specified by object
-            let time = new Date().setHours(0, 0, 0, 0) + day.day * 86400000;
+            let tempDay = new Date();
+            tempDay.setHours(0, 0, 0, 0);
+            let time = tempDay.setDate(tempDay.getDate() + day.day);
             return event.getScheduleKey(time).then((key: string) => {
                 //do a database query for the key
                 //if there is a key

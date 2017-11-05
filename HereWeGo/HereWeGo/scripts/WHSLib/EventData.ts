@@ -78,9 +78,12 @@ class EventData implements UIUtil.EventHandle {
         //first get all the days, then map them to promises with database info, inside of which we run the functions!
         return Promise.all(days.map((day: dayObj) => {
             //date stuff
-            let start = new Date().setHours(0, 0, 0, 0) + day.day * 86400000;
+            //today plus whatever specified by object
+            let tempDay = new Date();
+            tempDay.setHours(0, 0, 0, 0);
+            let start = tempDay.setDate(tempDay.getDate() + day.day);
             //add one day minus one millisecond
-            let end = start + 86399999;
+            let end = tempDay.setDate(tempDay.getDate() + 1) - 1;
             //db stuff!
             return new Promise((resolve) => {
                 let req: IDBRequest = this.db.transaction([this.objName], "readonly").objectStore(this.objName).index('startTime').openCursor(IDBKeyRange.bound(start, end));
