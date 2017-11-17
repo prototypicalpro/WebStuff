@@ -28,9 +28,9 @@ class CalDataManage implements DataInterface {
     //setDB func
     setDB(db: IDBDatabase) { this.db = db; }
     //yeah
-    updataData(data: any): Promise<boolean> | false {
+    updataData(cloud: any): Promise<boolean> | false {
         //if it's indexedDB, this should be pretty easy
-        data = data as Array<EventInterface>;
+        let data: Array<EventInterface> = this.inflateEventData(cloud);
         let objectStore = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
         //moar promises!
         return new Promise((resolve, reject) => {
@@ -68,9 +68,9 @@ class CalDataManage implements DataInterface {
         //return if we got a data array
     }
 
-    overwriteData(data: any): Promise<any> {
+    overwriteData(cloud: any): Promise<any> {
         //cast
-        data = data as Array<EventInterface>;
+        let data: Array<EventInterface> = this.inflateEventData(cloud);
         let objectStore: IDBObjectStore = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
         //promises! yay!
         return new Promise((resolve, reject) => {
@@ -95,6 +95,20 @@ class CalDataManage implements DataInterface {
 
     //return that database thingymajigger
     getData() { return new EventData(this.db, this.dbInfo.storeName); }
+
+    //private utility function to uncompress data from the cloud
+    private inflateEventData(data: Array<Array<any>>): Array<EventInterface> {
+        return data.map((ray) => {
+            return {
+                id: ray[0],
+                schedule: ray[1],
+                title: ray[2],
+                startTime: ray[3],
+                endTime: ray[4],
+                isAllDay: ray[5],
+            };
+        });
+    }
 }
 
 export = CalDataManage;
