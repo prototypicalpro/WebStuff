@@ -14,7 +14,6 @@ import DataInterface = require('./DataInterface');
 import ScheduleUtil = require('./ScheduleUtil');
 import DBManage = require('../DBLib/DBManage');
 import ErrorUtil = require('../ErrorUtil');
-import { TIME_CACHE_KEY } from './CacheKeys';
 
 const URL: string = 'https://script.google.com/macros/s/AKfycbxyS4utDJEJ3bE2spSE4SIRlwj10M2Owbe7_XWrOFSobfniQjve/exec';
 
@@ -38,7 +37,7 @@ class DataManage {
         return this.http.get(URL).then((data) => {
             //update sync time
             this.lastSyncTime = Date.now();
-            localStorage.setItem(TIME_CACHE_KEY, this.lastSyncTime.toString());
+            localStorage.setItem("1", this.lastSyncTime.toString());
             return data;
         });
     }

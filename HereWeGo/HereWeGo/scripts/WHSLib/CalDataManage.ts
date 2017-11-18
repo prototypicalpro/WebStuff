@@ -7,15 +7,15 @@
 //TODO: update gscript to handle event cancellations
 //also idk if any of this works yet, so test
 
-import DataInterface = require('./DataInterface');
-import EventInterface = require('./EventInterface');
-import EventData = require('./EventData');
+import EventData = require('./Interfaces/EventData');
 import DBManage = require('../DBLib/DBManage');
+import SyncableCache = require('./SyncableCache');
+import UIUtil = require('../UILib/UIUtil');
 
 //special consant for a special situation
 const EVENT_KEYS = ['isAllDay', 'startTime', 'endTime', 'title', 'schedule'];
 
-class CalDataManage implements DataInterface {
+class CalDataManage extends SyncableCache {
     readonly dataKey: string = 'calSyncData';
     //database info
     readonly dbInfo: DBManage.DBInfoInterface = {
@@ -23,23 +23,30 @@ class CalDataManage implements DataInterface {
         keyPath: 'id',
         keys: EVENT_KEYS
     }
-    //database
-    private db: IDBDatabase;
-    //setDB func
-    setDB(db: IDBDatabase) { this.db = db; }
-    //yeah
-    updataData(cloud: any): Promise<boolean> | false {
-        //if it's indexedDB, this should be pretty easy
-        let data: Array<EventInterface> = this.inflateEventData(cloud);
-        let objectStore = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
-        //moar promises!
+
+    //private utility function to uncompress data from the cloud
+    protected inflateCloudData(data: Array<Array<any>>): Array<EventData.EventInterface> {
+        return data.map((item: Array<any>) => {
+            return {
+                id: item[EventData.CloudEventEnum.id],
+                schedule: !!item[EventData.CloudEventEnum.schedule],
+                title: item[EventData.CloudEventEnum.title],
+                startTime: item[EventData.CloudEventEnum.startTime],
+                endTime: item[EventData.CloudEventEnum.endTime],
+                isAllDay: !!item[EventData.CloudEventEnum.isAllDay],
+            };
+        });
+    }
+
+    //and the pruning function, to remove any events which are before today
+    protected prune(store: IDBObjectStore): Promise<any> {
         return new Promise((resolve, reject) => {
             //iterate through all elements, removing the ones before today
             let nowDay: Date = new Date();
             nowDay.setHours(0, 0, 0, 0);
             let nowTime: number = nowDay.getTime();
             //remove if old
-            objectStore.openCursor(IDBKeyRange.upperBound(nowTime, true)).onsuccess = (event: any) => {
+            store.openCursor(IDBKeyRange.upperBound(nowTime, true)).onsuccess = (event: any) => {
                 let cursor = event.target.result as IDBCursorWithValue;
                 if (cursor) {
                     cursor.delete();
@@ -47,67 +54,81 @@ class CalDataManage implements DataInterface {
                 }
                 else resolve();
             };
-        }).then(() => {
-            //then do a buncha quuuueirereis to update the database entries
-            //but put it all in promises just to be sure
-            let ray: Array<Promise<any>> = [];
-            for (let i = 0, len = data.length; i < len; i++) {
-                if ('cancelled' in data[i]) ray.push(new Promise((resolve, reject) => {
-                    let req = objectStore.delete(data[i].id);
-                    req.onsuccess = resolve;
-                    req.onerror = reject;
-                }));
-                else ray.push(new Promise((resolve, reject) => {
-                    let req = objectStore.put(data[i]);
-                    req.onsuccess = resolve;
-                    req.onerror = reject;
-                }));
-            }
-            return Promise.all(ray);
-        }).then(() => { return data.length > 0; }); 
-        //return if we got a data array
+        });
     }
 
-    overwriteData(cloud: any): Promise<any> {
-        //cast
-        let data: Array<EventInterface> = this.inflateEventData(cloud);
-        let objectStore: IDBObjectStore = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
-        //promises! yay!
+    /**
+     * Data functions
+     */
+
+    //other more interesting functions
+    //gets the schedule key for today, the lazy way of course
+    getScheduleKey(start: number): Promise<string> {
         return new Promise((resolve, reject) => {
-            //clear object store
-            let req: IDBRequest = objectStore.clear();
-            req.onsuccess = resolve;
+            let req = this.db.transaction([this.dbInfo.storeName], "readonly").objectStore(this.dbInfo.storeName).index('schedule').openCursor(IDBKeyRange.only(1));
+            req.onsuccess = (event: any) => {
+                let cursor: IDBCursorWithValue = event.target.result;
+                if (cursor) {
+                    if (cursor.value.startTime === start) return resolve(cursor.value.title);
+                    else cursor.continue();
+                }
+                else resolve(null);
+            };
             req.onerror = reject;
-        }).then(() => {
-            //fill it with the new datums
-            let ray: Array<Promise<any>> = [];
-            for (let i = 0, len = data.length; i < len; i++) {
-                ray.push(new Promise((resolve, reject) => {
-                    let req = objectStore.add(data[i]);
-                    req.onsuccess = resolve;
-                    req.onerror = reject;
-                }));
-            }
-            //and run them all
-            return Promise.all(ray);
+        }).then((result) => {
+            if (!result) return null;
+            else return result;
         });
     }
 
-    //return that database thingymajigger
-    getData() { return new EventData(this.db, this.dbInfo.storeName); }
-
-    //private utility function to uncompress data from the cloud
-    private inflateEventData(data: Array<Array<any>>): Array<EventInterface> {
-        return data.map((ray) => {
-            return {
-                id: ray[0],
-                schedule: ray[1],
-                title: ray[2],
-                startTime: ray[3],
-                endTime: ray[4],
-                isAllDay: ray[5],
-            };
-        });
+    //UI handler interface madness!
+    getEvents(objs: Array<UIUtil.EventParams>): Promise<any> {
+        //step one: figure out the quiries to make
+        //sigh
+        interface dayObj {
+            day: number;
+            objs: Array<UIUtil.EventParams>;
+        }
+        //create an object with all the data we need to get and run the thigs
+        let days: Array<dayObj> = [];
+        for (let i = 0, len = objs.length; i < len; i++) {
+            let index = days.findIndex((day) => { return day.day === objs[i].day; })
+            if (index === -1) {
+                days.push({
+                    day: objs[i].day,
+                    objs: [objs[i]],
+                });
+            }
+            else days[index].objs.push(objs[i]);
+        }
+        //run the quiries!
+        //first get all the days, then map them to promises with database info, inside of which we run the functions!
+        return Promise.all(days.map((day: dayObj) => {
+            //date stuff
+            //today plus whatever specified by object
+            let tempDay = new Date();
+            tempDay.setHours(0, 0, 0, 0);
+            let start = tempDay.setDate(tempDay.getDate() + day.day);
+            //add one day minus one millisecond
+            let end = tempDay.setDate(tempDay.getDate() + 1) - 1;
+            //db stuff!
+            return new Promise((resolve) => {
+                let req: IDBRequest = this.db.transaction([this.dbInfo.storeName], "readonly").objectStore(this.dbInfo.storeName).index('startTime').openCursor(IDBKeyRange.bound(start, end));
+                req.onsuccess = (event: any) => {
+                    let cursor: IDBCursorWithValue = event.target.result;
+                    if (cursor) {
+                        if (!cursor.value.schedule) {
+                            //run it bby
+                            for (let i = 0, len = day.objs.length; i < len; i++) day.objs[i].storeEvent(cursor.value);
+                        }
+                        cursor.continue();
+                    }
+                    else return resolve();
+                };
+            });
+        }));
+        //it's now occurring to me how I should just iterate through the events instead of doing database stuff in parrellel,
+        //but I think it's a little late for that now
     }
 }
 

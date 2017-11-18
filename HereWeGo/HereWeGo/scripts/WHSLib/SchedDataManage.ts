@@ -5,7 +5,6 @@
 
 import DataInterface = require("./DataInterface");
 import DBManage = require('../DBLib/DBManage');
-import { SCHED_DB_NAME } from './CacheKeys';
 import StoreSchedUtil = require('./StoreSchedUtil');
 import ScheduleData = require('./ScheduleData');
 

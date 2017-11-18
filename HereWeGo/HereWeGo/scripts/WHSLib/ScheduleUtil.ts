@@ -2,15 +2,17 @@
  * Library which makes schedule data semi-accesible
  */
 
+import ScheduleData = require('./Interfaces/ScheduleData');
+
 namespace ScheduleUtil {
     export enum PeriodType {
-        BEFORE_START = -2,
-        CLASS = 0,
-        LUNCH,
-        PASSING,
-        TUTOR_TIME,
-        ASSEMBLY,
-        AFTER_END = -1
+        passing = -3,
+        before_start = -2,
+        class = 0,
+        lunch,
+        tutor_time,
+        assembly,
+        after_end = -1
     }
 
     //classes to simplify information acess
@@ -22,10 +24,10 @@ namespace ScheduleUtil {
         private type: PeriodType;
         private name: string;
 
-        //takes start and end times in form of '9:36am' or '12:45pm'
+        //takes start and end times in form of '9:36 am' or '12:45 pm'
         constructor(startStr: string, endStr: string, type: PeriodType, name: string) {
-            this.startStr = addSpaceToPM(startStr);
-            this.endStr = addSpaceToPM(endStr);
+            this.startStr = startStr;
+            this.endStr = endStr;
             this.startTime = timeFromCloudData(startStr);
             this.endTime = timeFromCloudData(endStr);
             this.type = type;
@@ -50,12 +52,21 @@ namespace ScheduleUtil {
     //class which takes an array of periods, fills in the gaps, and then
     //makes the data semi-accesible
     export class Schedule {
-        private periods: Period[];
+        private periods: Period[] = [];
         private prettyName: string;
 
-        constructor(periods: Period[], name: string) {
-            this.periods = periods;
-            this.prettyName = name;
+        constructor(schedule: ScheduleData.SchedCloudData | string, time: ScheduleData.TimeCloudData = null) {
+            if (typeof schedule === "string" || !time) this.prettyName = <string>schedule;
+            //construct period array
+            else {
+                for (let i = 0, len = schedule.periodNames.length; i < len; i++) this.periods.push(new Period(
+                    Schedule.formatCloudTime(time.times[i][ScheduleData.TimeCloudEnum.start]),
+                    Schedule.formatCloudTime(time.times[i][ScheduleData.TimeCloudEnum.end]),
+                    PeriodType[schedule.periodNames[i][ScheduleData.PeriodCloudEnum.type]],
+                    schedule.periodNames[i][ScheduleData.PeriodCloudEnum.name]
+                ));
+                this.prettyName = schedule.name;
+            }
         }
 
         getPeriod(index: number): Period { return this.periods[index]; }
@@ -67,15 +78,27 @@ namespace ScheduleUtil {
         //I don't know if this is the best way, but it's my way
         //returns a negative number corresponding to a PeriodType if school hasn't started,
         //otherwise returns the index of the current period to be used in getPeriod()
-        getCurrentPeriodIndex(time: Date): number {
+        getCurrentPeriod(time: Date): number {
             let today = new Date(time).setHours(0, 0, 0, 0);
             //check if school has started
-            if (this.periods[0].getStart(today) > time) return PeriodType.BEFORE_START;
+            if (this.periods[0].getStart(today) > time) {
+                let ret = this.[p]
+            };
             //school has started, check if school has ended
-            if (this.periods[this.periods.length - 1].getEnd(today) < time) return PeriodType.AFTER_END;
+            if (this.periods[this.periods.length - 1].getEnd(today) < time) return PeriodType.after_end;
             //find the current period
-            for (let index = 0, len = this.periods.length; index < len; index++) if (this.periods[index].getEnd(today) > time) return index;
+            for (let index = 0, len = this.periods.length; index < len; index++) {
+                if (this.periods[index].getEnd(today) > time) {
+                    if (this.periods[index].getStart(today) < time) return PeriodType.passing;
+                    return index;
+                }
+            }
             throw Error("WTF");
+        }
+
+        private static formatCloudTime(timeString: string): string {
+            if (timeString[1] === ':' && timeString[4] != ' ') return timeString.slice(0, 4) + ' ' + timeString.slice(4) + 'm';
+            if (timeString[5] != ' ') return timeString.slice(0, 5) + ' ' + timeString.slice(5) + 'm';
         }
     }
 
@@ -87,13 +110,8 @@ namespace ScheduleUtil {
         return (hours + (hours != 12 && timeString[5] === 'p' ? 12 : 0)) * 3600000 + parseInt(timeString.slice(3, 5)) * 60000;
     }
 
-    const addSpaceToPM = (timeString: string): string => {
-        if (timeString[1] === ':' && timeString[4] != ' ') return timeString.slice(0, 4) + ' ' + timeString.slice(4);
-        if (timeString[5] != ' ') return timeString.slice(0, 5) + ' ' + timeString.slice(5);
-    }
-
     //schedule constant
-    export const NoSchool = new Schedule([], "No School");
+    export const NoSchool = new Schedule("No School");
 }
 
 export = ScheduleUtil;
