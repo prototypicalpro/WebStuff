@@ -78,12 +78,11 @@ class ScheduleData implements UIUtil.SchedHandle {
         let days: Array<dayObj> = [];
         for (let i = 0, len = objs.length; i < len; i++) {
             let index = days.findIndex((day) => { return day.day === objs[i].day; })
-            if (index === -1) {
+            if (index === -1) 
                 days.push({
                     day: objs[i].day,
                     objs: [objs[i]],
                 });
-            }
             else days[index].objs.push(objs[i]);
         }
         //step two: get the relevant events

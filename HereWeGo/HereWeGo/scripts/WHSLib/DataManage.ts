@@ -10,7 +10,7 @@
  */
 
 import GetLib = require('../GetLib/GetLib');
-import DataInterface = require('./DataInterface');
+import DataInterface = require('./Interfaces/DataInterface');
 import ScheduleUtil = require('./ScheduleUtil');
 import DBManage = require('../DBLib/DBManage');
 import ErrorUtil = require('../ErrorUtil');
@@ -45,7 +45,7 @@ class DataManage {
     private updateData(data: Object): Promise<Array<boolean>> {
         let ret: Array<Promise<boolean> | false> = [];
         for (let i = 0, len = this.dataObj.length; i < len; i++)
-            ret.push(this.dataObj[i].updataData(data[this.dataObj[i].dataKey]));
+            ret.push(this.dataObj[i].updateData(data[this.dataObj[i].dataKey]));
         return Promise.all(ret);
     }
 
@@ -71,7 +71,7 @@ class DataManage {
         let ray: Array<Promise<any>> = [
             new Promise((resolve, reject) => {
                 //load last sync time from storage
-                let lastSync = localStorage.getItem(TIME_CACHE_KEY);
+                let lastSync = localStorage.getItem('1');
                 if (!lastSync) throw ErrorUtil.code.NO_STORED;
                 this.lastSyncTime = parseInt(lastSync);
                 return resolve();

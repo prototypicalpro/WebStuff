@@ -20,8 +20,10 @@ namespace DBManage {
         keyPath: string;
     }
     //and the lone function which does all the magic
-    export const constructDB = (dbs: Array<DBInfoInterface>): Promise<IDBDatabase> => {
+    export const constructDB = (args: Array<DBInfoInterface | Array<DBInfoInterface>>): Promise<IDBDatabase> => {
         let isUpgraded: boolean;
+        //flatten dbs
+        let dbs: Array<DBInfoInterface> = args.concat.apply([], args);
         return new Promise((resolve, reject) => {
             //check to see if the database exists
             if (!window.indexedDB) return reject(false);

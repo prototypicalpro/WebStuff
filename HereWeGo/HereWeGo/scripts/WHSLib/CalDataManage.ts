@@ -4,28 +4,126 @@
  * By default will use an indexedDB
  */
 
-//TODO: update gscript to handle event cancellations
-//also idk if any of this works yet, so test
-
 import EventData = require('./Interfaces/EventData');
+import DataInterface = require('./Interfaces/DataInterface');
 import DBManage = require('../DBLib/DBManage');
-import SyncableCache = require('./SyncableCache');
 import UIUtil = require('../UILib/UIUtil');
 
 //special consant for a special situation
 const EVENT_KEYS = ['isAllDay', 'startTime', 'endTime', 'title', 'schedule'];
 
-class CalDataManage extends SyncableCache {
+//special enum for crappy code
+enum DBInfoEnum {
+    cal,
+    sched,
+    time,
+};
+
+class CalDataManage implements DataInterface {
+    //we can also do this
+    protected db: IDBDatabase;
+    setDB(db: IDBDatabase): void { this.db = db; }
+    //db info
     readonly dataKey: string = 'calSyncData';
     //database info
-    readonly dbInfo: DBManage.DBInfoInterface = {
-        storeName: 'cal',
-        keyPath: 'id',
-        keys: EVENT_KEYS
+    //three databi: calendar events, schedule types, and schedule times
+    readonly dbInfo: Array<DBManage.DBInfoInterface> = [
+        {
+            storeName: DBInfoEnum[DBInfoEnum.cal],
+            keyPath: 'id',
+            keys: EVENT_KEYS
+        },
+        {
+            storeName: DBInfoEnum[DBInfoEnum.sched],
+            keyPath: 'name',
+            keys: [],
+        },
+        {
+            storeName: DBInfoEnum[DBInfoEnum.time],
+            keyPath: 'name',
+            keys: [],
+        },
+    ];
+    //functions that use the above data to manipulate the cache
+    //update data: remove the old, replace the new
+    updateData(data: any): Promise<boolean> | false {
+        //store our next steps
+        let nextFunc = (args: [IDBObjectStore, DBManage.DBInfoInterface]): Promise<boolean> => {
+            //then do a buncha quuuueirereis to update the database entries
+            //but put it all in promises just to be sure
+            let ray: Array<Promise<any>> = [];
+            for (let i = 0, len = data[args[1].storeName].length; i < len; i++) {
+                if ('cancelled' in data[args[1].storeName][i]) ray.push(new Promise((resolve, reject) => {
+                    let req = args[0].delete(data[args[1].storeName][i][args[1].keyPath]);
+                    req.onsuccess = resolve;
+                    req.onerror = reject;
+                }));
+                else ray.push(new Promise((resolve, reject) => {
+                    let req = args[0].put(data[i]);
+                    req.onsuccess = resolve;
+                    req.onerror = reject;
+                }));
+            }
+            return Promise.all(ray).then(() => { return data.length > 0; });
+        };
+        //do things in parrellel!
+        let transactions: Array<IDBObjectStore> = this.dbInfo.map((dbInf) => { return this.db.transaction([dbInf.storeName], "readwrite").objectStore(dbInf.storeName); });
+        return Promise.all([
+            new Promise((resolve, reject) => {
+                //moar promises!
+                let objectStore = transactions[DBInfoEnum.cal];
+                //decompress the calendar data
+                data[this.dbInfo[DBInfoEnum.cal].storeName] = this.inflateCalCloudData(data[this.dbInfo[DBInfoEnum.cal].storeName]);
+                //iterate through all elements, removing the ones before today
+                let nowDay: Date = new Date();
+                nowDay.setHours(0, 0, 0, 0);
+                let nowTime: number = nowDay.getTime();
+                //remove if old
+                objectStore.openCursor(IDBKeyRange.upperBound(nowTime, true)).onsuccess = (event: any) => {
+                    let cursor = event.target.result as IDBCursorWithValue;
+                    if (cursor) {
+                        cursor.delete();
+                        cursor.continue();
+                    }
+                    else resolve([objectStore, this.dbInfo[DBInfoEnum.cal]]);
+                };
+            }).then(nextFunc),
+            nextFunc([transactions[DBInfoEnum.sched], this.dbInfo[DBInfoEnum.sched]]),
+            nextFunc([transactions[DBInfoEnum.time], this.dbInfo[DBInfoEnum.time]]),
+        ]).then((datums: Array<boolean>) => { return datums.indexOf(true) != -1; });
+    }
+    //overwrite data: replace, database be damned
+    overwriteData(data: any) {
+        //inflate just calData
+        data.cal = this.inflateCalCloudData(data.cal);
+        //parellel!
+        return Promise.all(this.dbInfo.map(((dbInf: DBManage.DBInfoInterface) => {
+            //object store
+            let objectStore: IDBObjectStore = this.db.transaction([dbInf.storeName], "readwrite").objectStore(dbInf.storeName);
+            //promises! yay!
+            return new Promise((resolve, reject) => {
+                //clear object store
+                let req: IDBRequest = objectStore.clear();
+                req.onsuccess = resolve;
+                req.onerror = reject;
+            }).then(() => {
+                //fill it with the new datums
+                let ray: Array<Promise<any>> = [];
+                for (let i = 0, len = data[dbInf.storeName].length; i < len; i++) {
+                    ray.push(new Promise((resolve, reject) => {
+                        let req = objectStore.add(data[dbInf.storeName][i]);
+                        req.onsuccess = resolve;
+                        req.onerror = reject;
+                    }));
+                }
+                //and run them all
+                return Promise.all(ray);
+            });
+        }).bind(this)));
     }
 
     //private utility function to uncompress data from the cloud
-    protected inflateCloudData(data: Array<Array<any>>): Array<EventData.EventInterface> {
+    protected inflateCalCloudData(data: Array<Array<any>>): Array<EventData.EventInterface> {
         return data.map((item: Array<any>) => {
             return {
                 id: item[EventData.CloudEventEnum.id],
@@ -38,31 +136,12 @@ class CalDataManage extends SyncableCache {
         });
     }
 
-    //and the pruning function, to remove any events which are before today
-    protected prune(store: IDBObjectStore): Promise<any> {
-        return new Promise((resolve, reject) => {
-            //iterate through all elements, removing the ones before today
-            let nowDay: Date = new Date();
-            nowDay.setHours(0, 0, 0, 0);
-            let nowTime: number = nowDay.getTime();
-            //remove if old
-            store.openCursor(IDBKeyRange.upperBound(nowTime, true)).onsuccess = (event: any) => {
-                let cursor = event.target.result as IDBCursorWithValue;
-                if (cursor) {
-                    cursor.delete();
-                    cursor.continue();
-                }
-                else resolve();
-            };
-        });
-    }
-
     /**
      * Data functions
      */
 
     //other more interesting functions
-    //gets the schedule key for today, the lazy way of course
+    //get and inject the schedule for today
     getScheduleKey(start: number): Promise<string> {
         return new Promise((resolve, reject) => {
             let req = this.db.transaction([this.dbInfo.storeName], "readonly").objectStore(this.dbInfo.storeName).index('schedule').openCursor(IDBKeyRange.only(1));
@@ -113,7 +192,7 @@ class CalDataManage extends SyncableCache {
             let end = tempDay.setDate(tempDay.getDate() + 1) - 1;
             //db stuff!
             return new Promise((resolve) => {
-                let req: IDBRequest = this.db.transaction([this.dbInfo.storeName], "readonly").objectStore(this.dbInfo.storeName).index('startTime').openCursor(IDBKeyRange.bound(start, end));
+                let req: IDBRequest = this.db.transaction([this.dbInfo[DBInfoEnum.cal].storeName], "readonly").objectStore(this.dbInfo[DBInfoEnum.cal].storeName).index('startTime').openCursor(IDBKeyRange.bound(start, end));
                 req.onsuccess = (event: any) => {
                     let cursor: IDBCursorWithValue = event.target.result;
                     if (cursor) {
