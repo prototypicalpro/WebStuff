@@ -142,7 +142,7 @@ class CalDataManage implements DataInterface {
 
     //other more interesting functions
     //get and inject the schedule for today
-    getScheduleKey(start: number): Promise<string> {
+    getSchedules(start: number): Promise<string> {
         return new Promise((resolve, reject) => {
             let req = this.db.transaction([this.dbInfo.storeName], "readonly").objectStore(this.dbInfo.storeName).index('schedule').openCursor(IDBKeyRange.only(1));
             req.onsuccess = (event: any) => {

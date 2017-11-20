@@ -13,7 +13,8 @@
         "cordova-plugin-inappbrowser": "~1.7.1",
         "cordova-plugin-statusbar": "^2.2.3",
         "cordova-plugin-whitelist": "git+https://github.com/apache/cordova-plugin-whitelist.git",
-        "cordova-windows": "4.4.2"
+        "cordova-windows": "4.4.2",
+        "cordova-plugin-splashscreen": "~4.0.3"
     },
     "cordova": {
         "plugins": {
@@ -23,7 +24,8 @@
             "cordova-plugin-whitelist": {},
             "com.compellingsoftware.plugins.http": {},
             "cordova-plugin-http": {},
-            "cordova-plugin-browsertab": {}
+            "cordova-plugin-browsertab": {},
+            "cordova-plugin-splashscreen": {}
         },
         "platforms": [
             "android",

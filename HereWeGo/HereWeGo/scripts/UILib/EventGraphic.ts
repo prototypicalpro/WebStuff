@@ -9,7 +9,7 @@ import EventInterface = require('../WHSLib/EventInterface');
 import EventData = require('../WHSLib/EventData');
 import ColorUtil = require('./ColorUtil');
 
-class EventGraphic extends UIUtil.UIItem {
+class EventGraphic extends UIUtil.UpdateableUIItem {
     //other stuff
     //storage title
     private readonly header: string;

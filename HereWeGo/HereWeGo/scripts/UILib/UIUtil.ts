@@ -7,27 +7,7 @@
  * Will also include some templating-engine-esq utility functions
  */
 
-import EventInterface = require('../WHSLib/EventInterface');
-import ScheduleUtil = require('../WHSLib/ScheduleUtil');
-import QuoteDataInterface = require('../WHSLib/QuoteDataInterface');
-
 namespace UIUtil {
-    //enumeration to specify which triggers the element would like to be refreshed in
-    export const enum TRIGGERED {
-        //called after the time needs updating
-        TIME_UPDATE,
-        //called after a new event has changed the event cache
-        EVENT_UPDATE,
-        //called after a new type of schedule has changed the schedule cache
-        SCHEDULE_UPDATE,
-        //called after a new quote has been added to the cache
-        QUOTE_UPDATE,
-        //called after the image is refresed
-        IMAGE_UPDATE,
-        //trigger both schedule and event update
-        UPDATE_ALL_DATA,
-        //TODO: Interactivity
-    }
     //enumeration for the type of recvParam
     export const enum RecvType {
         SCHEDULE,
@@ -48,7 +28,6 @@ namespace UIUtil {
         day: number;
         //database runs this function for every event, so this should store all the data you need 
         //to do the thing
-        storeEvent(event: EventInterface): void;
     }
     export interface SchedParams extends RecvParams {
         //need to specify the day we want the schedule on
@@ -58,72 +37,12 @@ namespace UIUtil {
         //isolated property or array of properties to only store about schedule (if we only need title or something)
         schedProps?: Array<string>;
         //callback fn
-        storeSchedule(sched: ScheduleUtil.Schedule | Array<string>);
-    }
-    export interface DayParams extends RecvParams {
-        //callback fn
-        storeDay(day: Date);
-    }
-    export interface QuoteParams extends RecvParams {
-        //just a callback
-        storeQuote(quote: QuoteDataInterface);
-    }
-    export interface ImageParams extends RecvParams {
-        //just a callback...
-        storeImgURL(thumbUrl: string, picPromise: Promise<string>);
     }
     //interfaces to describe handlers for the different things that need to be injected
-    //event data handler
-    export interface EventHandle {
-        //the injection method, which a thing will pass a buncha subclasses
-        getEvents(objs: Array<EventParams>): Promise<any>;
-        //also this bonus method b/c schedule getting is hard
-        getScheduleKey(start: number): Promise<any>;
-    }
-    //schedule
-    export interface SchedHandle {
-        getSched(objs: Array<SchedParams>, Event: UIUtil.EventHandle): Promise<any>;
-    }
-    //day
-    export interface DayHandle {
-        getDay(obj: Array<DayParams>): Promise<any> | void;
-    }
-    //quote
-    export interface QuoteHandle {
-        getQuote(obj: Array<QuoteParams>): Promise<any>;
-    }
-    //image
-    export interface ImageHandle {
-        getImage(obj: Array<ImageParams>): Promise<any> | void;
-    }
-    //IDK where to put this, but a utility function to dedupe days is here
-    //this has a buncha confusing optimization stuff and is pretty much unreadable, but assume it
-    //would otherwise reside in one of the ___Data files
-    //returns an object in {(small day number (0, 1, 2, etc.)): (Array of indexes in object array argument)} format
-    export const deDupeDays = (key: string, objs: Array<Object>): Object => {
-        let days: Object = {};
-        for (let i = 0, len = objs.length; i < len; i++) {
-            //convert the date(s) into a number so we can compare it
-            //if it's an array, do every date
-            let dayRay = objs[i][key] as Array<number>;
-            if (Array.isArray(dayRay)) {
-                //for every item
-                for (let o = 0, len1 = dayRay.length; o < len1; o++) {
-                    //if the days object does not have the property of the time we want to push, add the index of the element
-                    if (!days[dayRay[o]]) days[dayRay[o]] = [i];
-                    //else push it to the existing array
-                    else days[dayRay[o]].push(i);
-                }
-            }
-            //else if it's a single item, add it if it's not a dupe
-            else {
-                //if the days object does not have the property of the time we want to push, add the index of the element
-                if (!days[<number>dayRay]) days[<number>dayRay] = [i];
-                //else push it to the existing array
-                else days[<number>dayRay].push(i);
-            }
-        }
-        return days;
+    export interface Hanlder extends RecvParams {
+        //the functiion that injects the magic
+        //takes an array of parameter objects or nothing and returns the data needed
+        getData(params?: Array<RecvParams>): any;
     }
     //Varibles to put in template, in form of { name: value }
     //searches for strings in double curly beackets and replaces them (e.g. {{thing}})
@@ -167,13 +86,17 @@ namespace UIUtil {
         //build html
         //thingys are always filled before calling this
         abstract getHTML(): string;
+        //build javascript over html
+        onInit?(): void;
+    }
+
+    export abstract class UpdateableUIItem extends UIItem {
         //the enum array descriping the objects to be updated on an update
         //since db calls are async, it's better this way
         recv?: Array<UIUtil.RecvParams>;
-        //build javascript over html
-        onInit?(): void;
         //and on any update
-        onUpdate?(type: Array<UIUtil.TRIGGERED>);
+        //takes a tuple indexed by the RecvType enum
+        abstract onUpdate(data: Array<any>);
     }
     //didn't have a better place to put this :(
     export interface ButtonParam {
@@ -185,3 +108,53 @@ namespace UIUtil {
 }
 
 export = UIUtil;
+
+//idk what do do with these
+/*
+//utility function to de duplicate an array of days stored inside an object
+    private deDupeDays(key: string, objs: Array<Object>): Array<number> {
+        let days: Array<number> = [];
+        for (let i = 0, len = objs.length; i < len; i++) {
+            //convert the date(s) into a number so we can compare it
+            //if it's an array, do every date
+            let dayRay = objs[i][key] as Array<number>;
+            if (Array.isArray(dayRay)) {
+                //for every item, if the day isn't a duplicate add it
+                for (let o = 0, len1 = dayRay.length; o < len1; o++) if(days.indexOf(dayRay[o]) == -1) days.push(dayRay[o]);
+            }
+            //else if it's a single item, add it if it's not a dupe
+            else if(days.indexOf(dayRay[i]) == -1) days.push(dayRay[i]);
+        }
+        return days;
+    }
+
+     //IDK where to put this, but a utility function to dedupe days is here
+    //this has a buncha confusing optimization stuff and is pretty much unreadable, but assume it
+    //would otherwise reside in one of the ___Data files
+    //returns an object in {(small day number (0, 1, 2, etc.)): (Array of indexes in object array argument)} format
+    export const deDupeDays = (key: string, objs: Array<Object>): Object => {
+        let days: Object = {};
+        for (let i = 0, len = objs.length; i < len; i++) {
+            //convert the date(s) into a number so we can compare it
+            //if it's an array, do every date
+            let dayRay = objs[i][key] as Array<number>;
+            if (Array.isArray(dayRay)) {
+                //for every item
+                for (let o = 0, len1 = dayRay.length; o < len1; o++) {
+                    //if the days object does not have the property of the time we want to push, add the index of the element
+                    if (!days[dayRay[o]]) days[dayRay[o]] = [i];
+                    //else push it to the existing array
+                    else days[dayRay[o]].push(i);
+                }
+            }
+            //else if it's a single item, add it if it's not a dupe
+            else {
+                //if the days object does not have the property of the time we want to push, add the index of the element
+                if (!days[<number>dayRay]) days[<number>dayRay] = [i];
+                //else push it to the existing array
+                else days[<number>dayRay].push(i);
+            }
+        }
+        return days;
+    }
+*/

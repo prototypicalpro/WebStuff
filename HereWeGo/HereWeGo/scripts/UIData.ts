@@ -85,23 +85,6 @@ class UIData {
             for (let i = 0, len = this.recvs.length; i < len; i++) if (this.recvs[i].onUpdate) this.recvs[i].onUpdate(why);
         });
     }
-
-    //utility function to de duplicate an array of days stored inside an object
-    private deDupeDays(key: string, objs: Array<Object>): Array<number> {
-        let days: Array<number> = [];
-        for (let i = 0, len = objs.length; i < len; i++) {
-            //convert the date(s) into a number so we can compare it
-            //if it's an array, do every date
-            let dayRay = objs[i][key] as Array<number>;
-            if (Array.isArray(dayRay)) {
-                //for every item, if the day isn't a duplicate add it
-                for (let o = 0, len1 = dayRay.length; o < len1; o++) if(days.indexOf(dayRay[o]) == -1) days.push(dayRay[o]);
-            }
-            //else if it's a single item, add it if it's not a dupe
-            else if(days.indexOf(dayRay[i]) == -1) days.push(dayRay[i]);
-        }
-        return days;
-    }
 }
 
 export = UIData;
