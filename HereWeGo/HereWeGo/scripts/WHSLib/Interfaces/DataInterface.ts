@@ -4,8 +4,12 @@
  */
 
 import { DBInfoInterface } from '../../DBLib/DBManage';
+import UIUtil = require('../../UILib/UIUtil');
 
 interface DataInterface {
+    //type of recv for internal UIItem stuff
+    //each data item should be a unique type, else stuff breaks
+    readonly dataType: UIUtil.RecvType;
     //database info for the superclass to manage
     readonly dbInfo: DBInfoInterface | Array<DBInfoInterface>;
     //the key for the sync data this object will use (e.g. "calSyncData")
@@ -18,6 +22,10 @@ interface DataInterface {
     updateData(data: any): Promise<boolean> | false;
     //overwrite function, deletes any existing data and replaces it with the passed data
     overwriteData(data: any): Promise<any>;
+    //get the data to be served to the UIItems
+    //an object depending on the implementation
+    //be sure to document what you're returning in an interface or something
+    getData(params?: Array<UIUtil.RecvParams>): Promise<any>;
 }
 
 export = DataInterface;

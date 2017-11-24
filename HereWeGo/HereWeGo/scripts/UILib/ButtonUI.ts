@@ -8,7 +8,7 @@ import UIUtil = require('./UIUtil');
 
 class ButtonUI extends UIUtil.UIItem {
     //main html! pretty simple, just a lot of varibles
-    private readonly template: string = `
+    private readonly strTemplate: string = `
     <div class="{{wrapClass}}" id="{{id}}" style="{{image}}">
         <p class="{{textClass}}">{{text}}</p>
     </div>`
@@ -35,12 +35,12 @@ class ButtonUI extends UIUtil.UIItem {
         this.callback = callback;
         this.longPress = longPressCallback;
         this.disableAnim = disableAnim;
-        this.strStore = UIUtil.templateEngine(this.template, {
+        this.strStore = super.template(this.strTemplate, {
             id: this.id,
             wrapClass: wrapClass,
             textClass: textClass,
             text: text,
-            image: icon ? UIUtil.templateEngine(this.imgTemplate, { image: icon }) : '',
+            image: icon ? super.template(this.imgTemplate, { image: icon }) : '',
         });
     }
 
@@ -49,13 +49,14 @@ class ButtonUI extends UIUtil.UIItem {
         return params.map((param) => { return new ButtonUI(wrapClass, textClass, param.text, param.callback, param.icon, param.longPressCallback, disableAnim); });
     }
 
-    //get dat HTML
-    getHTML(): string {
+
+    //init dat HTML
+    onInit(): string {
         return this.strStore;
     }
 
     //init dat javascript
-    onInit() {
+    buildJS() {
         //add members
         this.buttonStore = document.querySelector('#' + this.id) as HTMLElement;
         //register callbacks

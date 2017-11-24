@@ -15,6 +15,7 @@ namespace UIUtil {
         EVENTS,
         QUOTE,
         IMAGE,
+        length = 5, //adjust for number of above items
     }
     //base interface for an object which specifys how to inject
     export interface RecvParams {
@@ -38,17 +39,11 @@ namespace UIUtil {
         schedProps?: Array<string>;
         //callback fn
     }
-    //interfaces to describe handlers for the different things that need to be injected
-    export interface Hanlder extends RecvParams {
-        //the functiion that injects the magic
-        //takes an array of parameter objects or nothing and returns the data needed
-        getData(params?: Array<RecvParams>): any;
-    }
     //Varibles to put in template, in form of { name: value }
     //searches for strings in double curly beackets and replaces them (e.g. {{thing}})
     //no spaces in there please
     //this function will search every member of values, and fill the template
-    export const templateEngine = (template: string, values: Object): string => {
+    const templateEngine = (template: string, values: Object): string => {
         //get all teh keys, and map them to a RegEx for optimization
         let re = new RegExp(Object.keys(values)
             //give the strings the template syntax
@@ -58,19 +53,14 @@ namespace UIUtil {
         //then in the replace, match the things to the things (filtering out the {{}} first)
         return template.replace(re, function (matched) { return values[matched.replace(new RegExp(/{|}/, 'g'), '')]; });
     };
-    //utility function to search an array of UIItem for base children and return the flat array
-    export const findChildren = (ray: Array<UIItem>): Array<UIItem> => {
-        //iterate through every item making sure to find it's children, adding things on the end to check as we go
-        for(let i = 0; i < ray.length; i++){
-            if(ray[i].getChildren){
-                ray.push.apply(ray, ray[i].getChildren());
-            }
-        }
-        return ray;
+    //utility function to flatten the arrays of messes of recvparams
+    const combineParams = (ray: Array<Array<RecvParams>>): Array<RecvParams> => {
+        return [].concat.apply([], ray).filter((obj) => { return obj; });
     };
+
     //unique ID utility function, will just increment a number to ensure nothing is duplicated
     var idCount: number = 0;
-    export const getUniqueId = (): number => {
+    const getUniqueId = (): number => {
         return idCount++;
     }
     //Interface to universalize UI Items (such as graphics)
@@ -81,23 +71,19 @@ namespace UIUtil {
         constructor() {
             this.id = 'i' + getUniqueId();
         }
-        //get all the child UIItems (or if it is at the bottom, don't implement this function)
-        getChildren?(): Array<UIItem>;
-        //build html
-        //thingys are always filled before calling this
-        abstract getHTML(): string;
-        //build javascript over html
-        onInit?(): void;
+        //get data, fill in html from children or class
+        abstract onInit(data: Array<any>): void | string;
+        //build JS over the html from onInit
+        abstract buildJS(): void;
+        //update data, also give data to children, reconstructing HTML if needed
+        onUpdate?(data: Array<any>): void;
+        //recv parameters, parsed from children at construction
+        recvParams?: Array<UIUtil.RecvParams>;
+        //and a utility function to parse them for you
+        protected readonly genRecv = combineParams;
+        protected readonly template = templateEngine;
     }
 
-    export abstract class UpdateableUIItem extends UIItem {
-        //the enum array descriping the objects to be updated on an update
-        //since db calls are async, it's better this way
-        recv?: Array<UIUtil.RecvParams>;
-        //and on any update
-        //takes a tuple indexed by the RecvType enum
-        abstract onUpdate(data: Array<any>);
-    }
     //didn't have a better place to put this :(
     export interface ButtonParam {
         text: string,

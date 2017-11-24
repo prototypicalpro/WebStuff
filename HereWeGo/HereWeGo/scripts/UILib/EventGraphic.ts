@@ -5,20 +5,13 @@
 
 import UIUtil = require('./UIUtil');
 import TimeUtil = require('../TimeFormatUtil');
-import EventInterface = require('../WHSLib/EventInterface');
-import EventData = require('../WHSLib/EventData');
+import EventInterface = require('../WHSLib/Interfaces/EventData');
 import ColorUtil = require('./ColorUtil');
 
-class EventGraphic extends UIUtil.UpdateableUIItem {
+class EventGraphic extends UIUtil.UIItem {
     //other stuff
     //storage title
     private readonly header: string;
-    //whether or not to display schedule
-    private readonly dispSched: boolean;
-    //storage schedule name
-    private schedName: string;
-    //storage events for callback
-    private eventObjs: Array<any> = [];
     //storage document item
     private elem: HTMLElement;
     //template for overall
@@ -53,32 +46,29 @@ class EventGraphic extends UIUtil.UpdateableUIItem {
     //constructor for teh evenents
     constructor(header: string, day: number, displaySchedule: boolean) {
         super();
-        this.recv = [
+        this.recvParams = [
             //events
             <UIUtil.EventParams>{
                 type: UIUtil.RecvType.EVENTS,
-                storeEvent: this.storeEvent.bind(this),
                 day: day,
             },
         ];
         this.header = header;
         if (displaySchedule) {
-            this.dispSched = true;
-            this.recv.push(<UIUtil.SchedParams>{
+            this.recvParams.push(<UIUtil.SchedParams>{
                 type: UIUtil.RecvType.SCHEDULE,
                 day: day,
                 schedProps: ['key'],
-                storeSchedule: this.storeSchedule.bind(this),
             });
         }
     }
     //new callback api functions!
     //setup update callbacks with recv
-    recv: Array<UIUtil.RecvParams>; 
+    recvParams: Array<UIUtil.RecvParams>; 
     //and the funtion itself!
     //we specify the contents of the args array in the varible above
-    getHTML(): string {
-        return UIUtil.templateEngine(this.wrap, {
+    onInit(data: Array<any>): string {
+        return super.template(this.wrap, {
             id: this.id,
             stuff: this.makeEventHTML(),
         });
