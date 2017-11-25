@@ -4,10 +4,10 @@
  */
 
 interface ImageInterface {
-    //the day (0-31) to show the image on
-    showDay: number;
-    //the url to the image
+    //the url to the image, and the identifier
     id: string;
+    //cancelled or not
+    cancelled?: boolean;
     //the image blob, only present if gotten from database
     image?: Blob;
     //the thumbnail to start displaying, only present if gotten from database

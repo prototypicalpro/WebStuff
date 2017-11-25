@@ -3,25 +3,27 @@
  * from the cloud
  */
 
-import DataInterface = require('./DataInterface');
-import GetLib = require('../GetLib/GetLib');
-import ImageInterface = require('./ImageInterface');
-import { DBInfoInterface } from '../DBLib/DBManage';
+import DataInterface = require('./Interfaces/DataInterface');
 import UIUtil = require('../UILib/UIUtil');
+import GetLib = require('../GetLib/GetLib');
+import ImageInterface = require('./Interfaces/ImageInterface');
+import { DBInfoInterface } from '../DBLib/DBManage';
 import ErrorUtil = require('../ErrorUtil');
 
 const THUMB_URL: string = 'https://drive.google.com/thumbnail?authuser=0&sz=h{{height}}&id={{id}}'; 
 
 class ImageDataManage implements DataInterface {
+    //type
+    readonly dataType = UIUtil.RecvType.IMAGE;
     //database stuff
     readonly dbInfo: DBInfoInterface = {
         //store images
         storeName: 'images',
         //have one category for the image, and one category for when it was stored
         //TODO: Credits
-        keys: ['id'],
+        keys: [],
         //keypath is index
-        keyPath: 'showDay',
+        keyPath: 'id',
     };
     //the key for our database
     readonly dataKey = 'imgData';
@@ -30,13 +32,13 @@ class ImageDataManage implements DataInterface {
     private readonly http: GetLib;
     //database
     private db: IDBDatabase;
+    //boolean to tell us if the stored images are currect
+    private dataRefreshed: boolean = false;
     //promise to tell the app when we've finished fetching the full pictures
-    private picPromise: Promise<any>;
-    //lastDay for imagedata
-    private lastDay: number;
+    private picPromise: Array<Promise<Blob>>;
     //the constructor
     //do file plugin stuff here since that stuff can run in the background (I think)
-    constructor(http: GetLib) {
+    constructor(http: GetLib, cacheDays: number) {
         this.http = http;
     }
     //set DB func
@@ -48,131 +50,96 @@ class ImageDataManage implements DataInterface {
         //and if we don't add it
         //also delete old ones
         return new Promise((resolve, reject) => {
-            let req: IDBRequest = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName).openCursor();
-            req.onsuccess = (event: any) => {
-                let cursor: IDBCursorWithValue = event.target.result;
-                if (cursor) {
-                    let imgData: ImageInterface = cursor.value;
-                    //if grabbed index is not present in database, fetch
-                    //if index is present in database but not here, remove
-                    let i = data.length - 1;
-                    for (; i >= 0; i--) {
-                        if (data[i].showDay === imgData.showDay) {
-                            data.splice(i, 1);
-                            break;
-                        }
-                    }
-                    //if it's not found, delete it
-                    if (i < 0) cursor.delete();
-                    cursor.continue();
-                }
-                else resolve();
-            };
-            req.onerror = reject;
-        }).then(() => {
-            return this.getAndStoreImagesFromArray(data);
-        }).then(() => {
-            return data.length > 0;
-        }).catch((err) => { return null; });
+            let store: IDBObjectStore = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
+            //then do a buncha quuuueirereis to update the database entries
+            //but put it all in promises just to be sure
+            let ray: Array<Promise<any>> = [];
+            for (let i = 0, len = data.length; i < len; i++) {
+                if ('cancelled' in data[i]) ray.push(new Promise((resolve, reject) => {
+                    let req = store.delete(data[i][this.dbInfo.keyPath]);
+                    req.onsuccess = resolve;
+                    req.onerror = reject;
+                }));
+                else ray.push(new Promise((resolve, reject) => {
+                    let req = store.put(data[i]);
+                    req.onsuccess = resolve;
+                    req.onerror = reject;
+                }));
+            }
+        }).then(() => { this.dataRefreshed = true; return data.length > 0; }).catch((err) => { return null; });
     }
     //overwriteData func
-    overwriteData(data: any): Promise<any> {
+    overwriteData(data: Array<ImageInterface>): Promise<any> {
+        let obj = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
         return new Promise((resolve, reject) => {
-            let req = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName).clear();
-            req.onsuccess = resolve;
+            let req = obj.clear();
             req.onerror = reject;
-        }).then(() => {
-            return this.getAndStoreImagesFromArray(data);
-        });
+            req.onsuccess = () => {
+                return Promise.all(data.map((img) => {
+                    let req2 = obj.add(img);
+                    req2.onerror = reject;
+                    req2.onsuccess = resolve;
+                }));
+            };
+        }).then(() => this.dataRefreshed = true);
     }
 
-    getData() {
-        return this;
+    getData(): [Promise<string>, Promise<string>] | Promise<[Promise<string>, Promise<string>]> | Promise<false>{
+        if (!this.picPromise) return this.getTodayPicData();
+        else return this.picPromise;
     }
 
-    //ImageData merger
-    //cuz promises are a huge pain
-    //aaand the magic
-    getImage(): Promise<any> | void {
-        //check and see if the day is new
+    private getTodayPicData(): Promise<Array<any>> {
         let day = new Date().getDate();
-        if (day === this.lastDay) return;
-        this.lastDay = day;
-        //search database for todays time
+        //get the database entry for the stored images
         return new Promise((resolve, reject) => {
-            //get todays image
+            //get the image database item
             let req = this.db.transaction([this.dbInfo.storeName], "readonly").objectStore(this.dbInfo.storeName).get(day);
-            let image;
-            req.onsuccess = resolve;
             req.onerror = reject;
-        }).then((data: any) => {
-            //TODO: FIX WHEN WE DON'T AHVE AN IMAGE
-            if (!data.target.result) throw ErrorUtil.code.NO_IMAGE;
-            //fill all the objects
-            for (let i = 0, len = obj.length; i < len; i++) obj[i].storeImgURL(
-                URL.createObjectURL(data.target.result.thumb),
-                new Promise((resolve, reject) => {
-                    if (!this.picPromise) return resolve(URL.createObjectURL(data.target.result.image));
-                    else return resolve(this.picPromise.then(() => {
-                        return new Promise((resolve, reject) => {
-                            //get todays image
-                            let req = this.db.transaction([this.dbInfo.storeName], "readonly").objectStore(this.dbInfo.storeName).get(day);
-                            let image;
-                            req.onsuccess = resolve;
-                            req.onerror = reject;
-                        }).then((img: any) => {
-                            return URL.createObjectURL(img.target.result.image);
-                        });
-                    }));
-                })
-            );
-        }).catch(() => {
-            throw ErrorUtil.code.NO_IMAGE;
+            req.onsuccess = resolve;
+        }).then((evt: any) => {
+            let data: ImageInterface = evt.target.result;
+            if (!data) return [false, false];
+            return this.picPromise = this.makePicPromise(data);
         });
     }
 
-    private getAndStoreImagesFromArray(imgs: Array<ImageInterface>): [Promise<string> /* thumbnail */, Promise<string> /* picture */] {
-        //any leftover items in data will not have been found in the database, which means we gotta fetch em and then add em to the database
-        //fetch half width thumnails and store them
-        let fetchArray = imgs.map((img) => {
-            return this.http.getAsBlob(UIUtil.templateEngine(THUMB_URL, { height: Math.floor(screen.height / 4), id: img.id })).then((blob: Blob) => {
+    private fillPicPromises(): [Promise<Blob>, Promise<Blob>] {
+        return new Promise((resolve, reject) => {
+            let req = this.db.transaction([this.dbInfo.storeName], "readonly").objectStore(this.dbInfo.storeName).openCursor();
+            req.onerror = reject;
+            req.onsuccess = (evt: any) => {
+                //TODO iterate through database, fetching any blobs that are needed, and caching all teh things
+            }
+        });
+
+
+        const codeReuse = (key: string, url: string): Promise<Blob> => {
+            //if the database has the image, great! send it off
+            return data[key] ? Promise.resolve(data[key]) : this.getUntilBlobSuccess(url).then((blob: Blob) => {
+                data[key] = blob;
                 return new Promise((resolve, reject) => {
-                    let put = img;
-                    //save the image
-                    put.thumb = blob;
-                    let req = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName).put(put);
-                    req.onsuccess = resolve;
+                    let req = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName).put(data);
+                    req.onsuccess = () => { return resolve(data[key]); };
                     req.onerror = reject;
                 });
             });
-        });
-
-        //setup pic promise
-        this.picPromise = Promise.all(fetchArray).then(() => {
-            return Promise.all(imgs.map((img) => {
-                //async start fetching the real pictures
-                return this.http.getAsBlob(UIUtil.templateEngine(THUMB_URL, { height: screen.height, id: img.id })).then((blob: Blob) => {
-                    //get the existing object
-                    return new Promise((resolve, reject) => {
-                        let req = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName).get(img.showDay);
-                        req.onsuccess = resolve;
-                        req.onerror = reject;
-                    }).then((event: any) => {
-                        //update, then store the new object with the image
-                        let old: ImageInterface = event.target.result;
-                        old.image = blob;
-                        return new Promise((resolve, reject) => {
-                            let req = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName).put(old);
-                            req.onsuccess = resolve;
-                            req.onerror = reject;
-                        });
-                    });
-                });
-            }));
-        }).then((() => { this.picPromise = null; }).bind(this));;
-        //dooo eet
-        return Promise.all(fetchArray);
+        };
+        //fetch the thumbnail, then the full image, but stagger the full image until after the thumbnail
+        //but still return the string for each
+        //...
+        let ret: Array<Promise<Blob>> = [codeReuse("thumb", UIUtil.templateEngine(THUMB_URL, { height: Math.floor(screen.height / 4), id: data.id })), null];
+        ret[1] = Promise.all(ret).then(() => { return codeReuse("image", UIUtil.templateEngine(THUMB_URL, { height: screen.height, id: data.id })) });
+        return <[Promise<Blob>, Promise<Blob>]>ret;
     }
+
+    private getUntilBlobSuccess(url): Promise<Blob> {
+        //...sigh
+        return this.http.getAsBlob(url).then((data: Blob) => {
+            if (!data) return this.getUntilBlobSuccess(url);
+        });
+    }
+
 }
 
 export = ImageDataManage
