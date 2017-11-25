@@ -12,14 +12,14 @@ import ErrorUtil = require('../ErrorUtil');
 
 const THUMB_URL: string = 'https://drive.google.com/thumbnail?authuser=0&sz=h{{height}}&id={{id}}'; 
 
-class ImageDataManage implements DataInterface, UIUtil.ImageHandle {
+class ImageDataManage implements DataInterface {
     //database stuff
     readonly dbInfo: DBInfoInterface = {
         //store images
         storeName: 'images',
         //have one category for the image, and one category for when it was stored
         //TODO: Credits
-        keys: ['id', 'image'],
+        keys: ['id'],
         //keypath is index
         keyPath: 'showDay',
     };
@@ -42,7 +42,7 @@ class ImageDataManage implements DataInterface, UIUtil.ImageHandle {
     //set DB func
     setDB(db: IDBDatabase) { this.db = db; }
     //update data func
-    updataData(data: Array<ImageInterface>): Promise<boolean> | false {
+    updateData(data: Array<ImageInterface>): Promise<boolean> | false {
         if (!Array.isArray(data) || data.length === 0) return false;
         //check database if we already have any of the images
         //and if we don't add it
@@ -93,7 +93,7 @@ class ImageDataManage implements DataInterface, UIUtil.ImageHandle {
     //ImageData merger
     //cuz promises are a huge pain
     //aaand the magic
-    getImage(obj: Array<UIUtil.ImageParams>): Promise<any> | void {
+    getImage(): Promise<any> | void {
         //check and see if the day is new
         let day = new Date().getDate();
         if (day === this.lastDay) return;
@@ -131,7 +131,7 @@ class ImageDataManage implements DataInterface, UIUtil.ImageHandle {
         });
     }
 
-    private getAndStoreImagesFromArray(imgs: Array<ImageInterface>): Promise<any> {
+    private getAndStoreImagesFromArray(imgs: Array<ImageInterface>): [Promise<string> /* thumbnail */, Promise<string> /* picture */] {
         //any leftover items in data will not have been found in the database, which means we gotta fetch em and then add em to the database
         //fetch half width thumnails and store them
         let fetchArray = imgs.map((img) => {

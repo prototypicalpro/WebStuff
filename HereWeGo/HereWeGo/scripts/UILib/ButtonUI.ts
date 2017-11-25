@@ -35,12 +35,12 @@ class ButtonUI extends UIUtil.UIItem {
         this.callback = callback;
         this.longPress = longPressCallback;
         this.disableAnim = disableAnim;
-        this.strStore = super.template(this.strTemplate, {
+        this.strStore = UIUtil.templateEngine(this.strTemplate, {
             id: this.id,
             wrapClass: wrapClass,
             textClass: textClass,
             text: text,
-            image: icon ? super.template(this.imgTemplate, { image: icon }) : '',
+            image: icon ? UIUtil.templateEngine(this.imgTemplate, { image: icon }) : '',
         });
     }
 

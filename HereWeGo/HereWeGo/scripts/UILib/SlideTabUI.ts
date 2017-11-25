@@ -30,32 +30,21 @@ class SlideTabUI extends UIUtil.UIItem {
         super();
         this.pages = pages;
         this.names = names;
-    }
-    //get children method
-    //flatmap pages then return
-    getChildren() {
-        return UIUtil.findChildren([].concat.apply([], this.pages));
+        this.recvParams = UIUtil.combineParams([].concat.apply(pages));
     }
     //needs the day for the top bar thingy
-    recv = [<UIUtil.DayParams>{
+    recv = [<UIUtil.RecvParams>{
         type: UIUtil.RecvType.DAY,
-        storeDay: (day) => {
-            //only update if necessary
-            if (!this.storeDay || day.getDate() != this.storeDay.getDate()) {
-                this.storeDay = day;
-                this.dayUpdate = true;
-            }
-        }
     }];
     //and the getHTML
-    getHTML(): string {
+    onInit(data: Array<any>): void {
         //get all the htmls in parellel
         //this chaining is gonna be beutiful
         //for every array of pages
-        return this.pages.map((items: Array<UIUtil.UIItem>) => { return UIUtil.templateEngine(this.wrapperTemplate, { stuff: items.map((item) => { return item.getHTML(); }).join('') }); }).join(''); //one. freaking. line
+        HTMLMap.setSliderHTML(this.pages.map((items: Array<UIUtil.UIItem>) => { return UIUtil.templateEngine(this.wrapperTemplate, { stuff: items.map((item) => { return item.onInit(data); }).join('') }); }).join('')); //one. freaking. line
     }
     
-    onInit() {
+    buildJS() {
         //start up lory
         let thing = document.querySelector('body');
         this.storly = lory.lory(thing, {
@@ -92,24 +81,27 @@ class SlideTabUI extends UIUtil.UIItem {
         //create a bunch of button objects, bind thier callbacks, then destroy them b/c they don't need updating
         let buttonRay = this.names.map((name, index) => {
             let button = new ButtonUI('menu', 'menuText', name, (() => this.storly.slideTo(index)).bind(this), null, null, true);
-            htmlStr += button.getHTML();
+            htmlStr += button.onInit();
             return button;
         });
         //set the menu html
         HTMLMap.menuBar.innerHTML = htmlStr;
         //run all that menu javascript
-        for (let i = 0, len = buttonRay.length; i < len; i++) buttonRay[i].onInit();
+        for (let i = 0, len = buttonRay.length; i < len; i++) buttonRay[i].buildJS();
         //set the top grey bar date correctly
         HTMLMap.topBarText.innerHTML = TimeFormatUtil.asLongDayMonthText(this.storeDay);
         this.dayUpdate = false;
+        //finally, run the JS of all the little dudes
+        for (let i = 0, len = this.pages.length; i < len; i++) for (let o = 0, len1 = this.pages[i].length; o < len1; o++) this.pages[i][o].buildJS();
     }
-
+    /* TODO: fix for new system
     onUpdate(why: Array<UIUtil.TRIGGERED>) {
         if (this.dayUpdate && why.indexOf(UIUtil.TRIGGERED.TIME_UPDATE) != -1) {
             HTMLMap.topBarText.innerHTML = TimeFormatUtil.asLongDayMonthText(this.storeDay);
             this.dayUpdate = false;
         }
     }
+    */
 }
 
 export = SlideTabUI;

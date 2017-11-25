@@ -10,7 +10,7 @@ import lory = require('../lory');
 
 class MenuUI extends UIUtil.UIItem {
     //main HTML for sidemenu
-    private readonly template: string = `
+    private readonly templateStr: string = `
     <div class="SMFrame" id="{{id}}">
             <!-- div for shadow effect -->
             <div class="SMShadow"></div>
@@ -42,26 +42,24 @@ class MenuUI extends UIUtil.UIItem {
         super();
         this.topItems = topItems;
         this.botItems = botItems;
-    }
-    //getChildren
-    getChildren() {
-        return UIUtil.findChildren(this.topItems.concat(this.botItems));
+        //build recv parameter list
+        this.recvParams = UIUtil.combineParams(topItems).concat(UIUtil.combineParams(botItems));
     }
     //get them htmls by mega joining
-    getHTML() {
+    onInit(data: Array<any>): void {
         //join top arrays HTML
-        let topStr = this.topItems.map((item) => { return item.getHTML(); }).join('');
+        let topStr = this.topItems.map((item) => { return item.onInit(data); }).join('');
         //join bottom
-        let botStr = this.botItems.map((item) => { return item.getHTML(); }).join('');
-        //template and return
-        return UIUtil.templateEngine(this.template, {
+        let botStr = this.botItems.map((item) => { return item.onInit(data); }).join('');
+        //template and set
+        HTMLMap.setSideMenuHTML(UIUtil.templateEngine(this.templateStr, {
             id: this.id,
             topItems: topStr,
             botItems: botStr,
-        });
+        }));
     }
     //init all that js
-    onInit() {
+    buildJS() {
         this.storly = lory.lory(HTMLMap.sideMenu, {
             //different naming scheme
             classNameFrame: 'SMFrame',
@@ -98,6 +96,9 @@ class MenuUI extends UIUtil.UIItem {
                 this.closeMenu();
             }
         });
+
+        //run the js of all our little dudes
+        this.topItems.concat(this.botItems).map((item) => item.buildJS());
     }
 
     private backButtonHandle(event) {

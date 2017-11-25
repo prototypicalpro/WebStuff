@@ -12,12 +12,9 @@ import TimeFormatUtil = require('../TimeFormatUtil');
 import { PeriodType } from '../WHSLib/ScheduleUtil';
 
 class ScheduleGraphic extends UIUtil.UIItem {
-    //storage schedule
-    private sched: ScheduleUtil.Schedule;
     //last green period store
     private lastIndex: number;
     //stored date
-    private day: Date;
     //HTML Template
     //It's gonna be ugly, that's just how it is
     private readonly wrap: string = `<div id="{{id}}">{{stuff}}</div>`;
@@ -55,54 +52,46 @@ class ScheduleGraphic extends UIUtil.UIItem {
         super();
         this.recv = [
             //prolly want the day
-            <UIUtil.DayParams>{
+            <UIUtil.RecvParams>{
                 type: UIUtil.RecvType.DAY,
-                storeDay: this.storeDay.bind(this),
             },
             //and the schedule
-            <UIUtil.SchedParams>{
-                type: UIUtil.RecvType.SCHEDULE,
-                day: day,
-                storeSchedule: this.storeSchedule.bind(this),
+            <UIUtil.CalParams>{
+                type: UIUtil.RecvType.CAL,
+                schedDay: day,
             },
         ];
-    }
-
-    //store schedule callback fn
-    storeSchedule(sched: ScheduleUtil.Schedule) {
-        this.sched = sched;
-    }
-
-    //store day callback fn
-    storeDay(day: Date) {
-        this.day = day;
     }
 
     //update params to get
     recv: Array<UIUtil.RecvParams>;
     //gethtml
-    getHTML(): string {
+    onInit(data: Array<any>): string {
+        let sched: ScheduleUtil.Schedule = data[UIUtil.RecvType.CAL]["scheds"][new Date(data[UIUtil.RecvType.DAY]).setHours(0, 0, 0, 0)];
         return UIUtil.templateEngine(this.wrap, {
             id: this.id,
-            stuff: this.makeSchedule(),
+            stuff: sched ? this.makeSchedule(sched, data[UIUtil.RecvType.DAY]) : '',
         });
     }
+    //buildJS does nothing for now
+    buildJS() { }
+
     //utility makeScheduleHTML
-    private makeSchedule(): string {
+    private makeSchedule(sched: ScheduleUtil.Schedule, day: Date): string {
         //if there's no schedule, rip
-        if (!this.sched) return '';
+        if (!sched) return '';
         //do all the construction stuff
         let schedStr = '';
-        this.lastIndex = this.sched.getCurrentPeriodIndex(this.day);
-        const inv = 1.0 / (this.sched.getNumPeriods() - 1);
+        this.lastIndex = sched.getCurrentPeriodAndIndex(day)[0];
+        const inv = 1.0 / (sched.getNumPeriods() - 1);
         //all parrellel b/c we're already async so why not
         //cache today
-        let today = new Date(this.day).setHours(0, 0, 0, 0);
-        for (let i = 0, len = this.sched.getNumPeriods(); i < len; i++) {
+        let today = day.setHours(0, 0, 0, 0);
+        for (let i = 0, len = sched.getNumPeriods(); i < len; i++) {
             //if it's not passing or whatever, we display it
-            let period: ScheduleUtil.Period = this.sched.getPeriod(i);
+            let period: ScheduleUtil.Period = sched.getPeriod(i);
             //make a buncha row templates
-            if (period.getType() >= 0 && period.getType() != ScheduleUtil.PeriodType.PASSING) {
+            if (period.getType() >= 0) {
                 schedStr += UIUtil.templateEngine(this.itemTemplate, {
                     upTime: period.getStartStr(),
                     lowTime: period.getEndStr(),
@@ -114,12 +103,13 @@ class ScheduleGraphic extends UIUtil.UIItem {
             }
         }
         return UIUtil.templateEngine(this.tableTemplate, {
-            head: this.sched.getName() + ' Schedule',
+            head: sched.getName() + ' Schedule',
             sched: schedStr,
         });
     }
     //onUpdate function
     //handles the updates
+    /*
     onUpdate(why: Array<UIUtil.TRIGGERED>) {
         //if no schedule, do nothing
         if (!this.sched) return;
@@ -145,6 +135,8 @@ class ScheduleGraphic extends UIUtil.UIItem {
             }
         }
     }
+    TODO: Fix for new system
+    */
 }
 
 export = ScheduleGraphic;

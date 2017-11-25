@@ -4,17 +4,15 @@
  */
 
 import UIUtil = require('./UIUtil');
-import QuoteDataInterface = require('../WHSLib/QuoteDataInterface');
+import QuoteDataInterface = require('../WHSLib/Interfaces/QuoteDataInterface');
 
 class QuoteUI extends UIUtil.UIItem {
     //template, pretty simple
-    private readonly template: string = `<p class="{{className}}" id="{{id}}">{{text}}</p>`;
+    private readonly templateStr: string = `<p class="{{className}}" id="{{id}}">{{text}}</p>`;
     //storage stuff
     private readonly className: string;
     private readonly maxLen: number;
     private elem: HTMLElement;
-    //callback quote storage
-    private quoteStore: QuoteDataInterface;
     //make it shake it bake it
     constructor(className: string, lineLen: number) {
         super();
@@ -22,34 +20,33 @@ class QuoteUI extends UIUtil.UIItem {
         this.maxLen = lineLen;
     }
     //getHTMLJESUS
-    getHTML(): string {
-        let ret = UIUtil.templateEngine(this.template, {
+    onInit(data: Array<any>): string {
+        let ret = UIUtil.templateEngine(this.templateStr, {
             className: this.className,
             id: this.id,
-            text: this.makeQuote(),
+            text: this.makeQuote(data[UIUtil.RecvType.QUOTE]),
         });
         //return
         return ret;
     }
     //store document element
-    onInit() {
+    buildJS() {
         this.elem = document.querySelector('#' + this.id) as HTMLElement;
     }
     //get dat quote
-    recv: Array<UIUtil.QuoteParams> = [
+    recv: Array<UIUtil.RecvParams> = [
         {
             type: UIUtil.RecvType.QUOTE,
-            storeQuote: ((quote) => { this.quoteStore = quote; }).bind(this),
         }
     ];
     //fix quote on update
-    onUpdate(why: Array<UIUtil.TRIGGERED>) {
-        if (this.quoteStore) this.elem.innerHTML = this.makeQuote();
+    onUpdate(data: Array<any>) {
+        if (data[UIUtil.RecvType.QUOTE]) this.elem.innerHTML = this.makeQuote(data[UIUtil.RecvType.QUOTE]);
     }
     //utility construct quote HTML function
-    private makeQuote(): string {
+    private makeQuote(data: QuoteDataInterface): string {
         let quotefix = '';
-        let tempQuote: string = this.quoteStore.quote;
+        let tempQuote: string = data.quote;
         //add breaklines to quote so we don't overflow
         while (tempQuote.length > this.maxLen) {
             //work on the substring ending at the 64th char
@@ -62,9 +59,9 @@ class QuoteUI extends UIUtil.UIItem {
         if (quotefix.length) quotefix += tempQuote;
         else quotefix = tempQuote;
         //add the author after another breakline
-        quotefix += `<br/>-` + (this.quoteStore.author ? this.quoteStore.author : 'Unknown');
+        quotefix += `<br/>-` + (data.author ? data.author : 'Unknown');
         //delete quoteStore
-        this.quoteStore = null;
+        data = null;
         //return!
         return quotefix;
     }

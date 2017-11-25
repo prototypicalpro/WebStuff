@@ -173,8 +173,8 @@ class CalDataManage implements DataInterface {
         if (!evRange.length) return false;
         //create key range based on data above
         let range: IDBKeyRange;
-        if (!evRange[1]) range = IDBKeyRange.only(day.setDate(nowDay + evRange[0]));
-        else range = IDBKeyRange.bound(day.setDate(nowDay + evRange[0]), day.setDate(nowDay + evRange[1] + 1) - 1);
+        if (!evRange[1] && onlySched) range = IDBKeyRange.only(day.setDate(nowDay + evRange[0]));
+        else range = IDBKeyRange.bound(day.setDate(nowDay + evRange[0]), (evRange[1] ? day.setDate(nowDay + evRange[1] + 1) : day.setDate(nowDay + 1)) - 1);
         //start running the query!
         return new Promise((resolve, reject) => {
             let evRet: any = {};

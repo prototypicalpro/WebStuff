@@ -3,12 +3,14 @@
  * fairly simple
  */
 
-import DataInterface = require('./DataInterface');
-import QuoteDataInterface = require('./QuoteDataInterface');
+import DataInterface = require('./Interfaces/DataInterface');
+import UIUtil = require('../UILib/UIUtil');
 import QuoteData = require('./QuoteData');
 import DBManage = require('../DBLib/DBManage');
 
 class QuoteDataManage implements DataInterface {
+    //data type
+    readonly dataType = UIUtil.RecvType.QUOTE;
     //data key for recieved data
     readonly dataKey: string = 'quoteData';
     //database info
@@ -38,14 +40,19 @@ class QuoteDataManage implements DataInterface {
     }
 
     //update data does same thing cuz I was lazy in the backend
-    updataData(data: any): Promise<boolean> | false {
+    updateData(data: any): Promise<boolean> | false {
         if (!Array.isArray(data)) return this.overwriteData(data).then(() => { return true; });
         return false; //I LOVE JAVASCRIPT
     }
 
     //get data returns the quoteData obj
-    getData(): any {
-        return new QuoteData(this.db, this.dbInfo.storeName, this.key);
+    getData(): Promise<any> {
+        //and UI magic!
+        return new Promise((resolve, reject) => {
+            let req = this.db.transaction([this.dbInfo.storeName], 'readonly').objectStore(this.dbInfo.storeName).get(this.key);
+            req.onsuccess = (evt: any) => { resolve(evt.target.result); };
+            req.onerror = reject;
+        });
     }
 }
 

@@ -10,89 +10,80 @@ import HTMLMap = require('../HTMLMap');
 import TimeFormatUtil = require('../TimeFormatUtil');
 
 class TopUI extends UIUtil.UIItem {
-    //storage schedule name
-    private schedule: ScheduleUtil.Schedule;
-    //storage day
-    private day: Date;
-    //storage image url
-    private url: string;
     //storage promise with the real image url
     private picPromise: Promise<string>;
     private bigURL: string;
     //actual members for optimization
     private lastIndex: number;
     //gethtml doesn't do anything since we already built the html for this component
-    getHTML(): string {
-        return null;
-    }
-    //callback for init
-    //we'll just operate in document quiries
-    onInit(): void {
-        if (!this.schedule) {
-            HTMLMap.timeText.innerHTML = TimeFormatUtil.asSmallTime(this.day);
+    //the only onInit function where document selectors are OK
+    onInit(data: Array<any>): void {
+        const day: Date = data[UIUtil.RecvType.DAY];
+        const zeroDay: number = new Date(day).setHours(0, 0, 0, 0);
+        const schedule: ScheduleUtil.Schedule = data[UIUtil.RecvType.CAL]["scheds"][zeroDay];
+        if (!schedule) {
+            HTMLMap.timeText.innerHTML = TimeFormatUtil.asSmallTime(day);
             HTMLMap.backText.innerHTML = "";
             HTMLMap.periodText.innerHTML = "No School";
         }
         else {
-            //cache today time
-            let todayTime = new Date(this.day).setHours(0, 0, 0, 0); 
             //get current period
-            const index = this.schedule.getCurrentPeriodIndex(this.day);
+            const indexAndPeriod: [number, ScheduleUtil.Period] = schedule.getCurrentPeriodAndIndex(day);
             //store it so we can check it later
-            this.lastIndex = index;
-            if (index === ScheduleUtil.PeriodType.BEFORE_START) {
+            this.lastIndex = indexAndPeriod[0];
+            if (indexAndPeriod[0] === ScheduleUtil.PeriodType.before_start) {
                 //before start code
-                HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(this.day, this.schedule.getPeriod(0).getStart(todayTime)) + " remaining";
+                HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(day, indexAndPeriod[1].getEnd(zeroDay)) + " remaining";
                 HTMLMap.periodText.innerHTML = "Before School";
             }
-            else if (index === ScheduleUtil.PeriodType.AFTER_END) {
+            else if (indexAndPeriod[0] === ScheduleUtil.PeriodType.after_end) {
                 //after end code
-                HTMLMap.timeText.innerHTML = TimeFormatUtil.asSmallTime(this.day);
+                HTMLMap.timeText.innerHTML = TimeFormatUtil.asSmallTime(day);
                 HTMLMap.periodText.innerHTML = "After School";
             }
             else {
                 //current period code
-                const period = this.schedule.getPeriod(index);
-                HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(this.day, period.getEnd(todayTime)) + " remaining";
+                const period: ScheduleUtil.Period = indexAndPeriod[1];
+                HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(day, period.getEnd(zeroDay)) + " remaining";
                 switch (period.getType()) {
-                    case ScheduleUtil.PeriodType.CLASS:
+                    case ScheduleUtil.PeriodType.class:
                         HTMLMap.periodText.innerHTML = 'Period ' + period.getName();
                         break;
-                    case ScheduleUtil.PeriodType.LUNCH:
+                    case ScheduleUtil.PeriodType.lunch:
                         HTMLMap.periodText.innerHTML = 'Lunch';
                         break;
-                    case ScheduleUtil.PeriodType.TUTOR_TIME:
+                    case ScheduleUtil.PeriodType.tutor_time:
                         HTMLMap.periodText.innerHTML = 'Tutor Time';
                         break;
-                    case ScheduleUtil.PeriodType.ASSEMBLY:
+                    case ScheduleUtil.PeriodType.assembly:
                         HTMLMap.periodText.innerHTML = 'Assembly';
                         break;
-                    case ScheduleUtil.PeriodType.PASSING:
+                    case ScheduleUtil.PeriodType.passing:
                         HTMLMap.periodText.innerHTML = 'Passing';
                         break;
                 }
             }
-            HTMLMap.backText.innerHTML = this.schedule.getName()[0];
+            HTMLMap.backText.innerHTML = schedule.getName()[0];
         }
         //background image
         if (this.bigURL) HTMLMap.setBackImg(this.bigURL);
         else HTMLMap.setBackImg(this.url);
     }
+    //callback for init
+    //we'll just operate in document quiries
+    buildJS(): void {
+        
+    }
     recv: Array<UIUtil.RecvParams> = [
-        <UIUtil.SchedParams>{
-            type: UIUtil.RecvType.SCHEDULE,
-            day: 0,
-            storeSchedule: ((sched) => { this.schedule = sched; }).bind(this),
+        <UIUtil.CalParams>{
+            type: UIUtil.RecvType.CAL,
+            schedDay: 0,
         },
-        <UIUtil.DayParams>{
+        <UIUtil.RecvParams>{
             type: UIUtil.RecvType.DAY,
-            storeDay: ((day) => { this.day = day; }).bind(this),
         },
-        <UIUtil.ImageParams>{
-            type: UIUtil.RecvType.IMAGE,
-            storeImgURL: ((url, picPromise) => { this.url = url; this.picPromise = picPromise; }).bind(this),
-        }
     ];
+    /*
     //the actual update callback
     onUpdate(why: Array<UIUtil.TRIGGERED>) {
         //if update or update schedule, rebuild
@@ -115,6 +106,7 @@ class TopUI extends UIUtil.UIItem {
             }
         }
     }
+    */
 
     //tell topUI to start using the non-thumbnail
     useBetterImage(): void {

@@ -37,7 +37,7 @@ namespace UIUtil {
     //searches for strings in double curly beackets and replaces them (e.g. {{thing}})
     //no spaces in there please
     //this function will search every member of values, and fill the template
-    const templateEngine = (template: string, values: Object): string => {
+    export const templateEngine = (template: string, values: Object): string => {
         //get all teh keys, and map them to a RegEx for optimization
         let re = new RegExp(Object.keys(values)
             //give the strings the template syntax
@@ -48,8 +48,8 @@ namespace UIUtil {
         return template.replace(re, function (matched) { return values[matched.replace(new RegExp(/{|}/, 'g'), '')]; });
     };
     //utility function to flatten the arrays of messes of recvparams
-    const combineParams = (ray: Array<Array<RecvParams>>): Array<RecvParams> => {
-        return [].concat.apply([], ray).filter((obj) => { return obj; });
+    export const combineParams = (ray: Array<UIItem>): Array<RecvParams> => {
+        return [].concat.apply([], ray.map((item) => { return item.recvParams; }).filter((obj) => { return obj; }));
     };
 
     //unique ID utility function, will just increment a number to ensure nothing is duplicated
@@ -73,9 +73,6 @@ namespace UIUtil {
         onUpdate?(data: Array<any>): void;
         //recv parameters, parsed from children at construction
         recvParams?: Array<UIUtil.RecvParams>;
-        //and a utility function to parse them for you
-        protected readonly genRecv = combineParams;
-        protected readonly template = templateEngine;
     }
 
     //didn't have a better place to put this :(
