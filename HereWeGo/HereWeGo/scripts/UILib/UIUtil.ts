@@ -10,12 +10,11 @@
 namespace UIUtil {
     //enumeration for the type of recvParam
     export const enum RecvType {
-        SCHEDULE,
         DAY,
-        EVENTS,
+        CAL,
         QUOTE,
         IMAGE,
-        length = 5, //adjust for number of above items
+        length = 4, //adjust for number of above items
     }
     //base interface for an object which specifys how to inject
     export interface RecvParams {
@@ -23,21 +22,16 @@ namespace UIUtil {
     }
     //interfaces enumerating the properties each object must have in order to recieve the data
     //only present due to weird database efficiency stuff
-    export interface EventParams extends RecvParams {
+    export interface CalParams extends RecvParams {
         //which days we want events for
         //use a number, 0 being today, 1 being the next day, and so on
-        day: number;
+        //to get a range, also fill dayend
+        dayStart?: number;
+        dayCount?: number;
+        //constructing a schedule is expensive, so we'll assume that if we want a schedule we'll ony need a single one
+        schedDay?: number;
         //database runs this function for every event, so this should store all the data you need 
         //to do the thing
-    }
-    export interface SchedParams extends RecvParams {
-        //need to specify the day we want the schedule on
-        //use a number, 0 being today, 1 being the next day, and so on
-        //also can request an array of multiple schedules
-        day: number;
-        //isolated property or array of properties to only store about schedule (if we only need title or something)
-        schedProps?: Array<string>;
-        //callback fn
     }
     //Varibles to put in template, in form of { name: value }
     //searches for strings in double curly beackets and replaces them (e.g. {{thing}})

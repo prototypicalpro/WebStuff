@@ -25,7 +25,7 @@ interface DataInterface {
     //get the data to be served to the UIItems
     //an object depending on the implementation
     //be sure to document what you're returning in an interface or something
-    getData(params?: Array<UIUtil.RecvParams>): Promise<any>;
+    getData(params?: Array<UIUtil.RecvParams>): Promise<any> | false;
 }
 
 export = DataInterface;

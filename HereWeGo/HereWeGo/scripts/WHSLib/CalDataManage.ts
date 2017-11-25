@@ -5,12 +5,11 @@
  */
 
 import EventData = require('./Interfaces/EventData');
+import ScheduleData = require('./Interfaces/ScheduleData');
+import ScheduleUtil = require('./ScheduleUtil');
 import DataInterface = require('./Interfaces/DataInterface');
 import DBManage = require('../DBLib/DBManage');
 import UIUtil = require('../UILib/UIUtil');
-
-//special consant for a special situation
-const EVENT_KEYS = ['isAllDay', 'startTime', 'endTime', 'title', 'schedule'];
 
 //special enum for crappy code
 enum DBInfoEnum {
@@ -20,6 +19,7 @@ enum DBInfoEnum {
 };
 
 class CalDataManage implements DataInterface {
+    readonly dataType: UIUtil.RecvType = UIUtil.RecvType.CAL;
     //we can also do this
     protected db: IDBDatabase;
     setDB(db: IDBDatabase): void { this.db = db; }
@@ -31,7 +31,7 @@ class CalDataManage implements DataInterface {
         {
             storeName: DBInfoEnum[DBInfoEnum.cal],
             keyPath: 'id',
-            keys: EVENT_KEYS
+            keys: ['isAllDay', 'startTime', 'endTime', 'title', 'schedule'],
         },
         {
             storeName: DBInfoEnum[DBInfoEnum.sched],
@@ -140,74 +140,92 @@ class CalDataManage implements DataInterface {
      * Data functions
      */
 
-    //other more interesting functions
-    //get and inject the schedule for today
-    getSchedules(start: number): Promise<string> {
+    //only one data function, takes the days needed and returns the events and schedules for each
+    getData(params: Array<UIUtil.CalParams>): Promise<any> | false {
+        //create a range of events to fetch, then an array of schedules to fetch
+        let evRange = [];
+        let schedList = [];
+        let onlySched = true;
+        //utility function to expand range
+        const expandRange = (start: number, count?: number): void => {
+            //start of range
+            if (!evRange[0] || start < evRange[0]) evRange[0] = start;
+            else if (!evRange[1] || start > evRange[1]) evRange[1] = start;
+            //end of range
+            if (start + count > evRange[1]) evRange[1] = start + count;
+        };
+
+        for (let i = 0, len = params.length; i < len; i++) {
+            if (params[i].dayStart) {
+                onlySched = false;
+                expandRange(params[i].dayStart, params[i].dayCount);
+            }
+            if (params[i].schedDay && schedList.indexOf(params[i].schedDay) === -1) {
+                schedList.push(params[i].schedDay);
+                expandRange(params[i].schedDay);
+            }
+        }
+        //cache date
+        let day = new Date();
+        day.setHours(0, 0, 0, 0);
+        let nowDay = day.getDate();
+        //check if there's a reason to search
+        if (!evRange.length) return false;
+        //create key range based on data above
+        let range: IDBKeyRange;
+        if (!evRange[1]) range = IDBKeyRange.only(day.setDate(nowDay + evRange[0]));
+        else range = IDBKeyRange.bound(day.setDate(nowDay + evRange[0]), day.setDate(nowDay + evRange[1] + 1) - 1);
+        //start running the query!
         return new Promise((resolve, reject) => {
-            let req = this.db.transaction([this.dbInfo.storeName], "readonly").objectStore(this.dbInfo.storeName).index('schedule').openCursor(IDBKeyRange.only(1));
+            let evRet: any = {};
+            let req: IDBRequest = this.db.transaction([this.dbInfo[DBInfoEnum.cal].storeName], "readonly").objectStore(this.dbInfo[DBInfoEnum.cal].storeName).index('startTime').openCursor(range);
+            req.onerror = reject;
             req.onsuccess = (event: any) => {
                 let cursor: IDBCursorWithValue = event.target.result;
                 if (cursor) {
-                    if (cursor.value.startTime === start) return resolve(cursor.value.title);
-                    else cursor.continue();
-                }
-                else resolve(null);
-            };
-            req.onerror = reject;
-        }).then((result) => {
-            if (!result) return null;
-            else return result;
-        });
-    }
-
-    //UI handler interface madness!
-    getEvents(objs: Array<UIUtil.EventParams>): Promise<any> {
-        //step one: figure out the quiries to make
-        //sigh
-        interface dayObj {
-            day: number;
-            objs: Array<UIUtil.EventParams>;
-        }
-        //create an object with all the data we need to get and run the thigs
-        let days: Array<dayObj> = [];
-        for (let i = 0, len = objs.length; i < len; i++) {
-            let index = days.findIndex((day) => { return day.day === objs[i].day; })
-            if (index === -1) {
-                days.push({
-                    day: objs[i].day,
-                    objs: [objs[i]],
-                });
-            }
-            else days[index].objs.push(objs[i]);
-        }
-        //run the quiries!
-        //first get all the days, then map them to promises with database info, inside of which we run the functions!
-        return Promise.all(days.map((day: dayObj) => {
-            //date stuff
-            //today plus whatever specified by object
-            let tempDay = new Date();
-            tempDay.setHours(0, 0, 0, 0);
-            let start = tempDay.setDate(tempDay.getDate() + day.day);
-            //add one day minus one millisecond
-            let end = tempDay.setDate(tempDay.getDate() + 1) - 1;
-            //db stuff!
-            return new Promise((resolve) => {
-                let req: IDBRequest = this.db.transaction([this.dbInfo[DBInfoEnum.cal].storeName], "readonly").objectStore(this.dbInfo[DBInfoEnum.cal].storeName).index('startTime').openCursor(IDBKeyRange.bound(start, end));
-                req.onsuccess = (event: any) => {
-                    let cursor: IDBCursorWithValue = event.target.result;
-                    if (cursor) {
-                        if (!cursor.value.schedule) {
-                            //run it bby
-                            for (let i = 0, len = day.objs.length; i < len; i++) day.objs[i].storeEvent(cursor.value);
-                        }
-                        cursor.continue();
+                    if (!onlySched || cursor.value.schedule) {
+                        if (!evRet[cursor.value.startTime]) evRet[cursor.value.startTime] = [cursor.value];
+                        else evRet[cursor.value.startTime].push(cursor.value);
                     }
-                    else return resolve();
-                };
+                    cursor.continue();
+                }
+                else return resolve(evRet);
+            };
+        }).then((ret: any) => {
+            //the return object will be event objects indexed by start time
+            //generate schedules for all the schedule days listed
+            if (!schedList.length) Promise.resolve({ events: ret });
+            //search events, matching each event to it's schedule, and storing it
+            //query the schedule types and then the times
+            //with a buncha on-off queries
+            else return Promise.all(schedList.map((schedNum: number) => {
+                //get the appropriete event
+                let find: EventData.EventInterface;
+                if (!ret[day.setDate(nowDay + schedNum)] || !(find = ret[day.setDate(nowDay + schedNum)].find((ev) => { return ev.schedule; }))) return false;
+                //and search the database for that key
+                //double nested database search 
+                return new Promise((resolve, reject) => {
+                    let tx = this.db.transaction([this.dbInfo[DBInfoEnum.sched].storeName, this.dbInfo[DBInfoEnum.cal].storeName], "readonly");
+                    let req = tx.objectStore(this.dbInfo[DBInfoEnum.sched].storeName).get(find.title);
+                    req.onsuccess = (evt: any) => {
+                        if (!evt.target.result) return resolve(false);
+                        let req2 = tx.objectStore(this.dbInfo[DBInfoEnum.time].storeName).get(evt.target.result.timeName);
+                        req2.onsuccess = (evt1: any) => {
+                            if (!evt1.target.result) return resolve(false);
+                            resolve([find.startTime, new ScheduleUtil.Schedule(evt.target.result, evt1.target.result)]);
+                        };
+                        req2.onerror = reject;
+                    };
+                    req.onerror = reject;
+                    //yaaaaay caaaalbaaaacks
+                });
+            })).then((scheds: Array<[number, false | ScheduleUtil.Schedule]>) => {
+                //index schedule based on start time
+                let schedRet = {};
+                for (let i = 0, len = scheds.length; i < len; i++) if (scheds[i] && scheds[i][1]) schedRet[scheds[i][0]] = scheds[i][1];
+                return { events: ret, scheds: schedRet };
             });
-        }));
-        //it's now occurring to me how I should just iterate through the events instead of doing database stuff in parrellel,
-        //but I think it's a little late for that now
+        });
     }
 }
 
