@@ -4,16 +4,11 @@
 // and then run "window.location.reload()" in the JavaScript Console.
 import TimeFormatUtil = require('./TimeFormatUtil');
 import lory = require('./lory');
-import DataManage = require('./WHSLib/DataManage');
-import SchedDataManage = require('./WHSLib/SchedDataManage');
-import ScheduleData = require('./WHSLib/ScheduleData');
+import DataManage = require('./DataManage');
 import ScheduleUtil = require('./WHSLib/ScheduleUtil');
 import CalDataManage = require('./WHSLib/CalDataManage');
 import QuoteDataManage = require('./WHSLib/QuoteDataManage');
-import QuoteData = require('./WHSLib/QuoteData');
 import QuoteUI = require('./UILib/QuoteUI');
-import EventData = require('./WHSLib/EventData');
-import EventInterface = require('./WHSLib/EventInterface');
 import ScheduleGraphic = require('./UILib/ScheduleGraphic');
 import EventGraphic = require('./UILib/EventGraphic');
 import SlideTabUI = require('./UILib/SlideTabUI');
@@ -23,25 +18,15 @@ import ButtonUI = require('./UILib/ButtonUI');
 import HTMLMap = require('./HTMLMap');
 import ErrorUtil = require('./ErrorUtil');
 import ToastUI = require('./UILib/ToastUI');
-import UIData = require('./UIData');
 import TopUI = require('./UILib/TopUI');
-import DayHandler = require('./DayHandler');
 import ImageDataManage = require('./WHSLib/ImageDataManage');
 import GetLib = require('./GetLib/GetLib');
 
 "use strict";
 
-const enum DataIndex {
-    EVENTS = 0,
-    SCHED,
-    QUOTE,
-    IMAGE,
-};
-
 var http: GetLib = new GetLib();
-var data: DataManage = new DataManage([new CalDataManage(), new SchedDataManage(), new QuoteDataManage(), new ImageDataManage(http)], http);
+var data: DataManage = new DataManage([new CalDataManage(), new QuoteDataManage(), new ImageDataManage(http, 7)], http);
 var toast: ToastUI = new ToastUI(HTMLMap.toastBox);
-var uiThing: UIData;
 
 var timeCallbackID;
 var browserTabWorks: boolean;
@@ -71,6 +56,11 @@ function onDeviceReady(): void {
     (<any>cordova).plugins.browsertab.isAvailable((result) => browserTabWorks = result);
 
     let start: number = performance.now();
+    //start up http
+    if (!http.initAPI()) {
+        console.log("http failed");
+        throw ErrorUtil.code.HTTP_FAIL;
+    }
     const today = new Date();
     //grabby grabby
     data.initData().then(earlyInit).then(buildUI).then(() => {
@@ -82,14 +72,9 @@ function onDeviceReady(): void {
         if (err === ErrorUtil.code.NO_IMAGE) return true;
         else throw err;
     }).then((getNewDataVar: any): any => {
-        //start up http
-        if (!http.initAPI()) {
-            console.log("http failed");
-            throw ErrorUtil.code.HTTP_FAIL;
-        }
         //grab them datums
         if (getNewDataVar) return data.getNewData().then(buildUI);
-        return data.refreshData().then(() => { return uiThing.trigger([UIUtil.TRIGGERED.UPDATE_ALL_DATA]); }).catch(() => { return data.getNewData().then(buildUI); });
+        return data.refreshData().then(() => data.refreshData.bind(data)).catch(() => { return data.getNewData().then(buildUI); });
     }).catch((err: any) => {
         console.log(err);
         if (err === ErrorUtil.code.HTTP_FAIL) setTimeout(toastError, 1000, "This phone is unsupported!");
@@ -108,15 +93,8 @@ function onDeviceReady(): void {
 }
 
 function earlyInit(): Promise<any> {
-    //start up the early data stuff
-    const calData: EventData = data.returnData(DataIndex.EVENTS);
-    const schedData: ScheduleData = data.returnData(DataIndex.SCHED);
-    const quoteData: QuoteData = data.returnData(DataIndex.QUOTE);
-    const myData: any = data.returnData(DataIndex.IMAGE);
-    //give the top all the data it needs
-    uiThing = new UIData(schedData, calData, new DayHandler(), quoteData, myData, [top]);
-    //power up!
-    return uiThing.initInject().then(uiThing.initRun.bind(uiThing)).then(() => setTimeout(navigator.splashscreen.hide, 2000));
+    data.setUIObjs([top]);
+    return data.initUI().then(() => setTimeout(navigator.splashscreen.hide, 2000));
 }
 
 function buildUI(): Promise<any> {
@@ -173,23 +151,10 @@ function buildUI(): Promise<any> {
         //naw
     ], ['Home', 'Schedule', 'Credit']);
     //start up the early data stuff
-    const calData: EventData = data.returnData(DataIndex.EVENTS);
-    const schedData: ScheduleData = data.returnData(DataIndex.SCHED);
-    const quoteData: QuoteData = data.returnData(DataIndex.QUOTE);
-    const myData: any = data.returnData(DataIndex.IMAGE);
     //give the top all the data it needs
-    uiThing = new UIData(schedData, calData, new DayHandler(), quoteData, myData, [top, slide, menu]);
+    data.setUIObjs([top, slide, menu]);
     //init
-    return uiThing.initInject().then(() => {
-        //set HTML
-        HTMLMap.setSliderHTML(slide.getHTML());
-        HTMLMap.setSideMenuHTML(menu.getHTML());
-        //then tell it to go!
-        uiThing.initRun();
-        //and finish with the cherry on top
-        top.useBetterImage();
-        navigator.splashscreen.hide();
-    });
+    return data.initUI().then(navigator.splashscreen.hide);
 }
 
 function onPause(): void {
@@ -206,8 +171,9 @@ function onResume(): void {
 
 //sixty second timeupdate callback
 function updateTime(): void {
+    //TODO: Updating with a reasonalbe CPU impact
     //triggered!
-    uiThing.trigger([UIUtil.TRIGGERED.TIME_UPDATE]);
+    //uiThing.trigger([UIUtil.TRIGGERED.TIME_UPDATE]);
     //reset callback
     let time = new Date();
     time.setHours(time.getHours(), time.getMinutes() + 1, 0, 0);

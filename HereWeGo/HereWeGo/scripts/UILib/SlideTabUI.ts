@@ -21,7 +21,6 @@ class SlideTabUI extends UIUtil.UIItem {
     //stored names for buttons later on
     private readonly names: Array<string>;
     //stored date
-    private storeDay: Date;
     private dayUpdate: boolean;
     //storeage lory object
     private storly: any;
@@ -32,10 +31,6 @@ class SlideTabUI extends UIUtil.UIItem {
         this.names = names;
         this.recvParams = UIUtil.combineParams([].concat.apply(pages));
     }
-    //needs the day for the top bar thingy
-    recv = [<UIUtil.RecvParams>{
-        type: UIUtil.RecvType.DAY,
-    }];
     //and the getHTML
     onInit(data: Array<any>): void {
         //get all the htmls in parellel
@@ -89,7 +84,7 @@ class SlideTabUI extends UIUtil.UIItem {
         //run all that menu javascript
         for (let i = 0, len = buttonRay.length; i < len; i++) buttonRay[i].buildJS();
         //set the top grey bar date correctly
-        HTMLMap.topBarText.innerHTML = TimeFormatUtil.asLongDayMonthText(this.storeDay);
+        HTMLMap.topBarText.innerHTML = TimeFormatUtil.asLongDayMonthText(new Date());
         this.dayUpdate = false;
         //finally, run the JS of all the little dudes
         for (let i = 0, len = this.pages.length; i < len; i++) for (let o = 0, len1 = this.pages[i].length; o < len1; o++) this.pages[i][o].buildJS();

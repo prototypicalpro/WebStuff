@@ -11,7 +11,7 @@ interface DataInterface {
     //each data item should be a unique type, else stuff breaks
     readonly dataType: UIUtil.RecvType;
     //database info for the superclass to manage
-    readonly dbInfo: DBInfoInterface | Array<DBInfoInterface> | false;
+    readonly dbInfo: DBInfoInterface | Array<DBInfoInterface>;
     //the key for the sync data this object will use (e.g. "calSyncData")
     //should be constant
     readonly dataKey: string;

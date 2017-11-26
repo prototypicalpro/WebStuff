@@ -51,6 +51,10 @@ class EventGraphic extends UIUtil.UIItem {
         super();
         this.recvParams = [
             //events
+            <UIUtil.CalParams>{
+                type: UIUtil.RecvType.CAL,
+                dayStart: 1,
+            }
         ];
         this.header = header;
         this.dispSched = displaySchedule;

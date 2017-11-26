@@ -77,8 +77,11 @@ class ImageDataManage implements DataInterface {
                         req.onerror = reject;
                     }));
                 }
-            })
-        }).then(() => { return data.length > 0; }).catch((err) => { return null; });
+                return Promise.all(ray);
+            });
+        }).then(() => {
+            if (this.cacheRefresh) return this.fillPicPromises(this.storeNum).then(() => this.cacheRefresh = false);
+        }).then(() => { return data.length > 0; });
     }
     //overwriteData func
     overwriteData(data: Array<ImageInterface>): Promise<any> {
@@ -147,7 +150,7 @@ class ImageDataManage implements DataInterface {
                 req2.onsuccess = (evt: any) => {
                     //iterate through database, fetching any blobs that are needed, and caching all teh things
                     let cursor = evt.target.result as IDBCursorWithValue;
-                    if (!cursor || ++i > temp) resolve(this.picPromise);
+                    if (!cursor || ++i > temp) return resolve(this.picPromise);
                     count--;
                     if (i > this.index || count >= 0) {
                         let tempPromise = this.getAndStoreImage(cursor.value, "thumb", UIUtil.templateEngine(THUMB_URL, { height: Math.floor(screen.height / 4), id: cursor.value.id }));
@@ -161,6 +164,8 @@ class ImageDataManage implements DataInterface {
     }
 
     private getAndStoreImage(data: ImageInterface, key: string, url: string): Promise<Blob> {
+        //trip a boolean here that we got new images
+        this.cacheRefresh = true;
         //if the database has the image, great! send it off
         return data[key] ? Promise.resolve(data[key]) : this.getUntilBlobSuccess(url).then((blob: Blob) => {
             data[key] = blob;

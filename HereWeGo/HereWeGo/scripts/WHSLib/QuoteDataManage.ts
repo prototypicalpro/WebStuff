@@ -5,7 +5,6 @@
 
 import DataInterface = require('./Interfaces/DataInterface');
 import UIUtil = require('../UILib/UIUtil');
-import QuoteData = require('./QuoteData');
 import DBManage = require('../DBLib/DBManage');
 
 class QuoteDataManage implements DataInterface {

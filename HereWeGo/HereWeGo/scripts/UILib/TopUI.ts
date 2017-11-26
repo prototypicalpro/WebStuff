@@ -18,6 +18,7 @@ class TopUI extends UIUtil.UIItem {
     onInit(data: Array<any>): void {
         const day: Date = new Date();
         const zeroDay: number = new Date(day).setHours(0, 0, 0, 0);
+        console.log(data);
         const schedule: ScheduleUtil.Schedule = data[UIUtil.RecvType.CAL]["scheds"][zeroDay];
         if (!schedule) {
             HTMLMap.timeText.innerHTML = TimeFormatUtil.asSmallTime(day);
@@ -87,7 +88,7 @@ class TopUI extends UIUtil.UIItem {
     buildJS(): void {
         
     }
-    recv: Array<UIUtil.RecvParams> = [
+    recvParams: Array<UIUtil.RecvParams> = [
         <UIUtil.CalParams>{
             type: UIUtil.RecvType.CAL,
             schedDay: 0,

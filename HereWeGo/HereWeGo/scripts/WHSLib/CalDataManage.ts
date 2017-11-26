@@ -127,11 +127,11 @@ class CalDataManage implements DataInterface {
         return data.map((item: Array<any>) => {
             return {
                 id: item[EventData.CloudEventEnum.id],
-                schedule: !!item[EventData.CloudEventEnum.schedule],
+                schedule: item[EventData.CloudEventEnum.schedule],
                 title: item[EventData.CloudEventEnum.title],
                 startTime: item[EventData.CloudEventEnum.startTime],
                 endTime: item[EventData.CloudEventEnum.endTime],
-                isAllDay: !!item[EventData.CloudEventEnum.isAllDay],
+                isAllDay: item[EventData.CloudEventEnum.isAllDay],
             };
         });
     }
@@ -160,17 +160,19 @@ class CalDataManage implements DataInterface {
                 onlySched = false;
                 expandRange(params[i].dayStart, params[i].dayCount);
             }
-            if (params[i].schedDay && schedList.indexOf(params[i].schedDay) === -1) {
+            if (typeof params[i].schedDay === 'number' && schedList.indexOf(params[i].schedDay) === -1) {
                 schedList.push(params[i].schedDay);
                 expandRange(params[i].schedDay);
             }
         }
+        console.log(params);
+        console.log(evRange);
+        //check if there's a reason to search
+        if (!evRange.length) return false;
         //cache date
         let day = new Date();
         day.setHours(0, 0, 0, 0);
         let nowDay = day.getDate();
-        //check if there's a reason to search
-        if (!evRange.length) return false;
         //create key range based on data above
         let range: IDBKeyRange;
         if (!evRange[1] && onlySched) range = IDBKeyRange.only(day.setDate(nowDay + evRange[0]));
