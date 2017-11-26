@@ -10,15 +10,13 @@ import HTMLMap = require('../HTMLMap');
 import TimeFormatUtil = require('../TimeFormatUtil');
 
 class TopUI extends UIUtil.UIItem {
-    //storage promise with the real image url
-    private picPromise: Promise<string>;
     private bigURL: string;
     //actual members for optimization
     private lastIndex: number;
     //gethtml doesn't do anything since we already built the html for this component
     //the only onInit function where document selectors are OK
     onInit(data: Array<any>): void {
-        const day: Date = data[UIUtil.RecvType.DAY];
+        const day: Date = new Date();
         const zeroDay: number = new Date(day).setHours(0, 0, 0, 0);
         const schedule: ScheduleUtil.Schedule = data[UIUtil.RecvType.CAL]["scheds"][zeroDay];
         if (!schedule) {
@@ -66,8 +64,23 @@ class TopUI extends UIUtil.UIItem {
             HTMLMap.backText.innerHTML = schedule.getName()[0];
         }
         //background image
-        if (this.bigURL) HTMLMap.setBackImg(this.bigURL);
-        else HTMLMap.setBackImg(this.url);
+        //get the promisi
+        let back: [Promise<Blob>, Promise<Blob>] = data[UIUtil.RecvType.IMAGE];
+        if (!back) {
+            //display a waiting image?
+            //TODO: something other than blank
+        }
+        back[0].then((thing: Blob) => {
+            //set it
+            let url = URL.createObjectURL(thing)
+            HTMLMap.setBackLowRes(url);
+            //and set the splashscreen to hide after it finishes
+            let load = new Image();
+            load.onload = navigator.splashscreen.hide;
+            load.src = url;
+        });
+        //set it to go 50ms after, for dat load speed increase
+        back[1].then((hqThing: Blob) => setTimeout(() => HTMLMap.setBackImg(URL.createObjectURL(hqThing)), 50));
     }
     //callback for init
     //we'll just operate in document quiries
@@ -78,10 +91,7 @@ class TopUI extends UIUtil.UIItem {
         <UIUtil.CalParams>{
             type: UIUtil.RecvType.CAL,
             schedDay: 0,
-        },
-        <UIUtil.RecvParams>{
-            type: UIUtil.RecvType.DAY,
-        },
+        }
     ];
     /*
     //the actual update callback
@@ -107,31 +117,6 @@ class TopUI extends UIUtil.UIItem {
         }
     }
     */
-
-    //tell topUI to start using the non-thumbnail
-    useBetterImage(): void {
-        //background image
-        if (!this.bigURL) {
-            //set background image
-            HTMLMap.setBackLowRes(this.url);
-            //and set the splashscreen to hide after it finishes
-            let load = new Image();
-            load.onload = navigator.splashscreen.hide;
-            load.src = this.url;
-
-            console.log("thumb! " + performance.now());
-            this.picPromise.then((url: string) => {
-                //and promise to set the real image once its loaded
-                //it's funny b/c the image actually loads too fast: I need to stagger it before there's a performance benefit
-                setTimeout(HTMLMap.setBackImg, 50, url);
-                this.bigURL = url;
-                let now = performance.now();
-                console.log("pic! " + now);
-                return;
-            });
-        }
-        else HTMLMap.setBackImg(this.bigURL);
-    }
 }
 
 export = TopUI;

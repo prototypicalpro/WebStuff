@@ -51,13 +51,6 @@ class EventGraphic extends UIUtil.UIItem {
         super();
         this.recvParams = [
             //events
-            <UIUtil.CalParams>{
-                type: UIUtil.RecvType.CAL,
-                day: day,
-            },
-            {
-                type: UIUtil.RecvType.DAY,
-            }
         ];
         this.header = header;
         this.dispSched = displaySchedule;
@@ -69,7 +62,7 @@ class EventGraphic extends UIUtil.UIItem {
         //we only need the events for the today, so start with that
         return UIUtil.templateEngine(this.wrap, {
             id: this.id,
-            stuff: this.buildEventHTML(data[UIUtil.RecvType.CAL]["events"], new Date(data[UIUtil.RecvType.DAY]).setHours(0, 0, 0, 0), new Date(data[UIUtil.RecvType.DAY]).setHours(23, 59, 59, 999)),
+            stuff: this.buildEventHTML(data[UIUtil.RecvType.CAL]["events"], new Date().setHours(0, 0, 0, 0), new Date().setHours(23, 59, 59, 999)),
         });
     }
 
@@ -85,7 +78,7 @@ class EventGraphic extends UIUtil.UIItem {
         //if the event cahce has been populated
         let temp = data[UIUtil.RecvType.CAL]["events"][new Date().setHours(0, 0, 0, 0)];
         //if updated, update!
-        if (temp) this.elem.innerHTML = this.buildEventHTML(temp, new Date(data[UIUtil.RecvType.DAY]).setHours(0, 0, 0, 0), new Date(data[UIUtil.RecvType.DAY]).setHours(23, 59, 59, 999));
+        if (temp) this.elem.innerHTML = this.buildEventHTML(temp, new Date().setHours(0, 0, 0, 0), new Date().setHours(23, 59, 59, 999));
     }
 
     //actual html building func

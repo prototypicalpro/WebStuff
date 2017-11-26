@@ -10,11 +10,10 @@
 namespace UIUtil {
     //enumeration for the type of recvParam
     export const enum RecvType {
-        DAY,
         CAL,
         QUOTE,
         IMAGE,
-        length = 4, //adjust for number of above items
+        length = 3, //adjust for number of above items
     }
     //base interface for an object which specifys how to inject
     export interface RecvParams {

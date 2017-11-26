@@ -23,7 +23,7 @@ namespace DBManage {
     export const constructDB = (args: Array<DBInfoInterface | Array<DBInfoInterface>>): Promise<IDBDatabase> => {
         let isUpgraded: boolean;
         //flatten dbs
-        let dbs: Array<DBInfoInterface> = args.concat.apply([], args);
+        let dbs: Array<DBInfoInterface> = args.concat.apply([], args).filter((dbInf) => { return dbInf; });
         return new Promise((resolve, reject) => {
             //check to see if the database exists
             if (!window.indexedDB) return reject(false);

@@ -51,10 +51,6 @@ class ScheduleGraphic extends UIUtil.UIItem {
     constructor(day: number) {
         super();
         this.recv = [
-            //prolly want the day
-            <UIUtil.RecvParams>{
-                type: UIUtil.RecvType.DAY,
-            },
             //and the schedule
             <UIUtil.CalParams>{
                 type: UIUtil.RecvType.CAL,
@@ -67,10 +63,10 @@ class ScheduleGraphic extends UIUtil.UIItem {
     recv: Array<UIUtil.RecvParams>;
     //gethtml
     onInit(data: Array<any>): string {
-        let sched: ScheduleUtil.Schedule = data[UIUtil.RecvType.CAL]["scheds"][new Date(data[UIUtil.RecvType.DAY]).setHours(0, 0, 0, 0)];
+        let sched: ScheduleUtil.Schedule = data[UIUtil.RecvType.CAL]["scheds"][new Date().setHours(0, 0, 0, 0)];
         return UIUtil.templateEngine(this.wrap, {
             id: this.id,
-            stuff: sched ? this.makeSchedule(sched, data[UIUtil.RecvType.DAY]) : '',
+            stuff: sched ? this.makeSchedule(sched, new Date()) : '',
         });
     }
     //buildJS does nothing for now
