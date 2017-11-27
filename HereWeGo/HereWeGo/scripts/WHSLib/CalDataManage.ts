@@ -149,8 +149,8 @@ class CalDataManage implements DataInterface {
         //utility function to expand range
         const expandRange = (start: number, count?: number): void => {
             //start of range
-            if (!evRange[0] || start < evRange[0]) evRange[0] = start;
-            else if (!evRange[1] || start > evRange[1]) evRange[1] = start;
+            if (typeof evRange[0] != 'number' || start < evRange[0]) evRange[0] = start;
+            else if (typeof evRange[1] != 'number' || start > evRange[1]) evRange[1] = start;
             //end of range
             if (start + count > evRange[1]) evRange[1] = start + count;
         };
@@ -165,8 +165,6 @@ class CalDataManage implements DataInterface {
                 expandRange(params[i].schedDay);
             }
         }
-        console.log(params);
-        console.log(evRange);
         //check if there's a reason to search
         if (!evRange.length) return false;
         //cache date
@@ -207,7 +205,7 @@ class CalDataManage implements DataInterface {
                 //and search the database for that key
                 //double nested database search 
                 return new Promise((resolve, reject) => {
-                    let tx = this.db.transaction([this.dbInfo[DBInfoEnum.sched].storeName, this.dbInfo[DBInfoEnum.cal].storeName], "readonly");
+                    let tx = this.db.transaction([this.dbInfo[DBInfoEnum.sched].storeName, this.dbInfo[DBInfoEnum.time].storeName], "readonly");
                     let req = tx.objectStore(this.dbInfo[DBInfoEnum.sched].storeName).get(find.title);
                     req.onsuccess = (evt: any) => {
                         if (!evt.target.result) return resolve(false);

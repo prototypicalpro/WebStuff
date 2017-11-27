@@ -50,10 +50,10 @@ namespace ScheduleUtil {
 
         getDuration(): number { return this.endTime - this.startTime; }
 
-        //data conversion func (9:55pm => ms from start of day)
+        //data conversion func (9:55 pm => ms from start of day)
         private static timeFromCloudData(timeString: string): number {
             //hours, then mins, converted to ms (for Date logic), multiply by two if pm
-            if (timeString[1] === ':') return (parseInt(timeString[0]) + (timeString[4] === 'p' ? 12 : 0)) * 3600000 + parseInt(timeString.slice(2, 4)) * 60000;
+            if (timeString[1] === ':') return (parseInt(timeString[0]) + (timeString[5] === 'p' ? 12 : 0)) * 3600000 + parseInt(timeString.slice(2, 4)) * 60000;
             let hours = parseInt(timeString.slice(0, 2));
             return (hours + (hours != 12 && timeString[5] === 'p' ? 12 : 0)) * 3600000 + parseInt(timeString.slice(3, 5)) * 60000;
         }
@@ -93,13 +93,13 @@ namespace ScheduleUtil {
             let today = new Date(time).setHours(0, 0, 0, 0);
             //check if school has started
             //if so return before start
-            if (this.periods[0].getStart(today) > time)
-                return [PeriodType.before_start, new Period("12:00a", this.periods[0].getStartStr(), PeriodType.before_start, this.periods[0].getName(), 0, this.periods[0].startTime)];
+            if (this.periods[0].getStart(today).getTime() > time.getTime())
+                return [PeriodType.before_start, new Period("12:00 am", this.periods[0].getStartStr(), PeriodType.before_start, this.periods[0].getName(), 0, this.periods[0].startTime)];
             //school has started, check if school has ended
             //if so return after end
             let cache = this.periods.length - 1;
-            if (this.periods[cache].getEnd(today) < time)
-                return [PeriodType.after_end, new Period(this.periods[cache].getEndStr(), "11:59p", PeriodType.after_end, this.periods[cache].getName(), this.periods[cache].endTime, new Date(today).setHours(23, 59))];
+            if (this.periods[cache].getEnd(today).getTime() < time.getTime())
+                return [PeriodType.after_end, new Period(this.periods[cache].getEndStr(), "11:59 pm", PeriodType.after_end, this.periods[cache].getName(), this.periods[cache].endTime, new Date(today).setHours(23, 59))];
             //find the current period
             for (let index = 0, len = this.periods.length; index < len; index++) {
                 //if the period end is after the time

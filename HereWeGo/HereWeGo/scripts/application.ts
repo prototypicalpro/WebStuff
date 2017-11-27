@@ -94,7 +94,7 @@ function onDeviceReady(): void {
 
 function earlyInit(): Promise<any> {
     data.setUIObjs([top]);
-    return data.initUI().then(() => setTimeout(navigator.splashscreen.hide, 2000));
+    return data.initUI();
 }
 
 function buildUI(): Promise<any> {
@@ -142,7 +142,7 @@ function buildUI(): Promise<any> {
     slide = new SlideTabUI([
         //first page 
         [
-            new ScheduleGraphic(0),
+            new ScheduleGraphic(1),
             new EventGraphic('Today', 0, false),
             new EventGraphic('Tomorrow', 1, true),
             new EventGraphic(TimeFormatUtil.asFullDayText(new Date().getDay() + 2), 2, true),
@@ -154,7 +154,7 @@ function buildUI(): Promise<any> {
     //give the top all the data it needs
     data.setUIObjs([top, slide, menu]);
     //init
-    return data.initUI().then(navigator.splashscreen.hide);
+    return data.initUI()//.then(navigator.splashscreen.hide);
 }
 
 function onPause(): void {

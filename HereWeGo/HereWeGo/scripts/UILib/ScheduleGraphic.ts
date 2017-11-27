@@ -50,7 +50,7 @@ class ScheduleGraphic extends UIUtil.UIItem {
     //constructor with schedule
     constructor(day: number) {
         super();
-        this.recv = [
+        this.recvParams = [
             //and the schedule
             <UIUtil.CalParams>{
                 type: UIUtil.RecvType.CAL,
@@ -60,10 +60,12 @@ class ScheduleGraphic extends UIUtil.UIItem {
     }
 
     //update params to get
-    recv: Array<UIUtil.RecvParams>;
+    recvParams: Array<UIUtil.RecvParams>;
     //gethtml
     onInit(data: Array<any>): string {
-        let sched: ScheduleUtil.Schedule = data[UIUtil.RecvType.CAL]["scheds"][new Date().setHours(0, 0, 0, 0)];
+        let day = new Date();
+        day.setHours(0, 0, 0, 0);
+        let sched: ScheduleUtil.Schedule = data[UIUtil.RecvType.CAL]["scheds"][day.setDate(day.getDate() + (<UIUtil.CalParams>this.recvParams[0]).schedDay)];
         return UIUtil.templateEngine(this.wrap, {
             id: this.id,
             stuff: sched ? this.makeSchedule(sched, new Date()) : '',

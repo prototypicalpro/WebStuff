@@ -10,15 +10,12 @@ import HTMLMap = require('../HTMLMap');
 import TimeFormatUtil = require('../TimeFormatUtil');
 
 class TopUI extends UIUtil.UIItem {
-    private bigURL: string;
-    //actual members for optimization
-    private lastIndex: number;
+    private imageSet: boolean = false;
     //gethtml doesn't do anything since we already built the html for this component
     //the only onInit function where document selectors are OK
     onInit(data: Array<any>): void {
         const day: Date = new Date();
-        const zeroDay: number = new Date(day).setHours(0, 0, 0, 0);
-        console.log(data);
+        const zeroDay: number = new Date().setHours(0, 0, 0, 0);
         const schedule: ScheduleUtil.Schedule = data[UIUtil.RecvType.CAL]["scheds"][zeroDay];
         if (!schedule) {
             HTMLMap.timeText.innerHTML = TimeFormatUtil.asSmallTime(day);
@@ -29,7 +26,7 @@ class TopUI extends UIUtil.UIItem {
             //get current period
             const indexAndPeriod: [number, ScheduleUtil.Period] = schedule.getCurrentPeriodAndIndex(day);
             //store it so we can check it later
-            this.lastIndex = indexAndPeriod[0];
+            //this.lastIndex = indexAndPeriod[0];
             if (indexAndPeriod[0] === ScheduleUtil.PeriodType.before_start) {
                 //before start code
                 HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(day, indexAndPeriod[1].getEnd(zeroDay)) + " remaining";
@@ -71,17 +68,22 @@ class TopUI extends UIUtil.UIItem {
             //display a waiting image?
             //TODO: something other than blank
         }
-        back[0].then((thing: Blob) => {
-            //set it
-            let url = URL.createObjectURL(thing)
-            HTMLMap.setBackLowRes(url);
-            //and set the splashscreen to hide after it finishes
-            let load = new Image();
-            load.onload = navigator.splashscreen.hide;
-            load.src = url;
-        });
-        //set it to go 50ms after, for dat load speed increase
-        back[1].then((hqThing: Blob) => setTimeout(() => HTMLMap.setBackImg(URL.createObjectURL(hqThing)), 50));
+        if (!this.imageSet) {
+            back[0].then((thing: Blob) => {
+                //set it
+                let url = URL.createObjectURL(thing)
+                HTMLMap.setBackLowRes(url);
+                //and set the splashscreen to hide after it finishes
+                let load = new Image();
+                load.onload = () => {
+                    this.imageSet = true;
+                    navigator.splashscreen.hide();
+                };
+                load.src = url;
+            });
+            //set it to go 50ms after, for dat load speed increase
+            back[1].then((hqThing: Blob) => setTimeout(() => HTMLMap.setBackImg(URL.createObjectURL(hqThing)), 50));
+        }  
     }
     //callback for init
     //we'll just operate in document quiries

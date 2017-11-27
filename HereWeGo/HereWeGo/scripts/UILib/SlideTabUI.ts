@@ -29,7 +29,7 @@ class SlideTabUI extends UIUtil.UIItem {
         super();
         this.pages = pages;
         this.names = names;
-        this.recvParams = UIUtil.combineParams([].concat.apply(pages));
+        this.recvParams = UIUtil.combineParams([].concat.apply([], pages));
     }
     //and the getHTML
     onInit(data: Array<any>): void {

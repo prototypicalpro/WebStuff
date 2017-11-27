@@ -53,7 +53,7 @@ class EventGraphic extends UIUtil.UIItem {
             //events
             <UIUtil.CalParams>{
                 type: UIUtil.RecvType.CAL,
-                dayStart: 1,
+                dayStart: day,
             }
         ];
         this.header = header;
@@ -64,9 +64,11 @@ class EventGraphic extends UIUtil.UIItem {
     onInit(data: Array<any>): string {
         //the data will be fed to us in a tuple indexed by recvType
         //we only need the events for the today, so start with that
+        let day = new Date();
+        day.setDate(day.getDate() + (<UIUtil.CalParams>this.recvParams[0]).dayStart);
         return UIUtil.templateEngine(this.wrap, {
             id: this.id,
-            stuff: this.buildEventHTML(data[UIUtil.RecvType.CAL]["events"], new Date().setHours(0, 0, 0, 0), new Date().setHours(23, 59, 59, 999)),
+            stuff: this.buildEventHTML(data[UIUtil.RecvType.CAL]["events"], day.setHours(0, 0, 0, 0), day.setHours(23, 59, 59, 999)),
         });
     }
 
@@ -87,28 +89,31 @@ class EventGraphic extends UIUtil.UIItem {
 
     //actual html building func
     private buildEventHTML(eventData: any | false, start: number, end: number) {
-        
         if (eventData) {
-            let events: Array<EventData.EventInterface> = Object.keys(eventData).filter((time: string) => { let num = parseInt(time); return num >= start && num <= end; }).map((key) => { return eventData[key]; });
+            let events: Array<EventData.EventInterface> = [].concat.apply([], Object.keys(eventData).filter((time: string) => { let num = parseInt(time); return num >= start && num <= end; }).map((key) => { return eventData[key]; }));
             let length = events.length;
             if (length <= 0) return ''
             //if there is a schedule title, it's in our storage member
             let eventStr = '';
-            let schedNameIndex;
+            let schedNameIndex: number | boolean = false;
             if (this.dispSched) {
                 schedNameIndex = events.findIndex((ev) => { return ev.schedule; });
-                let schedName = events[schedNameIndex].title;
-                eventStr += UIUtil.templateEngine(this.eventTemplate, {
-                    modCl: 'evSmall',
-                    time: this.allDayTime,
-                    name: schedName ? schedName + ' Schedule' : 'No School',
-                });
+                if (schedNameIndex != -1) {
+                    let schedName = events[schedNameIndex].title;
+                    eventStr += UIUtil.templateEngine(this.eventTemplate, {
+                        modCl: 'evSmall',
+                        time: this.allDayTime,
+                        name: schedName ? schedName + ' Schedule' : 'No School',
+                        lineColor: '#00ff00',
+                    });
+                }
+                else schedNameIndex = false;
             }
             //yay!
             //do templating after so we can have line color fancyness
-            let inv = 1.0 / (length - 1);
+            let inv = 1.0 / (schedNameIndex === false ? length - 1 : length);
             for (let i = 0; i < length; i++) {
-                if (i != schedNameIndex) {
+                if (i !== schedNameIndex) {
                     let eventProp: any = {
                         //if it isn't all day, do templating, else use ALL DAY template instead
                         //beware nested conditional
@@ -119,26 +124,33 @@ class EventGraphic extends UIUtil.UIItem {
                         //add extra modifier class if it's all day as well
                         modCl: !events[i].isAllDay ? '' : 'evSmall',
                         name: events[i].title,
-                    }
+                    };
                     //set linecolor
-                    if (events.length === 1) eventProp.lineColor = '#00ff00';
-                    else eventProp.lineColor = ColorUtil.blendColors('#00ff00', '#004700', (schedNameIndex ? i + 1 : i) * inv);
+                    if (length === 1 && schedNameIndex === false) eventProp.lineColor = '#00ff00';
+                    else eventProp.lineColor = ColorUtil.blendColors('#00ff00', '#004700', (typeof schedNameIndex === 'number' ? i + 1 : i) * inv);
                     //add breakline tags to long titles
-                    while (eventProp.name.length >= this.charLineMax) {
+                    let eventfix = '';
+                    let tempEvent: string = eventProp.name;
+                    //add breaklines to quote so we don't overflow
+                    while (tempEvent.length > this.charLineMax) {
                         //work on the substring ending at the 64th char
                         //starting at the 64th char, and work backwards until we find a space
-                        let breakPoint = (<string>eventProp.name).slice(0, this.charLineMax).lastIndexOf(' ');
+                        let breakPoint = tempEvent.slice(0, this.charLineMax).lastIndexOf(' ');
                         //add a break tag to that space
-                        eventProp.name = (<string>eventProp.name).slice(0, breakPoint) + `<br/>` + (<string>eventProp.name).slice(breakPoint + 1);
+                        eventfix += tempEvent.slice(0, breakPoint) + `<br/>`;
+                        tempEvent = tempEvent.slice(breakPoint + 1);
                     }
+                    if (eventfix.length) eventProp.name = eventfix + tempEvent;
+                    else eventProp.name = tempEvent;
+                    //add the str
                     eventStr += UIUtil.templateEngine(this.eventTemplate, eventProp);
                 }
-                //return!
-                return UIUtil.templateEngine(this.templateStr, {
-                    head: this.header,
-                    stuff: eventStr,
-                });
             }
+            //return!
+            return UIUtil.templateEngine(this.templateStr, {
+                head: this.header,
+                stuff: eventStr,
+            });
         }
         else return '';
     }

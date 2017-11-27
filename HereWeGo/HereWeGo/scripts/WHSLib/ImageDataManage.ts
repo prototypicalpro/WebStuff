@@ -40,7 +40,7 @@ class ImageDataManage implements DataInterface {
     private picPromise: Array<Promise<Blob>>;
     //store the number of images to cache at once
     private storeNum: number;
-    private index: number;
+    private index: number = 0;
     //the constructor
     //do file plugin stuff here since that stuff can run in the background (I think)
     constructor(http: GetLib, cacheDays: number) {
@@ -80,7 +80,7 @@ class ImageDataManage implements DataInterface {
                 return Promise.all(ray);
             });
         }).then(() => {
-            if (this.cacheRefresh) return this.fillPicPromises(this.storeNum).then(() => this.cacheRefresh = false);
+            if (this.cacheRefresh || data.length > 0) return this.fillPicPromises(this.storeNum).then(() => this.cacheRefresh = false);
         }).then(() => { return data.length > 0; });
     }
     //overwriteData func
@@ -90,19 +90,21 @@ class ImageDataManage implements DataInterface {
         if (this.picPromise) thenme = Promise.all(this.picPromise);
         else thenme = Promise.resolve();
         //then do your stuff!
+        let obj = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
         return thenme.then(() => {
-            let obj = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
             return new Promise((resolve, reject) => {
                 let req = obj.clear();
                 req.onerror = reject;
-                req.onsuccess = () => {
-                    return Promise.all(data.map((img) => {
-                        let req2 = obj.add(img);
-                        req2.onerror = reject;
-                        req2.onsuccess = resolve;
-                    }));
-                };
-            });
+                req.onsuccess = resolve;
+            })
+        }).then(() => {
+            return Promise.all(data.map((img) => {
+                return new Promise((resolve1, reject1) => {
+                    let req2 = obj.add(img);
+                    req2.onerror = reject1;
+                    req2.onsuccess = resolve1;
+                });
+            }));
         }).then(() => { return this.fillPicPromises(this.storeNum); });
     }
 
@@ -153,9 +155,10 @@ class ImageDataManage implements DataInterface {
                     if (!cursor || ++i > temp) return resolve(this.picPromise);
                     count--;
                     if (i > this.index || count >= 0) {
-                        let tempPromise = this.getAndStoreImage(cursor.value, "thumb", UIUtil.templateEngine(THUMB_URL, { height: Math.floor(screen.height / 4), id: cursor.value.id }));
+                        let tempScope = cursor.value;
+                        let tempPromise = this.getAndStoreImage(tempScope, "thumb", UIUtil.templateEngine(THUMB_URL, { height: Math.floor(screen.height / 4), id: tempScope.id }));
                         this.picPromise.push(tempPromise);
-                        this.picPromise.push(Promise.resolve(tempPromise).then(() => { return this.getAndStoreImage(cursor.value, "image", UIUtil.templateEngine(THUMB_URL, { height: screen.height, id: cursor.value.id })); }));
+                        this.picPromise.push(Promise.resolve(tempPromise).then(() => { return this.getAndStoreImage(tempScope, "image", UIUtil.templateEngine(THUMB_URL, { height: screen.height, id: tempScope.id }), true); }));
                     }
                     cursor.continue();
                 };
@@ -163,16 +166,28 @@ class ImageDataManage implements DataInterface {
         });
     }
 
-    private getAndStoreImage(data: ImageInterface, key: string, url: string): Promise<Blob> {
+    private getAndStoreImage(data: ImageInterface, key: string, url: string, loadThenSave?: boolean): Promise<Blob> {
         //trip a boolean here that we got new images
         this.cacheRefresh = true;
         //if the database has the image, great! send it off
         return data[key] ? Promise.resolve(data[key]) : this.getUntilBlobSuccess(url).then((blob: Blob) => {
             data[key] = blob;
+            let obj = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
             return new Promise((resolve, reject) => {
-                let req = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName).put(data);
-                req.onsuccess = () => { return resolve(data[key]); };
-                req.onerror = reject;
+                const runFunc = (blurd: any) => {
+                    let req2 = obj.put(blurd);
+                    req2.onerror = reject;
+                    req2.onsuccess = () => resolve(data[key]);
+                };
+                if (loadThenSave) {
+                    let req = obj.get(data.id);
+                    req.onerror = reject;
+                    req.onsuccess = (evt: any) => {
+                        evt.target.result[key] = blob;
+                        runFunc(evt.target.result);
+                    };
+                }
+                else runFunc(data);
             });
         });
     }
@@ -181,6 +196,7 @@ class ImageDataManage implements DataInterface {
         //...sigh
         return this.http.getAsBlob(url).then((data: Blob) => {
             if (!data) return this.getUntilBlobSuccess(url);
+            else return data;
         });
     }
 
