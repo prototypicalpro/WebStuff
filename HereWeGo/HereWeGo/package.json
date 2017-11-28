@@ -1,36 +1,31 @@
 {
     "name": "HereWeGo",
-    "version": "1.0.0",
+    "version": "0.2.0",
     "private": true,
     "dependencies": {
         "cordova-android": "^6.2.3",
-        "cordova-http": "^0.3.0",
         "cordova-ios": "4.2.0",
-        "cordova-plugin-browsertab": "~0.2.0",
-        "cordova-plugin-compat": "~1.0.0",
-        "cordova-plugin-file": "^4.3.3",
-        "cordova-plugin-http": "^1.2.0",
-        "cordova-plugin-inappbrowser": "~1.7.1",
-        "cordova-plugin-statusbar": "^2.2.3",
-        "cordova-plugin-whitelist": "git+https://github.com/apache/cordova-plugin-whitelist.git",
-        "cordova-windows": "4.4.2",
-        "cordova-plugin-splashscreen": "~4.0.3"
+        "cordova-plugin-browsertab": "^0.2.0",
+        "cordova-plugin-compat": "^1.0.0",
+        "cordova-plugin-inappbrowser": "^1.7.2",
+        "cordova-plugin-splashscreen": "^4.1.0",
+        "cordova-plugin-statusbar": "^2.3.0",
+        "cordova-plugin-whitelist": "~1.2.2",
+        "cordova-windows": "4.4.2"
     },
     "cordova": {
-        "plugins": {
-            "cordova-plugin-compat": {},
-            "cordova-plugin-inappbrowser": {},
-            "cordova-plugin-statusbar": {},
-            "cordova-plugin-whitelist": {},
-            "com.compellingsoftware.plugins.http": {},
-            "cordova-plugin-http": {},
-            "cordova-plugin-browsertab": {},
-            "cordova-plugin-splashscreen": {}
-        },
         "platforms": [
             "android",
             "ios",
             "windows"
-        ]
+        ],
+        "plugins": {
+            "cordova-plugin-browsertab": {},
+            "cordova-plugin-compat": {},
+            "cordova-plugin-inappbrowser": {},
+            "cordova-plugin-statusbar": {},
+            "cordova-plugin-whitelist": {},
+            "cordova-plugin-splashscreen": {}
+        }
     }
 }

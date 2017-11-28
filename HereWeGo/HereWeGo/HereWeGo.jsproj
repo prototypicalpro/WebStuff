@@ -43,8 +43,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>525e38a9-8b96-4fbc-a491-dd4a50a42be0</ProjectGuid>
-    <TypeScriptToolsVersion>2.3</TypeScriptToolsVersion>
+    <ProjectGuid>35055af9-4adc-42ce-9add-7636434f6f34</ProjectGuid>
   </PropertyGroup>
   <ItemGroup>
     <ProjectCapability Include="UseFileGlobs" />
@@ -55,6 +54,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <TypeScriptCompileOnSaveEnabled>false</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptToolsVersion>2.3</TypeScriptToolsVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\ApacheCordovaTools\vs-mda-targets\Microsoft.TypeScript.MDA.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\ApacheCordovaTools\vs-mda-targets\Microsoft.MDA.FileMirroring.targets" />
@@ -79,10 +79,10 @@
   </ProjectExtensions>
   <PropertyGroup>
     <!-- Customize which folders are not shown by default -->
-    <ExcludedItems>bin;bld;platforms;node_modules;simulation</ExcludedItems>
+    <ExcludedItems>bin;bld;platforms;node_modules;simulation;plugins</ExcludedItems>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="**\**" Exclude="**\platforms\**;**\bin\**;**\bld\**;**\node_modules\**;**\simulation\**;.gitignore;HereWeGo.*" />
+    <Content Include="**\**" Exclude="**\platforms\**;**\bin\**;**\bld\**;**\node_modules\**;**\simulation\**;**\plugins\**;.gitignore;ReSpec.*" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="config.xml">
