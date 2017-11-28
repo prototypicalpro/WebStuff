@@ -113,12 +113,12 @@
     <preference name="Fullscreen" value="False" />
     <preference name="windows-target-version" value="10.0" />
     <vs:toolsetVersion>7.1.0</vs:toolsetVersion>
+    <engine name="android" spec="6.2.3" />
     <engine name="ios" spec="4.2.0" />
     <engine name="windows" spec="4.4.2" />
-    <engine name="android" spec="^6.2.3" />
     <plugin name="cordova-plugin-browsertab" spec="^0.2.0" />
     <plugin name="cordova-plugin-inappbrowser" spec="^1.7.2" />
+    <plugin name="cordova-plugin-splashscreen" spec="^4.1.0" />
     <plugin name="cordova-plugin-statusbar" spec="^2.3.0" />
     <plugin name="cordova-plugin-whitelist" spec="~1.2.2" />
-    <plugin name="cordova-plugin-splashscreen" spec="^4.1.0" />
 </widget>
