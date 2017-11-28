@@ -1,0 +1,33 @@
+{
+    "prepare_queue": {
+        "installed": [],
+        "uninstalled": []
+    },
+    "config_munge": {
+        "files": {}
+    },
+    "installed_plugins": {
+        "cordova-plugin-browsertab": {
+            "PACKAGE_NAME": "io.cordova.myappfa7f9f"
+        },
+        "cordova-plugin-compat": {
+            "PACKAGE_NAME": "io.cordova.myappfa7f9f"
+        },
+        "cordova-plugin-http": {
+            "PACKAGE_NAME": "io.cordova.myappfa7f9f"
+        },
+        "cordova-plugin-inappbrowser": {
+            "PACKAGE_NAME": "io.cordova.myappfa7f9f"
+        },
+        "cordova-plugin-statusbar": {
+            "PACKAGE_NAME": "io.cordova.myappfa7f9f"
+        },
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "io.cordova.myappfa7f9f"
+        },
+        "cordova-plugin-splashscreen": {
+            "PACKAGE_NAME": "io.cordova.myappfa7f9f"
+        }
+    },
+    "dependent_plugins": {}
+}
