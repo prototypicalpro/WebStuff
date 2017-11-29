@@ -30,9 +30,9 @@ class DataManage {
      * Stupid promise chaining functions
      */
 
-    private getData(): Promise<Object> { return this.getS(URL + '?syncTime=' + this.lastSyncTime); }
+    private getData(): Promise<any> { return this.getS(URL + '?syncTime=' + this.lastSyncTime); }
 
-    private getNewDataFunc(): Promise<Object> { return this.getS(URL); }
+    private getNewDataFunc(): Promise<any> { return this.getS(URL); }
 
     /*
      * Other utility functions

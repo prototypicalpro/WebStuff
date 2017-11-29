@@ -174,7 +174,7 @@ class CalDataManage implements DataInterface {
         //create key range based on data above
         let range: IDBKeyRange;
         if (!evRange[1] && onlySched) range = IDBKeyRange.only(day.setDate(nowDay + evRange[0]));
-        else range = IDBKeyRange.bound(day.setDate(nowDay + evRange[0]), (evRange[1] ? day.setDate(nowDay + evRange[1] + 1) : day.setDate(nowDay + 1)) - 1);
+        else range = IDBKeyRange.bound(new Date(day).setDate(nowDay + evRange[0]), (evRange[1] ? new Date(day).setDate(nowDay + evRange[1] + 1) : new Date(day).setDate(nowDay + 1)) - 1);
         //start running the query!
         return new Promise((resolve, reject) => {
             let evRet: any = {};
@@ -201,7 +201,7 @@ class CalDataManage implements DataInterface {
             else return Promise.all(schedList.map((schedNum: number) => {
                 //get the appropriete event
                 let find: EventData.EventInterface;
-                if (!ret[day.setDate(nowDay + schedNum)] || !(find = ret[day.setDate(nowDay + schedNum)].find((ev) => { return ev.schedule; }))) return false;
+                if (!ret[new Date(day).setDate(nowDay + schedNum)] || !(find = ret[day.setDate(nowDay + schedNum)].find((ev) => { return ev.schedule; }))) return false;
                 //and search the database for that key
                 //double nested database search 
                 return new Promise((resolve, reject) => {

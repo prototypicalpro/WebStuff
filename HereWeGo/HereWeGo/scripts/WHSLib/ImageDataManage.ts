@@ -108,7 +108,7 @@ class ImageDataManage implements DataInterface {
         }).then(() => { return this.fillPicPromises(this.storeNum); });
     }
 
-    getData(): [Promise<Blob>, Promise<Blob>] | Promise<[Promise<Blob>, Promise<Blob>]> | Promise<false>{
+    getData(): Promise<Array<Promise<Blob>>> | [Promise<Blob>, Promise<Blob>] | Promise<[Promise<Blob>, Promise<Blob>]> | Promise<false>{
         if (!this.picPromise) {
             //get crap from localstorage
             let day: number = parseInt(localStorage.getItem(IMG_DAY_ID));
