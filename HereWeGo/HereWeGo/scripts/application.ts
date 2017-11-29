@@ -142,7 +142,7 @@ function buildUI(): Promise<any> {
     slide = new SlideTabUI([
         //first page 
         [
-            new ScheduleGraphic(1),
+            new ScheduleGraphic(0),
             new EventGraphic('Today', 0, false),
             new EventGraphic('Tomorrow', 1, true),
             new EventGraphic(TimeFormatUtil.asFullDayText(new Date().getDay() + 2), 2, true),
