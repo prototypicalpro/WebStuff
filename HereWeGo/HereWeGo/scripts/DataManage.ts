@@ -30,16 +30,16 @@ class DataManage {
      * Stupid promise chaining functions
      */
 
-    private getData(): Promise<any> { return this.getS(URL + '?syncTime=' + this.lastSyncTime); }
+    private getData(): Promise<any> { return this.getS(URL, { syncTime: this.lastSyncTime, }); }
 
-    private getNewDataFunc(): Promise<any> { return this.getS(URL); }
+    private getNewDataFunc(): Promise<any> { return this.getS(URL, {}); }
 
     /*
      * Other utility functions
      */
 
-    private getS(URL: string): Promise<Object> {
-        return this.http.get(URL).then((data) => {
+    private getS(URL: string, params: any): Promise<Object> {
+        return this.http.get(URL, params).then((data) => {
             //update sync time
             this.lastSyncTime = Date.now();
             localStorage.setItem("1", this.lastSyncTime.toString());
@@ -99,6 +99,7 @@ class DataManage {
 
     //gets new data and overwrited any old data
     getNewData(): Promise<any> {
+        console.log("New data");
         return this.getNewDataFunc().then(this.overwriteData.bind(this));
     }
 

@@ -7,8 +7,8 @@
     "cordova-ios": "^4.5.4",
     "cordova-plugin-browsertab": "^0.2.0",
     "cordova-plugin-compat": "^1.2.0",
-    "cordova-plugin-file": "^5.0.0",
-    "cordova-plugin-http": "^1.2.0",
+    "cordova-plugin-file": "~5.0.0",
+    "cordova-plugin-http": "~1.2.0",
     "cordova-plugin-inappbrowser": "^1.7.2",
     "cordova-plugin-splashscreen": "^4.1.0",
     "cordova-plugin-statusbar": "^2.3.0",
@@ -22,11 +22,13 @@
       "android"
     ],
     "plugins": {
-      "cordova-plugin-browsertab": {},
       "cordova-plugin-inappbrowser": {},
       "cordova-plugin-statusbar": {},
       "cordova-plugin-whitelist": {},
       "cordova-plugin-splashscreen": {},
+      "cordova-plugin-http": {},
+      "cordova-plugin-file": {},
+      "cordova-plugin-browsertab": {},
       "cordova-plugin-compat": {}
     }
   }

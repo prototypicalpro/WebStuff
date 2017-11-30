@@ -25,12 +25,12 @@ class GetLib {
         return false;
     }
 
-    get(URL: string): Promise<Object> {
-        return this.useClass.get(URL);
+    get(URL: string, params: any): Promise<Object> {
+        return this.useClass.get(URL, params);
     }
 
-    getAsBlob(URL: string): Promise<Blob> {
-        return this.useClass.getAsBlob(URL);
+    getAsBlob(URL: string, params: any): Promise<Blob> {
+        return this.useClass.getAsBlob(URL, params);
     }
 }
 

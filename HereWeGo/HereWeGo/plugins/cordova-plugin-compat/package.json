@@ -1,19 +1,19 @@
 {
-  "_from": "cordova-plugin-compat@latest",
+  "_from": "cordova-plugin-compat@^1.0.0",
   "_id": "cordova-plugin-compat@1.2.0",
   "_inBundle": false,
   "_integrity": "sha1-C8ZXVyduvZIMASzpIOJ0F3V2Nz4=",
   "_location": "/cordova-plugin-compat",
   "_phantomChildren": {},
   "_requested": {
-    "type": "tag",
+    "type": "range",
     "registry": true,
-    "raw": "cordova-plugin-compat@latest",
+    "raw": "cordova-plugin-compat@^1.0.0",
     "name": "cordova-plugin-compat",
     "escapedName": "cordova-plugin-compat",
-    "rawSpec": "latest",
+    "rawSpec": "^1.0.0",
     "saveSpec": null,
-    "fetchSpec": "latest"
+    "fetchSpec": "^1.0.0"
   },
   "_requiredBy": [
     "#USER",
@@ -21,8 +21,8 @@
   ],
   "_resolved": "https://registry.npmjs.org/cordova-plugin-compat/-/cordova-plugin-compat-1.2.0.tgz",
   "_shasum": "0bc65757276ebd920c012ce920e274177576373e",
-  "_spec": "cordova-plugin-compat@latest",
-  "_where": "/Volumes/Shared/WebStuff/HereWeGo/HereWeGo",
+  "_spec": "cordova-plugin-compat@^1.0.0",
+  "_where": "E:\\WebStuff\\HereWeGo\\HereWeGo",
   "author": {
     "name": "Apache Software Foundation"
   },

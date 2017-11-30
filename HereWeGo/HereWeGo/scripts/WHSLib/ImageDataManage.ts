@@ -10,7 +10,8 @@ import ImageInterface = require('./Interfaces/ImageInterface');
 import { DBInfoInterface } from '../DBLib/DBManage';
 import ErrorUtil = require('../ErrorUtil');
 
-const THUMB_URL: string = 'https://drive.google.com/thumbnail?authuser=0&sz=h{{height}}&id={{id}}'; 
+//const THUMB_URL: string = 'https://drive.google.com/thumbnail?authuser=0&sz=h{{height}}&id={{id}}';
+const THUMB_URL: string = 'https://drive.google.com/thumbnail'
 const IMG_IND_ID: string = '2';
 const IMG_DAY_ID: string = '3';
 
@@ -160,8 +161,8 @@ class ImageDataManage implements DataInterface {
                     count--;
                     if (i > this.index || count >= 0) {
                         let tempScope = cursor.value;
-                        let tempPromise = this.getAndStoreImage(tempScope, "thumb", UIUtil.templateEngine(THUMB_URL, { height: Math.floor(screen.height / 4), id: tempScope.id }));
-                        let tempP2 = Promise.resolve(tempPromise).then(() => { return this.getAndStoreImage(tempScope, "image", UIUtil.templateEngine(THUMB_URL, { height: screen.height, id: tempScope.id }), true); });
+                        let tempPromise = this.getAndStoreImage(tempScope, "thumb", THUMB_URL, Math.floor(screen.height / 4),  tempScope.id);
+                        let tempP2 = Promise.resolve(tempPromise).then(() => { return this.getAndStoreImage(tempScope, "image", THUMB_URL, screen.height, tempScope.id, true); });
                         //push such that they end up in order, even though we may wrap around
                         if (count >= 0) endRay.push(tempPromise, tempP2);
                         else this.picPromise.push(tempPromise, tempP2);
@@ -172,11 +173,15 @@ class ImageDataManage implements DataInterface {
         });
     }
 
-    private getAndStoreImage(data: ImageInterface, key: string, url: string, loadThenSave?: boolean): Promise<Blob> {
+    private getAndStoreImage(data: ImageInterface, key: string, url: string, height: number, id: string, loadThenSave?: boolean): Promise<Blob> {
         //trip a boolean here that we got new images
         this.cacheRefresh = true;
         //if the database has the image, great! send it off
-        return data[key] ? Promise.resolve(data[key]) : this.getUntilBlobSuccess(url).then((blob: Blob) => {
+        return data[key] ? Promise.resolve(data[key]) : this.getUntilBlobSuccess(url, {
+            authuser: 0,
+            sz: 'h' + height,
+            id: id,
+        }).then((blob: Blob) => {
             data[key] = blob;
             let obj = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
             return new Promise((resolve, reject) => {
@@ -199,10 +204,10 @@ class ImageDataManage implements DataInterface {
         });
     }
 
-    private getUntilBlobSuccess(url): Promise<Blob> {
+    private getUntilBlobSuccess(url: string, params: any): Promise<Blob> {
         //...sigh
-        return this.http.getAsBlob(url).then((data: Blob) => {
-            if (!data) return this.getUntilBlobSuccess(url);
+        return this.http.getAsBlob(url, params).then((data: Blob) => {
+            if (!data) return this.getUntilBlobSuccess(url, params);
             else return data;
         });
     }

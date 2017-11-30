@@ -9,7 +9,9 @@ import ErrorUtil = require('../ErrorUtil');
 class FetchGet implements GetInterface {
     static initAPI(): boolean { return typeof fetch !== undefined; }
 
-    get(URL: string): Promise<Object> {
+    get(URL: string, params: any): Promise<Object> {
+        console.log("here");
+        URL = this.generateURL(URL, params);
         //fire away
         return fetch(URL).catch((err) => {
             console.log(err);
@@ -23,7 +25,8 @@ class FetchGet implements GetInterface {
         });
     }
 
-    getAsBlob(URL: string): Promise<Blob> {
+    getAsBlob(URL: string, params: any): Promise<Blob> {
+        URL = this.generateURL(URL, params);
         //fire away
         return fetch(URL).catch((err) => {
             console.log(err);
@@ -36,6 +39,15 @@ class FetchGet implements GetInterface {
             }
             return response.blob();
         });
+    }
+
+    private generateURL(URL: string, params: any): string {
+        //generate url
+        let keys = Object.keys(params);
+        if (keys.length === 0) return URL;
+        URL += '?'
+        for (let i = 0, len = keys.length; i < len; i++) URL += '&' + keys[i] + '=' + params[keys[i]];
+        return URL;
     }
 }
 
