@@ -65,6 +65,7 @@ function onDeviceReady(): void {
     //grabby grabby
     data.initData().then(earlyInit).then(buildUI).then(() => {
         let end: number = performance.now();
+
         console.log("Init took: " + (end - start));
     }).catch((err) => {
         console.log(err);

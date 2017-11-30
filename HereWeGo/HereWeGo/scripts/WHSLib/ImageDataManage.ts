@@ -51,7 +51,10 @@ class ImageDataManage implements DataInterface {
     setDB(db: IDBDatabase) { this.db = db; }
     //update data func
     updateData(data: Array<ImageInterface>): Promise<boolean> | false {
-        if (!Array.isArray(data) || data.length === 0) return false;
+        if (!Array.isArray(data) || data.length === 0) {
+            if (this.cacheRefresh) return this.fillPicPromises(this.storeNum).then(() => this.cacheRefresh = false);
+            else return false;
+        }
         //add iowait for anything making write calls to the database
         let thenme: Promise<any>;
         if (this.picPromise) thenme = Promise.all(this.picPromise);
@@ -142,23 +145,26 @@ class ImageDataManage implements DataInterface {
             req.onerror = reject;
             req.onsuccess = (evt: any) => {
                 //wrap index if it's over
-                if (this.index >= evt.target.result) this.index = 0;
+                if (this.index >= evt.target.result) localStorage.setItem(IMG_IND_ID, (this.index = 0).toString());
                 //count the number of items to wrap around and fetch at the start of the cursor
                 let temp = picNum + this.index;
                 let count = temp - evt.target.result;
+                let endRay = [];
                 let i = 0;
                 let req2 = obj.openCursor();
                 req2.onerror = reject;
                 req2.onsuccess = (evt: any) => {
                     //iterate through database, fetching any blobs that are needed, and caching all teh things
                     let cursor = evt.target.result as IDBCursorWithValue;
-                    if (!cursor || ++i > temp) return resolve(this.picPromise);
+                    if (!cursor || ++i > temp) return resolve(this.picPromise = this.picPromise.concat(endRay));
                     count--;
                     if (i > this.index || count >= 0) {
                         let tempScope = cursor.value;
                         let tempPromise = this.getAndStoreImage(tempScope, "thumb", UIUtil.templateEngine(THUMB_URL, { height: Math.floor(screen.height / 4), id: tempScope.id }));
-                        this.picPromise.push(tempPromise);
-                        this.picPromise.push(Promise.resolve(tempPromise).then(() => { return this.getAndStoreImage(tempScope, "image", UIUtil.templateEngine(THUMB_URL, { height: screen.height, id: tempScope.id }), true); }));
+                        let tempP2 = Promise.resolve(tempPromise).then(() => { return this.getAndStoreImage(tempScope, "image", UIUtil.templateEngine(THUMB_URL, { height: screen.height, id: tempScope.id }), true); });
+                        //push such that they end up in order, even though we may wrap around
+                        if (count >= 0) endRay.push(tempPromise, tempP2);
+                        else this.picPromise.push(tempPromise, tempP2);
                     }
                     cursor.continue();
                 };
@@ -175,6 +181,7 @@ class ImageDataManage implements DataInterface {
             let obj = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
             return new Promise((resolve, reject) => {
                 const runFunc = (blurd: any) => {
+                    console.log(blurd);
                     let req2 = obj.put(blurd);
                     req2.onerror = reject;
                     req2.onsuccess = () => resolve(data[key]);
