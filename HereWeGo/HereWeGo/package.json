@@ -3,10 +3,12 @@
   "version": "0.2.0",
   "private": true,
   "dependencies": {
-    "cordova-android": "6.2.3",
-    "cordova-ios": "^4.2.0",
+    "cordova-android": "^6.4.0",
+    "cordova-ios": "^4.5.4",
     "cordova-plugin-browsertab": "^0.2.0",
-    "cordova-plugin-compat": "~1.0.0",
+    "cordova-plugin-compat": "^1.2.0",
+    "cordova-plugin-file": "^5.0.0",
+    "cordova-plugin-http": "^1.2.0",
     "cordova-plugin-inappbrowser": "^1.7.2",
     "cordova-plugin-splashscreen": "^4.1.0",
     "cordova-plugin-statusbar": "^2.3.0",
@@ -15,9 +17,9 @@
   },
   "cordova": {
     "platforms": [
-      "android",
+      "windows",
       "ios",
-      "windows"
+      "android"
     ],
     "plugins": {
       "cordova-plugin-browsertab": {},

@@ -8,8 +8,8 @@ import FetchGet = require('./FetchGet');
 import NativeGet = require('./NativeGet');
 
 //list of all drivers useable in the app, in order of priority
-//const DRIVER_LIST: Array<any> = [NativeGet, FetchGet];
-const DRIVER_LIST: Array<any> = [FetchGet]; //comment this one if on mobile
+const DRIVER_LIST: Array<any> = [NativeGet, FetchGet];
+//const DRIVER_LIST: Array<any> = [FetchGet]; //comment this one if on mobile
 
 class GetLib {
     private useClass: GetInterface;

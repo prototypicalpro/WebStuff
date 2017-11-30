@@ -26,14 +26,20 @@ class NativeGet implements GetInterface {
 
     getAsBlob(URL: string): Promise<Blob> {
         //fire away
-        return new Promise((resolve, reject) => { cordovaHTTP.get(URL, {}, {}, resolve, reject); }).catch((err) => {
+        return new Promise((resolve, reject) => { cordovaHTTP.downloadFile(URL, {}, {}, resolve, reject); }).catch((err) => {
             console.log(err);
             throw ErrorUtil.code.NO_INTERNET;
-        }).then((response: any) => {
+        }).then((response: FileEntry) => {
             console.log(response);
             if (!response) throw ErrorUtil.code.NO_INTERNET;
-            if (response.status != 200) throw ErrorUtil.code.BAD_RESPONSE;
-            return new Blob(response.data);
+            if (!response.isFile) throw ErrorUtil.code.BAD_RESPONSE;
+            return <Promise<Blob>>new Promise((resolve, reject) => {
+                response.file((obj) => {
+                    let reader = new FileReader();
+                    reader.onloadend = () => resolve(new Blob([new Uint8Array((<any>this).result)]));
+                    reader.readAsArrayBuffer(obj);
+                });
+            });
         });
     }
 }

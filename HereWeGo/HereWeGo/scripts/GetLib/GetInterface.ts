@@ -6,8 +6,8 @@
 
 //interface drivers for get ar built on
 interface GetInterface {
-    get(URL: string): Promise<Object>;
-    getAsBlob(URL: string): Promise<Blob>;
+    get(URL: string, parameters: any): Promise<Object>;
+    getAsBlob(URL: string, parameters: any): Promise<Blob>;
 }
 
 
