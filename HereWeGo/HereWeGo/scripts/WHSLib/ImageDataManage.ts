@@ -10,10 +10,14 @@ import ImageInterface = require('./Interfaces/ImageInterface');
 import { DBInfoInterface } from '../DBLib/DBManage';
 import ErrorUtil = require('../ErrorUtil');
 
-//const THUMB_URL: string = 'https://drive.google.com/thumbnail?authuser=0&sz=h{{height}}&id={{id}}';
 const THUMB_URL: string = 'https://drive.google.com/thumbnail'
 const IMG_IND_ID: string = '2';
 const IMG_DAY_ID: string = '3';
+
+interface CloudData {
+    index: number;
+    data: Array<ImageInterface>;
+}
 
 class ImageDataManage implements DataInterface {
     //type
@@ -51,8 +55,18 @@ class ImageDataManage implements DataInterface {
     //set DB func
     setDB(db: IDBDatabase) { this.db = db; }
     //update data func
-    updateData(data: Array<ImageInterface>): Promise<boolean> | false {
-        if (!Array.isArray(data) || data.length === 0) {
+    updateData(data: CloudData): Promise<boolean> | false {
+        //check if emptey array
+        if(<any>data == []) return false;
+        //check index
+        if(typeof data.index === 'number') {
+            //refresh index
+            localStorage.setItem(IMG_DAY_ID, new Date().setHours(0,0,0,0).toString());
+            localStorage.setItem(IMG_IND_ID, data.index.toString());
+            this.index = data.index;
+        }
+        //refresh data
+        if (!Array.isArray(data.data) || data.data.length === 0) {
             if (this.cacheRefresh) return this.fillPicPromises(this.storeNum).then(() => this.cacheRefresh = false);
             else return false;
         }
@@ -69,14 +83,14 @@ class ImageDataManage implements DataInterface {
                 //then do a buncha quuuueirereis to update the database entries
                 //but put it all in promises just to be sure
                 let ray: Array<Promise<any>> = [];
-                for (let i = 0, len = data.length; i < len; i++) {
-                    if ('cancelled' in data[i]) ray.push(new Promise((resolve, reject) => {
-                        let req = store.delete(data[i][this.dbInfo.keyPath]);
+                for (let i = 0, len = data.data.length; i < len; i++) {
+                    if ('cancelled' in data.data[i]) ray.push(new Promise((resolve, reject) => {
+                        let req = store.delete(data.data[i][this.dbInfo.keyPath]);
                         req.onsuccess = resolve;
                         req.onerror = reject;
                     }));
                     else ray.push(new Promise((resolve, reject) => {
-                        let req = store.put(data[i]);
+                        let req = store.put(data.data[i]);
                         req.onsuccess = resolve;
                         req.onerror = reject;
                     }));
@@ -84,11 +98,15 @@ class ImageDataManage implements DataInterface {
                 return Promise.all(ray);
             });
         }).then(() => {
-            if (this.cacheRefresh || data.length > 0) return this.fillPicPromises(this.storeNum).then(() => this.cacheRefresh = false);
-        }).then(() => { return data.length > 0; });
+            if (this.cacheRefresh || data.data.length > 0) return this.fillPicPromises(this.storeNum).then(() => this.cacheRefresh = false);
+        }).then(() => { return data.data.length > 0; });
     }
     //overwriteData func
-    overwriteData(data: Array<ImageInterface>): Promise<any> {
+    overwriteData(data: CloudData): Promise<any> {
+        //refresh index
+        localStorage.setItem(IMG_DAY_ID, new Date().toString());
+        localStorage.setItem(IMG_IND_ID, data.index.toString());
+        this.index = data.index;
         //add iowait for any images making write calls to the database
         let thenme: Promise<any>;
         if (this.picPromise) thenme = Promise.all(this.picPromise);
@@ -102,7 +120,7 @@ class ImageDataManage implements DataInterface {
                 req.onsuccess = resolve;
             })
         }).then(() => {
-            return Promise.all(data.map((img) => {
+            return Promise.all(data.data.map((img) => {
                 return new Promise((resolve1, reject1) => {
                     let req2 = obj.add(img);
                     req2.onerror = reject1;
@@ -115,17 +133,14 @@ class ImageDataManage implements DataInterface {
     getData(): Promise<Array<Promise<Blob>>> | [Promise<Blob>, Promise<Blob>] | Promise<[Promise<Blob>, Promise<Blob>]> | Promise<false>{
         if (!this.picPromise) {
             //get crap from localstorage
-            let day: number = parseInt(localStorage.getItem(IMG_DAY_ID));
+            let day: Date = new Date(localStorage.getItem(IMG_DAY_ID));
             this.index = parseInt(localStorage.getItem(IMG_IND_ID));
-            let today = new Date().getDate();
-            if (!day || typeof this.index != 'number') {
+            let today = new Date();
+            today.setHours(0,0,0,0);
+            if (!day || typeof this.index != 'number') return Promise.resolve(null);
+            else if (day.getTime() != today.getTime()) {
                 localStorage.setItem(IMG_DAY_ID, today.toString());
-                localStorage.setItem(IMG_IND_ID, '0');
-                this.index = 0;
-            }
-            else if (day != today) {
-                localStorage.setItem(IMG_DAY_ID, today.toString());
-                localStorage.setItem(IMG_IND_ID, (++this.index).toString());
+                localStorage.setItem(IMG_IND_ID, (this.index += this.daysBetweenDates(day, today)).toString());
             }
             //make the promises for today, then return them
             //get the database entry for the stored images
@@ -212,6 +227,11 @@ class ImageDataManage implements DataInterface {
         });
     }
 
+    private daysBetweenDates(day1: Date, day2: Date): number {
+        // The number of milliseconds in one day
+        var ONE_DAY = 1000 * 60 * 60 * 24
+        return Math.round(Math.abs(day1.getTime() - day2.getTime())/ONE_DAY);
+    }
 }
 
 export = ImageDataManage

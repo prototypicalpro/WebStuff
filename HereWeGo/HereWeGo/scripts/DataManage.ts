@@ -16,7 +16,7 @@ import DBManage = require('./DBLib/DBManage');
 import ErrorUtil = require('./ErrorUtil');
 import UIUtil = require('./UILib/UIUtil');
 
-const URL: string = 'https://script.google.com/macros/s/AKfycbxyS4utDJEJ3bE2spSE4SIRlwj10M2Owbe7_XWrOFSobfniQjve/exec';
+const URL: string = 'https://script.google.com/a/koontzs.com/macros/s/AKfycbxyS4utDJEJ3bE2spSE4SIRlwj10M2Owbe7_XWrOFSobfniQjve/exec';
 
 class DataManage {
     private http: GetLib;

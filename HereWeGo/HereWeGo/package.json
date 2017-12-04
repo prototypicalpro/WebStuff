@@ -1,35 +1,35 @@
 {
-    "name": "HereWeGo",
-    "version": "0.2.0",
-    "private": true,
-    "dependencies": {
-        "cordova-android": "^6.4.0",
-        "cordova-ios": "^4.5.4",
-        "cordova-plugin-browsertab": "^0.2.0",
-        "cordova-plugin-compat": "^1.2.0",
-        "cordova-plugin-file": "~5.0.0",
-        "cordova-plugin-http": "~1.2.0",
-        "cordova-plugin-inappbrowser": "^1.7.2",
-        "cordova-plugin-splashscreen": "^4.1.0",
-        "cordova-plugin-statusbar": "^2.3.0",
-        "cordova-plugin-whitelist": "~1.2.2",
-        "cordova-windows": "4.4.2"
-    },
-    "cordova": {
-        "platforms": [
-            "android",
-            "ios",
-            "windows"
-        ],
-        "plugins": {
-            "cordova-plugin-inappbrowser": {},
-            "cordova-plugin-statusbar": {},
-            "cordova-plugin-whitelist": {},
-            "cordova-plugin-splashscreen": {},
-            "cordova-plugin-http": {},
-            "cordova-plugin-file": {},
-            "cordova-plugin-browsertab": {},
-            "cordova-plugin-compat": {}
-        }
+  "name": "HereWeGo",
+  "version": "0.2.0",
+  "private": true,
+  "dependencies": {
+    "cordova-android": "^6.4.0",
+    "cordova-ios": "^4.5.4",
+    "cordova-plugin-browsertab": "^0.2.0",
+    "cordova-plugin-compat": "^1.2.0",
+    "cordova-plugin-file": "~5.0.0",
+    "cordova-plugin-http": "~1.2.0",
+    "cordova-plugin-inappbrowser": "^1.7.2",
+    "cordova-plugin-splashscreen": "^4.1.0",
+    "cordova-plugin-statusbar": "^2.3.0",
+    "cordova-plugin-whitelist": "~1.2.2",
+    "cordova-windows": "4.4.2"
+  },
+  "cordova": {
+    "platforms": [
+      "android",
+      "ios",
+      "windows"
+    ],
+    "plugins": {
+      "cordova-plugin-inappbrowser": {},
+      "cordova-plugin-statusbar": {},
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-splashscreen": {},
+      "cordova-plugin-http": {},
+      "cordova-plugin-file": {},
+      "cordova-plugin-browsertab": {},
+      "cordova-plugin-compat": {}
     }
+  }
 }
