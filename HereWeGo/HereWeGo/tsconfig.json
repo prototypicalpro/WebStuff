@@ -8,7 +8,8 @@
     "allowJs": true,
     "outDir": "www",
     "module": "amd",
-    "target": "es6"
+    "target": "es6",
+    "watch": true
   },
   "exclude": ["platforms", "node_modules", "bower_components", "plugins", "merges", "res", "bin", "bld", "www"]
 }

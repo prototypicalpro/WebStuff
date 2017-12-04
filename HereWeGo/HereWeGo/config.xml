@@ -6,7 +6,6 @@
     <vs:template-name>BlankTS</vs:template-name>
     <content src="index.html" />
     <access origin="*" />
-    <access origin="*" />
     <allow-navigation href="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -112,15 +111,16 @@
     <preference name="Orientation" value="portrait" />
     <preference name="Fullscreen" value="False" />
     <preference name="windows-target-version" value="10.0" />
-    <engine name="windows" spec="4.4.2" />
-    <engine name="ios" spec="^4.5.4" />
+    <vs:toolsetVersion>7.1.0</vs:toolsetVersion>
     <engine name="android" spec="^6.4.0" />
-    <plugin name="cordova-plugin-inappbrowser" spec="^1.7.2" />
-    <plugin name="cordova-plugin-statusbar" spec="^2.3.0" />
-    <plugin name="cordova-plugin-whitelist" spec="~1.2.2" />
-    <plugin name="cordova-plugin-splashscreen" spec="^4.1.0" />
-    <plugin name="cordova-plugin-http" spec="~1.2.0" />
-    <plugin name="cordova-plugin-file" spec="~5.0.0" />
+    <engine name="ios" spec="^4.5.4" />
+    <engine name="windows" spec="4.4.2" />
     <plugin name="cordova-plugin-browsertab" spec="^0.2.0" />
     <plugin name="cordova-plugin-compat" spec="^1.2.0" />
+    <plugin name="cordova-plugin-file" spec="~5.0.0" />
+    <plugin name="cordova-plugin-http" spec="~1.2.0" />
+    <plugin name="cordova-plugin-inappbrowser" spec="^1.7.2" />
+    <plugin name="cordova-plugin-splashscreen" spec="^4.1.0" />
+    <plugin name="cordova-plugin-statusbar" spec="^2.3.0" />
+    <plugin name="cordova-plugin-whitelist" spec="~1.2.2" />
 </widget>

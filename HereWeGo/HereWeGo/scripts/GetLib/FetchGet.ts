@@ -10,7 +10,6 @@ class FetchGet implements GetInterface {
     static initAPI(): boolean { return typeof fetch !== undefined; }
 
     get(URL: string, params: any): Promise<Object> {
-        console.log("here");
         URL = this.generateURL(URL, params);
         //fire away
         return fetch(URL).catch((err) => {

@@ -73,10 +73,11 @@ class TopUI extends UIUtil.UIItem {
                 //set it
                 let url = URL.createObjectURL(thing)
                 HTMLMap.setBackLowRes(url);
+
+                this.imageSet = true;
                 //and set the splashscreen to hide after it finishes
                 let load = new Image();
                 load.onload = () => {
-                    this.imageSet = true;
                     navigator.splashscreen.hide();
                 };
                 load.src = url;
