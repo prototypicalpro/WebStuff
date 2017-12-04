@@ -10,8 +10,6 @@ import ErrorUtil = require('../ErrorUtil');
 class NativeGet implements GetInterface {
     //check to see whether cordova exists
     static initAPI(): boolean { 
-        console.log("Cordova Check!");
-        console.log(cordova.require("cordova/plugin_list").metadata);
         //console.log(cordovaHTTP.get);
         return typeof cordovaHTTP != 'undefined'; 
     }

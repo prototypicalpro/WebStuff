@@ -69,13 +69,8 @@
     <preference name="ShowSplashScreenSpinner" value="false" />
     <preference name="SplashScreen" value="screen" />
     <preference name="AutoHideSplashScreen" value="false" />
+    <preference name="SplashScreen" value="screen" />
     <platform name="android">
-        <splash density="land-hdpi" src="res/screens/android/screen-hdpi-landscape.png" />
-        <splash density="land-ldpi" src="res/screens/android/screen-ldpi-landscape.png" />
-        <splash density="land-mdpi" src="res/screens/android/screen-mdpi-landscape.png" />
-        <splash density="land-xhdpi" src="res/screens/android/screen-xhdpi-landscape.png" />
-        <splash density="land-xxhdpi" src="res/screens/android/screen-xxhdpi-landscape.png" />
-        <splash density="land-xxxhdpi" src="res/screens/android/screen-xxxhdpi-landscape.png" />
         <splash density="port-hdpi" src="res/screens/android/screen-hdpi-portrait.png" />
         <splash density="port-ldpi" src="res/screens/android/screen-ldpi-portrait.png" />
         <splash density="port-mdpi" src="res/screens/android/screen-mdpi-portrait.png" />
@@ -89,12 +84,8 @@
         <splash height="960" src="res/screens/ios/screen-iphone-portrait-2x.png" width="640" />
         <splash height="1334" src="res/screens/ios/screen-iphone-portrait-667h.png" width="750" />
         <splash height="2208" src="res/screens/ios/screen-iphone-portrait-736h.png" width="1242" />
-        <splash height="1242" src="res/screens/ios/screen-iphone-landscape-736h.png" width="2208" />
         <splash height="1024" src="res/screens/ios/screen-ipad-portrait.png" width="768" />
         <splash height="2048" src="res/screens/ios/screen-ipad-portrait-2x.png" width="1536" />
-        <splash height="768" src="res/screens/ios/screen-ipad-landscape.png" width="1024" />
-        <splash height="1536" src="res/screens/ios/screen-ipad-landscape-2x.png" width="2048" />
-        <splash height="2048" src="res/screens/ios/screen-ipad-landscape-ipadpro.png" width="2732" />
         <splash height="2732" src="res/screens/ios/screen-ipad-portrait-ipadpro.png" width="2048" />
     </platform>
     <platform name="windows">
@@ -113,14 +104,14 @@
     <preference name="windows-target-version" value="10.0" />
     <vs:toolsetVersion>7.1.0</vs:toolsetVersion>
     <engine name="android" spec="^6.4.0" />
-    <engine name="windows" spec="4.4.2" />
     <engine name="ios" spec="^4.5.4" />
-    <plugin name="cordova-plugin-inappbrowser" spec="^1.7.2" />
-    <plugin name="cordova-plugin-statusbar" spec="^2.3.0" />
-    <plugin name="cordova-plugin-whitelist" spec="~1.2.2" />
-    <plugin name="cordova-plugin-splashscreen" spec="^4.1.0" />
-    <plugin name="cordova-plugin-http" spec="~1.2.0" />
-    <plugin name="cordova-plugin-file" spec="~5.0.0" />
+    <engine name="windows" spec="4.4.2" />
     <plugin name="cordova-plugin-browsertab" spec="^0.2.0" />
     <plugin name="cordova-plugin-compat" spec="^1.2.0" />
+    <plugin name="cordova-plugin-file" spec="~5.0.0" />
+    <plugin name="cordova-plugin-http" spec="~1.2.0" />
+    <plugin name="cordova-plugin-inappbrowser" spec="^1.7.2" />
+    <plugin name="cordova-plugin-splashscreen" spec="^4.1.0" />
+    <plugin name="cordova-plugin-statusbar" spec="^2.3.0" />
+    <plugin name="cordova-plugin-whitelist" spec="~1.2.2" />
 </widget>
