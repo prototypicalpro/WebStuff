@@ -10,6 +10,7 @@ class FetchGet implements GetInterface {
     static initAPI(): boolean { return typeof fetch !== undefined; }
 
     get(URL: string, params: any): Promise<Object> {
+        console.log("Using fetch!");
         URL = this.generateURL(URL, params);
         //fire away
         return fetch(URL).catch((err) => {
@@ -28,6 +29,7 @@ class FetchGet implements GetInterface {
         URL = this.generateURL(URL, params);
         //fire away
         return fetch(URL).catch((err) => {
+            console.log("Fetch Error!");
             console.log(err);
             throw ErrorUtil.code.NO_INTERNET;
         }).then((response: Response) => {
