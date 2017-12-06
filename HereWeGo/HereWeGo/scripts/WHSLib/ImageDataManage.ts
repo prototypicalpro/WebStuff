@@ -65,6 +65,7 @@ class ImageDataManage implements DataInterface {
             localStorage.setItem(IMG_IND_ID, data.index.toString());
             this.index = data.index;
         }
+        else if (typeof this.index != 'number') this.index = parseInt(localStorage.getItem(IMG_IND_ID));
         //refresh data
         if (!Array.isArray(data.data) || data.data.length === 0) {
             if (this.cacheRefresh) return this.fillPicPromises(this.storeNum).then(() => this.cacheRefresh = false);
