@@ -99,9 +99,10 @@ class CalDataManage implements DataInterface {
         //parellel!
         return Promise.all(this.dbInfo.map(((dbInf: DBManage.DBInfoInterface) => {
             //object store
-            let objectStore: IDBObjectStore = this.db.transaction([dbInf.storeName], "readwrite").objectStore(dbInf.storeName);
+            let objectStore: IDBObjectStore;
             //promises! yay!
             return new Promise((resolve, reject) => {
+                objectStore = this.db.transaction([dbInf.storeName], "readwrite").objectStore(dbInf.storeName);
                 //clear object store
                 let req: IDBRequest = objectStore.clear();
                 req.onsuccess = resolve;

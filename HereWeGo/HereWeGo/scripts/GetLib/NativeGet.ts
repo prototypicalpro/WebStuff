@@ -37,6 +37,8 @@ class NativeGet implements GetInterface {
             console.log(err);
             throw ErrorUtil.code.NO_INTERNET;
         }).then((response: FileEntry) => {
+            console.log("Got Blob!");
+            console.log(response);
             if (!response) throw ErrorUtil.code.NO_INTERNET;
             if (!response.isFile) throw ErrorUtil.code.BAD_RESPONSE;
             return <Promise<Blob>>new Promise((resolve, reject) => {

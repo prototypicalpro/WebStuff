@@ -68,7 +68,7 @@ class TopUI extends UIUtil.UIItem {
             //display a waiting image?
             //TODO: something other than blank
         }
-        if (!this.imageSet) {
+        if (!this.imageSet && back[0] && back[1]) {
             back[0].then((thing: Blob) => {
                 //set it
                 let url = URL.createObjectURL(thing)

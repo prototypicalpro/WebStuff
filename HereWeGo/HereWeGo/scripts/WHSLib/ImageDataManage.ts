@@ -113,9 +113,10 @@ class ImageDataManage implements DataInterface {
         if (this.picPromise) thenme = Promise.all(this.picPromise);
         else thenme = Promise.resolve();
         //then do your stuff!
-        let obj = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
+        let obj;
         return thenme.then(() => {
             return new Promise((resolve, reject) => {
+                obj = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName)
                 let req = obj.clear();
                 req.onerror = reject;
                 req.onsuccess = resolve;

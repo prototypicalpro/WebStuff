@@ -27,6 +27,7 @@ class FetchGet implements GetInterface {
 
     getAsBlob(URL: string, params: any): Promise<Blob> {
         URL = this.generateURL(URL, params);
+        console.log(URL);
         //fire away
         return fetch(URL).catch((err) => {
             console.log("Fetch Error!");
