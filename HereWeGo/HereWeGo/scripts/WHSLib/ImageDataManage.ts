@@ -105,7 +105,7 @@ class ImageDataManage implements DataInterface {
     //overwriteData func
     overwriteData(data: CloudData): Promise<any> {
         //refresh index
-        localStorage.setItem(IMG_DAY_ID, new Date().toString());
+        localStorage.setItem(IMG_DAY_ID, new Date().setHours(0, 0, 0, 0).toString());
         localStorage.setItem(IMG_IND_ID, data.index.toString());
         this.index = data.index;
         //add iowait for any images making write calls to the database
@@ -135,14 +135,13 @@ class ImageDataManage implements DataInterface {
     getData(): Promise<Array<Promise<Blob>>> | [Promise<Blob>, Promise<Blob>] | Promise<[Promise<Blob>, Promise<Blob>]> | Promise<false>{
         if (!this.picPromise) {
             //get crap from localstorage
-            let day: Date = new Date(localStorage.getItem(IMG_DAY_ID));
+            let lastDay: number = parseInt(localStorage.getItem(IMG_DAY_ID));
             this.index = parseInt(localStorage.getItem(IMG_IND_ID));
-            let today = new Date();
-            today.setHours(0,0,0,0);
-            if (!day || typeof this.index != 'number') return Promise.resolve(null);
-            else if (day.getTime() != today.getTime()) {
+            if (!lastDay || typeof this.index != 'number') throw ErrorUtil.code.NO_STORED;
+            let today = new Date().setHours(0, 0, 0, 0);
+            if (lastDay != today) {
                 localStorage.setItem(IMG_DAY_ID, today.toString());
-                localStorage.setItem(IMG_IND_ID, (this.index += this.daysBetweenDates(day, today)).toString());
+                localStorage.setItem(IMG_IND_ID, (this.index += this.daysBetweenDates(lastDay, today)).toString());
             }
             //make the promises for today, then return them
             //get the database entry for the stored images
@@ -229,10 +228,10 @@ class ImageDataManage implements DataInterface {
         });
     }
 
-    private daysBetweenDates(day1: Date, day2: Date): number {
+    private daysBetweenDates(day1: number, day2: number): number {
         // The number of milliseconds in one day
         var ONE_DAY = 1000 * 60 * 60 * 24
-        return Math.round(Math.abs(day1.getTime() - day2.getTime())/ONE_DAY);
+        return Math.round(Math.abs(day1 - day2)/ONE_DAY);
     }
 }
 
