@@ -284,7 +284,6 @@ body {
     position: fixed;
     width: 70vw;
     height: 100vh;
-    overflow: hidden;
     z-index: 99;
 }
 
