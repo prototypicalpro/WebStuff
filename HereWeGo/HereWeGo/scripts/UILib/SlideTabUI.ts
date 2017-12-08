@@ -96,7 +96,7 @@ class SlideTabUI extends UIUtil.UIItem {
         this.dayUpdate = false;
         for (let i = 0, len = this.pages.length; i < len; i++) {
             //add IScroll
-            new IScroll('#s' + i);
+            new IScroll('#s' + i, { deceleration: 0.001 });
             //finally, run the JS of all the little dudes
             for (let o = 0, len1 = this.pages[i].length; o < len1; o++) this.pages[i][o].buildJS();
         } 

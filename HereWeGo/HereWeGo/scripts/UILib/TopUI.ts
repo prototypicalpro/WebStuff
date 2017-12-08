@@ -84,13 +84,23 @@ class TopUI extends UIUtil.UIItem {
             });
             //set it to go 50ms after, for dat load speed increase
             back[1].then((hqThing: Blob) => setTimeout(() => HTMLMap.setBackImg(URL.createObjectURL(hqThing)), 50));
-        }  
+        }
+
+        //take all touch events on the body and prevent scrolling
+        //cuz, yknow, javascript
+        document.addEventListener('touchmove', this.fixScrollForIOS, <any>{
+            capture: false,
+            passive: false
+        });
+        //status bar
+        StatusBar.overlaysWebView(true);
     }
     //callback for init
     //we'll just operate in document quiries
-    buildJS(): void {
-        
-    }
+    buildJS(): void { }
+    //touchmove fixer
+    private fixScrollForIOS = (e) => e.preventDefault();
+
     recvParams: Array<UIUtil.RecvParams> = [
         <UIUtil.CalParams>{
             type: UIUtil.RecvType.CAL,
