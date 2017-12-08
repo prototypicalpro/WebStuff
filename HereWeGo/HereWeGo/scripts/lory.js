@@ -106,7 +106,10 @@ return /******/ (function(modules) { // webpackBootstrap
         var indicators = new Array();
 	
 	    var index = 0;
-	    var options = {};
+		var options = {};
+		
+		//storage element for a pixel count
+		var xDistThres = 0;
 	
 	    /**
 	     * if object is jQuery convert to native DOM element
@@ -312,7 +315,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var classNamePrevCtrl = _options4.classNamePrevCtrl;
 	        var classNameNextCtrl = _options4.classNameNextCtrl;
 	        var enableMouseEvents = _options4.enableMouseEvents;
-            var classNameActiveSlide = _options4.classNameActiveSlide;
+			var classNameActiveSlide = _options4.classNameActiveSlide;
+			yDistThresh = _options4.yDistThresh;
 	
 	        frame = slider.getElementsByClassName(classNameFrame)[0];
 	        slideContainer = frame.getElementsByClassName(classNameSlideContainer)[0];
@@ -506,7 +510,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    var touchOffset = void 0;
 	    var delta = void 0;
-	    var isScrolling = void 0;
+		var isScrolling = void 0;
 	
 	    function onTransitionEnd() {
 	        if (transitionEndCallback) {
@@ -551,6 +555,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    function onTouchmove(event) {
+			console.log("move");
+
 	        var touches = event.touches ? event.touches[0] : event;
 	        var pageX = touches.pageX;
 	        var pageY = touches.pageY;
@@ -563,8 +569,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
             if (typeof isScrolling === 'undefined') {
                 //are you kidding me
-	            isScrolling = !!(isScrolling || Math.abs(delta.x) < Math.abs(delta.y));
-	        }
+	            isScrolling = !!(isScrolling || Math.abs(delta.x) + yDistThresh < Math.abs(delta.y));
+			}
             if (!isScrolling && touchOffset) {
                 event.preventDefault();
                 //USER MOD
@@ -575,7 +581,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // may be
 	        dispatchSliderEvent('on', 'touchmove', {
 	            event: event
-	        });
+			});
+			
+			//if the scrolling is false, cancel the touch
+			if(isScrolling) onTouchend();
 	    }
 	
 	    function onTouchend(event) {
@@ -951,7 +960,13 @@ return /******/ (function(modules) { // webpackBootstrap
       /**
        * Set the default slide to start on
        */
-      defaultIndex: 0,
+	  defaultIndex: 0,
+	  
+	  /**
+	   * The threshold x distance (in px) that the touch must be greater than the y distance to stop tracking the touch
+	   * 0 means none
+	   */
+	  yDistThresh: 10,
 	};
 
 /***/ }
