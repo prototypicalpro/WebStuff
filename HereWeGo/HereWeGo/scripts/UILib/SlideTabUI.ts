@@ -11,11 +11,19 @@ import HTMLMap = require('../HTMLMap');
 import lory = require('../lory');
 import ButtonUI = require('./ButtonUI');
 import TimeFormatUtil = require('../TimeFormatUtil');
+import IScroll = require('../iscroll-lite');
 
 class SlideTabUI extends UIUtil.UIItem {
     id: string;
     //wrapper template to make everything horizontally flatmapped
-    private readonly wrapperTemplate: string = `<div class="js_slide content">{{stuff}}</div>`;
+    private readonly wrapperTemplate: string = `<div class="js_slide content">
+                                                    <div id="{{id}}" class="scrollHack full">                    
+                                                        <div class="scrollHack"> 
+                                                            {{stuff}} 
+                                                            <p><br></p>
+                                                        </div>
+                                                    </div>
+                                                </div>`;
     //stored pages, to be flatmapped and shiz
     private readonly pages: Array<Array<UIUtil.UIItem>>;
     //stored names for buttons later on
@@ -36,7 +44,7 @@ class SlideTabUI extends UIUtil.UIItem {
         //get all the htmls in parellel
         //this chaining is gonna be beutiful
         //for every array of pages
-        HTMLMap.setSliderHTML(this.pages.map((items: Array<UIUtil.UIItem>) => { return UIUtil.templateEngine(this.wrapperTemplate, { stuff: items.map((item) => { return item.onInit(data); }).join('') }); }).join('')); //one. freaking. line
+        HTMLMap.setSliderHTML(this.pages.map((items: Array<UIUtil.UIItem>, index: number) => { return UIUtil.templateEngine(this.wrapperTemplate, { id: 's' + index, stuff: items.map((item) => { return item.onInit(data); }).join('') }); }).join('')); //one. freaking. line
     }
     
     buildJS() {
@@ -86,8 +94,12 @@ class SlideTabUI extends UIUtil.UIItem {
         //set the top grey bar date correctly
         HTMLMap.topBarText.innerHTML = TimeFormatUtil.asLongDayMonthText(new Date());
         this.dayUpdate = false;
-        //finally, run the JS of all the little dudes
-        for (let i = 0, len = this.pages.length; i < len; i++) for (let o = 0, len1 = this.pages[i].length; o < len1; o++) this.pages[i][o].buildJS();
+        for (let i = 0, len = this.pages.length; i < len; i++) {
+            //add IScroll
+            new IScroll('#s' + i);
+            //finally, run the JS of all the little dudes
+            for (let o = 0, len1 = this.pages[i].length; o < len1; o++) this.pages[i][o].buildJS();
+        } 
     }
     /* TODO: fix for new system
     onUpdate(why: Array<UIUtil.TRIGGERED>) {

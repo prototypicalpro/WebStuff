@@ -71,7 +71,7 @@ class ScheduleGraphic extends UIUtil.UIItem {
             stuff: sched ? this.makeSchedule(sched, new Date()) : '',
         });
     }
-    //buildJS does nothing for now
+    //buildJS creates the scrolling div using IScroll
     buildJS() { }
 
     //utility makeScheduleHTML
