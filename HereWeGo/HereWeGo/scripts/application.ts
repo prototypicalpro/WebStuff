@@ -55,6 +55,9 @@ function onDeviceReady(): void {
     //browsertab
     (<any>cordova).plugins.browsertab.isAvailable((result) => browserTabWorks = result);
 
+    //statusbar?
+    StatusBar.overlaysWebView(true);
+
     let start: number = performance.now();
     //start up http
     if (!http.initAPI()) {

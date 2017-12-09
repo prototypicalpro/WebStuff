@@ -202,7 +202,6 @@ class ImageDataManage implements DataInterface {
             let obj = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
             return new Promise((resolve, reject) => {
                 const runFunc = (blurd: any) => {
-                    console.log(blurd);
                     let req2 = obj.put(blurd);
                     req2.onerror = reject;
                     req2.onsuccess = () => resolve(data[key]);

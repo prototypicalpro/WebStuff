@@ -97,7 +97,7 @@ class TopUI extends UIUtil.UIItem {
     //we'll just operate in document quiries
     buildJS(): void { }
     //touchmove fixer
-    private fixScrollForIOS = (e) => e.preventDefault();
+    private fixScrollForIOS = () => { return false; };
 
     recvParams: Array<UIUtil.RecvParams> = [
         <UIUtil.CalParams>{
