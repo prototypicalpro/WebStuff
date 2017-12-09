@@ -92,8 +92,6 @@ class TopUI extends UIUtil.UIItem {
             capture: false,
             passive: false
         });
-        //status bar
-        StatusBar.overlaysWebView(true);
     }
     //callback for init
     //we'll just operate in document quiries
