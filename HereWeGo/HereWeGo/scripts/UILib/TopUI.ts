@@ -89,7 +89,6 @@ class TopUI extends UIUtil.UIItem {
         //take all touch events on the body and prevent scrolling
         //cuz, yknow, javascript
         document.addEventListener('touchmove', this.fixScrollForIOS, <any>{
-            capture: false,
             passive: false
         });
     }
@@ -97,7 +96,7 @@ class TopUI extends UIUtil.UIItem {
     //we'll just operate in document quiries
     buildJS(): void { }
     //touchmove fixer
-    private fixScrollForIOS = () => { return false; };
+    private fixScrollForIOS = (e) => e.preventDefault();
 
     recvParams: Array<UIUtil.RecvParams> = [
         <UIUtil.CalParams>{
