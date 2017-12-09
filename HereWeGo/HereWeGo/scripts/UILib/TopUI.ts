@@ -88,9 +88,11 @@ class TopUI extends UIUtil.UIItem {
 
         //take all touch events on the body and prevent scrolling
         //cuz, yknow, javascript
-        document.addEventListener('touchmove', this.fixScrollForIOS, <any>{
-            passive: false
-        });
+        if(cordova.platformId === 'ios') 
+            document.addEventListener('touchmove', this.fixScrollForIOS, <any>{
+                passive: false,
+                capture: false,
+            });
     }
     //callback for init
     //we'll just operate in document quiries
