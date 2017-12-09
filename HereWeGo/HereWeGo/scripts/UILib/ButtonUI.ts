@@ -71,7 +71,7 @@ class ButtonUI extends UIUtil.UIItem {
         //we got a touch!
         //start the touch and hold animation for the button, but only if it's the first touch
         if (!this.touchStore) {
-            e.preventDefault();
+            //e.preventDefault();
             //store the client rect of the button
             this.rectStore = this.buttonStore.getBoundingClientRect();
             //store the touch
@@ -86,7 +86,7 @@ class ButtonUI extends UIUtil.UIItem {
         let ourTouch = this.findTouch(e.changedTouches);
         if (!ourTouch) return;
         //steal it
-        e.preventDefault();
+        //e.preventDefault();
         //check to make sure the pointer is still within the button
         if (ourTouch.clientX < this.rectStore.left || ourTouch.clientX > this.rectStore.left + this.rectStore.width ||
             ourTouch.clientY < this.rectStore.top || ourTouch.clientY > this.rectStore.top + this.rectStore.height) {
@@ -101,7 +101,7 @@ class ButtonUI extends UIUtil.UIItem {
         let ourTouch = this.findTouch(e.changedTouches);
         if (!ourTouch) return;
         //mine
-        e.preventDefault();
+        //e.preventDefault();
         //click button!
         if (!this.disableAnim) this.buttonStore.classList.remove(this.touchClass);
         //clear touch cache
@@ -117,7 +117,7 @@ class ButtonUI extends UIUtil.UIItem {
         let ourTouch = this.findTouch(e.changedTouches);
         if (!ourTouch) return;
         //mine
-        e.preventDefault();
+        //e.preventDefault();
         //clear cache and classes
         if (!this.disableAnim) this.buttonStore.classList.remove(this.touchClass);
         this.touchStore = null;

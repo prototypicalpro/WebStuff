@@ -566,7 +566,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            isScrolling = !!(isScrolling || Math.abs(delta.x) < Math.abs(delta.y));
 			}
             if (!isScrolling && touchOffset) {
-				event.preventDefault();
+				//event.preventDefault();
                 //USER MOD
                 //disable overflow scrolling
 				if (options.overflowScroll || !(!index && delta.x > 0 || index === slides.length - 1 && delta.x < 0)) translate(position.x + delta.x, 0, null);
