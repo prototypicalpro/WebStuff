@@ -4,7 +4,6 @@
  */
 
 import GetInterface = require('./GetInterface');
-import GetConstants = require('./GetContants');
 import ErrorUtil = require('../ErrorUtil');
 
 class NativeGet implements GetInterface {

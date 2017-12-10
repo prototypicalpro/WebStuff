@@ -2,25 +2,24 @@
 // http://go.microsoft.com/fwlink/?LinkID=397705
 // To debug code on page load in cordova-simulate or on Android devices/emulators: launch your app, set breakpoints, 
 // and then run "window.location.reload()" in the JavaScript Console.
+import HTMLMap = require('./HTMLMap');
 import TimeFormatUtil = require('./TimeFormatUtil');
-import lory = require('./lory');
 import DataManage = require('./DataManage');
+import GetLib = require('./GetLib/GetLib');
 import ScheduleUtil = require('./WHSLib/ScheduleUtil');
+import ErrorUtil = require('./ErrorUtil');
+import UIUtil = require('./UILib/UIUtil');
+import TopUI = require('./UILib/TopUI');
+import ToastUI = require('./UILib/ToastUI');
+import ImageDataManage = require('./WHSLib/ImageDataManage');
 import CalDataManage = require('./WHSLib/CalDataManage');
 import QuoteDataManage = require('./WHSLib/QuoteDataManage');
 import QuoteUI = require('./UILib/QuoteUI');
 import ScheduleGraphic = require('./UILib/ScheduleGraphic');
 import EventGraphic = require('./UILib/EventGraphic');
 import SlideTabUI = require('./UILib/SlideTabUI');
-import UIUtil = require('./UILib/UIUtil');
 import MenuUI = require('./UILib/MenuUI');
 import ButtonUI = require('./UILib/ButtonUI');
-import HTMLMap = require('./HTMLMap');
-import ErrorUtil = require('./ErrorUtil');
-import ToastUI = require('./UILib/ToastUI');
-import TopUI = require('./UILib/TopUI');
-import ImageDataManage = require('./WHSLib/ImageDataManage');
-import GetLib = require('./GetLib/GetLib');
 
 "use strict";
 
