@@ -14,6 +14,7 @@ namespace HTMLMap {
     export const menuBar: HTMLElement = document.querySelector('#menuBar') as HTMLElement;
     export const menuLine: HTMLElement = document.querySelector('#menuLine') as HTMLElement;
 
+    export const topBar: HTMLElement = document.querySelector('#topBar') as HTMLElement;
     export const topBarText: HTMLElement = document.querySelector('#barText') as HTMLElement;
 
     export const backText: Element = document.querySelector('.backText');

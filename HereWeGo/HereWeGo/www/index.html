@@ -22,37 +22,41 @@
         <div class="image" id="img"></div>
         <p class="backText"></p>
         <div class="shader"></div>
-        <!-- Menu Button -->
-        <div id="sideButton"></div>
         <!-- Bottom Text stuff-->
         <div id="textWrap">
             <p class="periodText"></p>
             <p class="timeText"></p>
         </div>
-        <!-- Top menu bar, which shows aup after the first slide -->
-        <div id="topBar"><p id="barText"></p></div>
-
         <!-- Sliding content div, contains the bulk of the app -->
         <div class="js_frame">
+            <!-- Top menu bar, which shows aup after the first slide -->
+            <div id="topPos">
+                <!-- Menu Button -->
+                <div id="sideButton"></div>
+                <!-- Grey Bar and Text -->
+                <div id="topBar"><div id="textPos"><p id="barText"></p></div></div>
+            </div>
+            
+            <!-- Then the slides -->
             <div class="js_slides">
                 <!-- Start the app with the essential text loaded (see through slide) -->
                 <div class="js_slide start"></div>
                 <!-- Anything after will be populated as the app loads -->
                 <div id="addStuff"></div>
                 <!-- Debug stuff (I think) -->
-                <div class="js_slide content">
+                <div class="js_slide" style="background-color: white">
                     <p class="benjamin">Photos by Kitrick Miller</p>
                     <a class="benjamin" href="https://www.flickr.com/photos/kitrickmiller/">Flickr</a>
+                    <p class="benjamin"> <br> To my alpha testers: <br> Thank you for the support!</p>
                 </div>
             </div>
+            <!-- Menu Placeholder div -->
+            <div style="height: 7.05vh"></div>
         </div>
-
         <!-- Menu Bar, will have to be populated later -->
         <table id="menuBar"></table>
-
         <!-- Menu Bar line, which will get hecka moved around n stuff -->
         <div id="menuWrap"><div id="menuLine"></div></div>
-
         <!-- Side Menu Divs, which will be filled later by javascript -->
         <!-- Will be using Lory for sliding as well -->
         <div id="SMHere"></div>
