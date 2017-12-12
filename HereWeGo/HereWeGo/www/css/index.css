@@ -156,6 +156,10 @@ body {
 }
 
 /* Top Bar Positioning CSS */
+.topH {
+    height: 8.7vh;
+}
+
 #topPos {
     width: 200vw;
     display: flex;
@@ -163,7 +167,7 @@ body {
 
 /* Menu Button CSS */
 #sideButton {
-    margin-top: auto;
+    align-self: flex-end;
     z-index: 10; /* If there ever was a feature of CSS that clearly had good intentions, this would be it */
     background-image: url("../images/navicon.png");
     background-origin: content-box;
@@ -176,11 +180,12 @@ body {
 
 /* Top Menu Bar CSS */
 #topBar {
+    position: absolute;
+    left: 100vw;
     /* Stick it off the screen so the slider can bring it back */
     /* hnnnnng */
     /* margin calculated from subtraction menu button from entire screen */
-    height: 8.7vh;
-    margin-left: 84.92vw;
+    margin-right: auto;
     width: 100vw;
     background-color: #636363;
     z-index: 9; /* sigh */

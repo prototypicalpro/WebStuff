@@ -108,9 +108,9 @@ function resizeStatusBar() {
     if(height != windowHeight) {
         //query the top bar element, and increase it's element size accordingly
         //8.7vh is the default height, and we add the px as the statusbar increases the viewport size
-        if(height > windowHeight && windowHeight - height < 50) HTMLMap.topBar.style.height = 'calc(8.7vh + ' + (height - windowHeight) + 'px)';
+        if(height > windowHeight && windowHeight - height < 50) document.querySelectorAll('.topH').forEach((elem: HTMLElement) => elem.style.height = 'calc(8.7vh + ' + (height - windowHeight) + 'px)');
         //else reset
-        else HTMLMap.topBar.style.height = '8.7vh';
+        else document.querySelectorAll('.topH').forEach((elem: HTMLElement) =>  elem.style.height = '8.7vh');
         //recache
         windowHeight = height;
     }
