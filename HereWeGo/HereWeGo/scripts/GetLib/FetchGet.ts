@@ -6,7 +6,7 @@ import GetInterface = require('./GetInterface');
 import ErrorUtil = require('../ErrorUtil');
 
 class FetchGet implements GetInterface {
-    static initAPI(): boolean { return typeof fetch !== undefined; }
+    static initAPI(): boolean { return typeof fetch !== "undefined"; }
 
     get(URL: string, params: any): Promise<Object> {
         console.log("Using fetch!");

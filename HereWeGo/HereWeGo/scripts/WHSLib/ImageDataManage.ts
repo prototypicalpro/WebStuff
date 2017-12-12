@@ -113,22 +113,23 @@ class ImageDataManage implements DataInterface {
         if (this.picPromise) thenme = Promise.all(this.picPromise);
         else thenme = Promise.resolve();
         //then do your stuff!
-        let obj;
         return thenme.then(() => {
             return new Promise((resolve, reject) => {
-                obj = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName)
+                let obj = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
                 let req = obj.clear();
                 req.onerror = reject;
                 req.onsuccess = resolve;
             })
         }).then(() => {
-            return Promise.all(data.data.map((img) => {
-                return new Promise((resolve1, reject1) => {
-                    let req2 = obj.add(img);
-                    req2.onerror = reject1;
-                    req2.onsuccess = resolve1;
-                });
-            }));
+            let obj = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
+            let len = data.data.length;
+            let ray: Array<Promise<any>> = new Array(len);
+            for(let i = 0; i < len; i++) ray[i] = new Promise((resolve1, reject1) => {
+                let req2 = obj.add(data.data[i]);
+                req2.onerror = reject1;
+                req2.onsuccess = resolve1;
+            });
+            return Promise.all(ray);
         }).then(() => { return this.fillPicPromises(this.storeNum); });
     }
 
