@@ -58,7 +58,9 @@ function onDeviceReady(): void {
 
     //statusbar?
     windowHeight = window.innerHeight;
-    window.addEventListener("resize", resizeStatusBar);
+    if(cordova.platformId != "ios") window.addEventListener("resize", resizeStatusBar);
+    //oh ios, how you hurt me so
+    else setTimeout(resizeStatusBar, 100);
     StatusBar.overlaysWebView(true);
 
     let start: number = performance.now();
@@ -100,6 +102,7 @@ function onDeviceReady(): void {
 }
 
 function resizeStatusBar() {
+    console.log("resize");
     //get the window height, and if it's different, unbind
     let height = window.innerHeight;
     if(height != windowHeight) {
@@ -111,6 +114,8 @@ function resizeStatusBar() {
         //recache
         windowHeight = height;
     }
+    //if on ios, reset timeout if nothing changed
+    else if (cordova.platformId == "ios") setTimeout(resizeStatusBar, 50);
 }
 
 function earlyInit(): Promise<any> {
