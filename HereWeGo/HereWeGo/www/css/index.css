@@ -179,6 +179,7 @@ body {
     /* Stick it off the screen so the slider can bring it back */
     /* hnnnnng */
     /* margin calculated from subtraction menu button from entire screen */
+    height: 8.7vh;
     margin-left: 84.92vw;
     width: 100vw;
     background-color: #636363;
