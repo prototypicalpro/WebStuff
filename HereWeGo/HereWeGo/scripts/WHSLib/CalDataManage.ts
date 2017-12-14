@@ -75,9 +75,7 @@ class CalDataManage implements DataInterface {
                 //decompress the calendar data
                 data[this.dbInfo[DBInfoEnum.cal].storeName] = this.inflateCalCloudData(data[this.dbInfo[DBInfoEnum.cal].storeName]);
                 //iterate through all elements, removing the ones before today
-                let nowDay: Date = new Date();
-                nowDay.setHours(0, 0, 0, 0);
-                let nowTime: number = nowDay.getTime();
+                let nowTime: number = new Date().setHours(0, 0, 0, 0);
                 //remove if old
                 objectStore.openCursor(IDBKeyRange.upperBound(nowTime, true)).onsuccess = (event: any) => {
                     let cursor = event.target.result as IDBCursorWithValue;
@@ -144,7 +142,7 @@ class CalDataManage implements DataInterface {
     //only one data function, takes the days needed and returns the events and schedules for each
     getData(params: Array<UIUtil.CalParams>): Promise<any> | false {
         //create a range of events to fetch, then an array of schedules to fetch
-        let evRange = [];
+        let evRange = [null, null];
         let schedList = [];
         let onlySched = true;
         //utility function to expand range
@@ -175,7 +173,7 @@ class CalDataManage implements DataInterface {
         //create key range based on data above
         let range: IDBKeyRange;
         if (!evRange[1] && onlySched) range = IDBKeyRange.only(day.setDate(nowDay + evRange[0]));
-        else range = IDBKeyRange.bound(new Date(day).setDate(nowDay + evRange[0]), (evRange[1] ? new Date(day).setDate(nowDay + evRange[1] + 1) : new Date(day).setDate(nowDay + 1)) - 1);
+        else range = IDBKeyRange.bound(new Date(day).setDate(nowDay + evRange[0]), new Date(day).setDate(nowDay + evRange[1] + 1) - 1);
         //start running the query!
         return new Promise((resolve, reject) => {
             let evRet: any = {};

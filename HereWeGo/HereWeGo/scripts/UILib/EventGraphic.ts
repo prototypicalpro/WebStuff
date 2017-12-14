@@ -68,7 +68,7 @@ class EventGraphic extends UIUtil.UIItem {
         day.setDate(day.getDate() + (<UIUtil.CalParams>this.recvParams[0]).dayStart);
         return UIUtil.templateEngine(this.wrap, {
             id: this.id,
-            stuff: this.buildEventHTML(data[UIUtil.RecvType.CAL]["events"], day.setHours(0, 0, 0, 0), day.setHours(23, 59, 59, 999)),
+            stuff: this.buildEventHTML(data[UIUtil.RecvType.CAL]["events"], day.setHours(0, 0, 0, 0), day.setHours(23, 59, 59, 999), this.dispSched),
         });
     }
 
@@ -81,17 +81,19 @@ class EventGraphic extends UIUtil.UIItem {
     //update if necessary
     onUpdate(data: Array<any>) {
         let day = new Date();
+        day.setDate(day.getDate() + (<UIUtil.CalParams>this.recvParams[0]).dayStart);
         //if the event cahce has been populated
         let temp = data[UIUtil.RecvType.CAL]["events"];
         //if updated, update!
-        if (temp) this.elem.innerHTML = this.buildEventHTML(temp, day.setHours(0, 0, 0, 0), day.setHours(23, 59, 59, 999));
+        if (temp) this.elem.innerHTML = this.buildEventHTML(temp, day.setHours(0, 0, 0, 0), day.setHours(23, 59, 59, 999), this.dispSched);
         else this.elem.innerHTML = '';
     }
 
     //actual html building func
-    private buildEventHTML(eventData: any | false, start: number, end: number) {
+    private buildEventHTML(eventData: any | false, start: number, end: number, displaySchedule: boolean) {
         if (eventData) {
             let events: Array<EventData.EventInterface> = [].concat.apply([], Object.keys(eventData).filter((time: string) => { let num = parseInt(time); return num >= start && num <= end; }).map((key) => { return eventData[key]; }));
+            if(!displaySchedule) events = events.filter(e => { return !e.schedule });
             let length = events.length;
             if (length <= 0) return ''
             //if there is a schedule title, it's in our storage member

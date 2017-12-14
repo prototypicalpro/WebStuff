@@ -122,7 +122,7 @@ class ScheduleGraphic extends UIUtil.UIItem {
         let day = new Date();
         day.setHours(0, 0, 0, 0);
         this.sched = data[UIUtil.RecvType.CAL]["scheds"][day.setDate(day.getDate() + (<UIUtil.CalParams>this.recvParams[0]).schedDay)];
-        this.schedElem.innerHTML = this.sched ? this.makeSchedule(this.sched, day) : '';
+        this.schedElem.innerHTML = this.sched ? this.makeSchedule(this.sched, new Date()) : '';
     }
 
     onTimeChanged(): void {
