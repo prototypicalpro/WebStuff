@@ -83,7 +83,7 @@ function onDeviceReady(): void {
     }).then((getNewDataVar: any): any => {
         //grab them datums
         if (getNewDataVar) return data.getNewData().then(buildUI);
-        return data.refreshData().then(() => data.refreshData.bind(data)).catch(() => { return data.getNewData().then(buildUI); });
+        return data.refreshDataAndUI().catch((err) => { console.log(err); return data.getNewData().then(buildUI); });
     }).catch((err: any) => {
         console.log(err);
         if (err === ErrorUtil.code.HTTP_FAIL) setTimeout(toastError, 1000, "This phone is unsupported!");
@@ -91,7 +91,7 @@ function onDeviceReady(): void {
         else throw err;
     }).then(() => {
         //also start callback for every min to update time
-        updateTime();
+        setTimeout(updateTime, 60010);
         let end = performance.now();
         console.log("Second init took: " + (end - start));
     }).catch((err) => {
@@ -102,7 +102,6 @@ function onDeviceReady(): void {
 }
 
 function resizeStatusBar() {
-    console.log("resize");
     //get the window height, and if it's different, unbind
     let height = window.innerHeight;
     if(height != windowHeight) {
@@ -121,7 +120,7 @@ function resizeStatusBar() {
         windowHeight = height;
     }
     //if on ios, reset timeout if nothing changed
-    else if (cordova.platformId == "ios") setTimeout(resizeStatusBar, 50);
+    //else if (cordova.platformId === "ios") setTimeout(resizeStatusBar, 50);
 }
 
 function earlyInit(): Promise<any> {
@@ -186,30 +185,37 @@ function buildUI(): Promise<any> {
     //give the top all the data it needs
     data.setUIObjs([top, slide, menu]);
     //init
-    return data.initUI()//.then(navigator.splashscreen.hide);
+    return data.initUI();//.then(navigator.splashscreen.hide);
 }
 
 function onPause(): void {
     // TODO: This application has been suspended. Save application state here.
     //kill updateTime
     clearTimeout(timeCallbackID);
+    timeCallbackID = 0;
 }
 
 function onResume(): void {
     // TODO: This application has been reactivated. Restore application state here.
     //restart updateTime
-    updateTime();
+    if(!timeCallbackID) updateTime();
 }
+
+var lastUpdateTime: Date;
 
 //sixty second timeupdate callback
 function updateTime(): void {
-    //TODO: Updating with a reasonalbe CPU impact
     //triggered!
-    //uiThing.trigger([UIUtil.TRIGGERED.TIME_UPDATE]);
+    data.timeUpdateUI();
+    //if date has changed
+    let day = new Date();
+    //get the time to the next min
+    let time = new Date(day).setHours(day.getHours(), day.getMinutes() + 1) + 10;
+    if(lastUpdateTime && lastUpdateTime.getDate() != day.getDate()) data.refreshDataAndUI().then(() => timeCallbackID = setTimeout(updateTime, time - day.getTime()));
     //reset callback
-    let time = new Date();
-    time.setHours(time.getHours(), time.getMinutes() + 1, 0, 0);
-    timeCallbackID = setTimeout(updateTime, time.getTime() - Date.now() + 10);
+    else timeCallbackID = setTimeout(updateTime, time - day.getTime());
+    //reset day
+    lastUpdateTime = day;
 }
 
 function urlCallback(url: string): () => void {

@@ -32,6 +32,9 @@ class SlideTabUI extends UIUtil.UIItem {
     private dayUpdate: boolean;
     //storeage lory object
     private storly: any;
+    //storage IScroll objects
+    private iscroll: Array<any>;
+    private scrollBody: Array<HTMLElement>;
     //fill them varlibles
     constructor(pages: Array<Array<UIUtil.UIItem>>, names: Array<string>) {
         super();
@@ -94,21 +97,32 @@ class SlideTabUI extends UIUtil.UIItem {
         //set the top grey bar date correctly
         HTMLMap.topBarText.innerHTML = TimeFormatUtil.asLongDayMonthText(new Date());
         this.dayUpdate = false;
+        this.iscroll = new Array(this.pages.length);
+        this.scrollBody = new Array(this.pages.length);
         for (let i = 0, len = this.pages.length; i < len; i++) {
+            //cache id
+            let id = '#s' + i;
+            //store element
+            this.scrollBody[i] = document.querySelector(id);
             //add IScroll
-            new IScroll('#s' + i);
+            this.iscroll[i] = new IScroll(id);
             //finally, run the JS of all the little dudes
             for (let o = 0, len1 = this.pages[i].length; o < len1; o++) this.pages[i][o].buildJS();
         } 
     }
-    /* TODO: fix for new system
-    onUpdate(why: Array<UIUtil.TRIGGERED>) {
-        if (this.dayUpdate && why.indexOf(UIUtil.TRIGGERED.TIME_UPDATE) != -1) {
-            HTMLMap.topBarText.innerHTML = TimeFormatUtil.asLongDayMonthText(this.storeDay);
-            this.dayUpdate = false;
-        }
+
+    //onUpdate calls the update function of all the children
+    onUpdate(data: Array<any>): void {
+        let ray: Array<UIUtil.UIItem> = [].concat.apply([], this.pages);
+        for(let i = 0, len = ray.length; i < len; i++) if(ray[i].onUpdate) ray[i].onUpdate(data);
+        //recalc iscroll
+        for(let i = 0, len = this.pages.length; i < len; i++) this.iscroll[i].refresh();
     }
-    */
+
+    onTimeChanged(): void {
+        let ray: Array<UIUtil.UIItem> = [].concat.apply([], this.pages);
+        for(let i = 0, len = ray.length; i < len; i++) if(ray[i].onTimeChanged) ray[i].onTimeChanged(); 
+    }
 }
 
 export = SlideTabUI;

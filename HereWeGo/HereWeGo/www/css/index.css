@@ -560,12 +560,10 @@ body {
     background-color: #333;
     padding: 3vh 4.5vw 2.65vh 4.5vw;
     transition: transform 300ms cubic-bezier(0.1, 0.57, 0.1, 1);
-    display: none;
 }
 
 .tShown {
     transform: translateY(-8.65vh);
-    display: initial;
 }
 
 .tText {

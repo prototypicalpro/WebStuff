@@ -178,8 +178,9 @@ class ImageDataManage implements DataInterface {
                     count--;
                     if (i > this.index || count >= 0) {
                         let tempScope = cursor.value;
-                        let tempPromise = this.getAndStoreImage(tempScope, "thumb", THUMB_URL, Math.floor(screen.height / 4),  tempScope.id);
-                        let tempP2 = Promise.resolve(tempPromise).then(() => { return this.getAndStoreImage(tempScope, "image", THUMB_URL, screen.height, tempScope.id, true); });
+                        let tH = window.innerHeight;
+                        let tempPromise = this.getAndStoreImage(tempScope, "thumb", THUMB_URL, Math.floor(tH / 4),  tempScope.id);
+                        let tempP2 = Promise.resolve(tempPromise).then(() => { return this.getAndStoreImage(tempScope, "image", THUMB_URL, tH, tempScope.id, true); });
                         //push such that they end up in order, even though we may wrap around
                         if (count >= 0) endRay.push(tempPromise, tempP2);
                         else this.picPromise.push(tempPromise, tempP2);

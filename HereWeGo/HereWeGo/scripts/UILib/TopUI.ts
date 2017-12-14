@@ -11,55 +11,22 @@ import TimeFormatUtil = require('../TimeFormatUtil');
 
 class TopUI extends UIUtil.UIItem {
     private imageSet: boolean = false;
-    //gethtml doesn't do anything since we already built the html for this component
-    //the only onInit function where document selectors are OK
+    //storage scheudle
+    private schedule: ScheduleUtil.Schedule;
+    //storage index
+    private lastIndex: number;
     onInit(data: Array<any>): void {
         const day: Date = new Date();
         const zeroDay: number = new Date().setHours(0, 0, 0, 0);
-        const schedule: ScheduleUtil.Schedule = data[UIUtil.RecvType.CAL]["scheds"][zeroDay];
-        if (!schedule) {
+        this.schedule = data[UIUtil.RecvType.CAL]["scheds"][zeroDay];
+        if (!this.schedule) {
             HTMLMap.timeText.innerHTML = TimeFormatUtil.asSmallTime(day);
             HTMLMap.backText.innerHTML = "";
             HTMLMap.periodText.innerHTML = "No School";
         }
         else {
-            //get current period
-            const indexAndPeriod: [number, ScheduleUtil.Period] = schedule.getCurrentPeriodAndIndex(day);
-            //store it so we can check it later
-            //this.lastIndex = indexAndPeriod[0];
-            if (indexAndPeriod[0] === ScheduleUtil.PeriodType.before_start) {
-                //before start code
-                HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(day, indexAndPeriod[1].getEnd(zeroDay)) + " remaining";
-                HTMLMap.periodText.innerHTML = "Before School";
-            }
-            else if (indexAndPeriod[0] === ScheduleUtil.PeriodType.after_end) {
-                //after end code
-                HTMLMap.timeText.innerHTML = TimeFormatUtil.asSmallTime(day);
-                HTMLMap.periodText.innerHTML = "After School";
-            }
-            else {
-                //current period code
-                const period: ScheduleUtil.Period = indexAndPeriod[1];
-                HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(day, period.getEnd(zeroDay)) + " remaining";
-                switch (period.getType()) {
-                    case ScheduleUtil.PeriodType.class:
-                        HTMLMap.periodText.innerHTML = 'Period ' + period.getName();
-                        break;
-                    case ScheduleUtil.PeriodType.lunch:
-                        HTMLMap.periodText.innerHTML = 'Lunch';
-                        break;
-                    case ScheduleUtil.PeriodType.tutor_time:
-                        HTMLMap.periodText.innerHTML = 'Tutor Time';
-                        break;
-                    case ScheduleUtil.PeriodType.assembly:
-                        HTMLMap.periodText.innerHTML = 'Assembly';
-                        break;
-                    case ScheduleUtil.PeriodType.passing:
-                        HTMLMap.periodText.innerHTML = 'Passing';
-                        break;
-                }
-            }
-            HTMLMap.backText.innerHTML = schedule.getName()[0];
+            this.createTop(this.schedule.getCurrentPeriodAndIndex(day), day);
+            HTMLMap.backText.innerHTML = this.schedule.getName()[0];
         }
         //background image
         //get the promisi
@@ -88,8 +55,7 @@ class TopUI extends UIUtil.UIItem {
 
         //take all touch events on the body and prevent scrolling
         //cuz, yknow, javascript
-        if(cordova.platformId === 'ios') 
-            document.addEventListener('touchmove', this.fixScrollForIOS, <any>{
+        if(cordova.platformId === 'ios') document.addEventListener('touchmove', this.fixScrollForIOS, <any>{
                 passive: false,
                 capture: false,
             });
@@ -106,30 +72,71 @@ class TopUI extends UIUtil.UIItem {
             schedDay: 0,
         }
     ];
-    /*
+
+    //on changed data, rebuild!
+    onUpdate(data: Array<any>): void {
+        this.onInit(data);
+    }
+    
     //the actual update callback
-    onUpdate(why: Array<UIUtil.TRIGGERED>) {
-        //if update or update schedule, rebuild
-        if (why.indexOf(UIUtil.TRIGGERED.UPDATE_ALL_DATA) != -1 ||
-            why.indexOf(UIUtil.TRIGGERED.SCHEDULE_UPDATE) != -1) this.onInit();
-        //else if time update
-        else if (why.indexOf(UIUtil.TRIGGERED.TIME_UPDATE) != -1) {
-            if (!this.schedule) HTMLMap.timeText.innerHTML = TimeFormatUtil.asSmallTime(this.day);
-            else {
-                //cache today time
-                let todayTime = new Date(this.day).setHours(0, 0, 0, 0); 
-                //if the period hasn't changed, just update the time remaining
-                if (this.schedule.getCurrentPeriodIndex(this.day) === this.lastIndex) {
-                    if (this.lastIndex === ScheduleUtil.PeriodType.BEFORE_START) HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(this.day, this.schedule.getPeriod(0).getStart(todayTime)) + " remaining";
-                    else if (this.lastIndex === ScheduleUtil.PeriodType.AFTER_END) HTMLMap.timeText.innerHTML = TimeFormatUtil.asSmallTime(this.day);
-                    else HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(this.day, this.schedule.getPeriod(this.lastIndex).getEnd(todayTime)) + " remaining";
-                }
-                //else rebuild
-                else this.onInit();
+    onTimeChanged(): void {
+        let day = new Date()
+        if (!this.schedule) HTMLMap.timeText.innerHTML = TimeFormatUtil.asSmallTime(day);
+        else {
+            //cache today time
+            let todayTime = new Date(day).setHours(0, 0, 0, 0); 
+            //if the period hasn't changed, just update the time remaining
+            let curStuff = this.schedule.getCurrentPeriodAndIndex(day);
+            if (curStuff[0] === this.lastIndex) {
+                let zeroDay = new Date(day).setHours(0, 0, 0, 0);
+                if (this.lastIndex === ScheduleUtil.PeriodType.before_start) HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(day, curStuff[1].getEnd(zeroDay)) + " remaining";
+                else if (this.lastIndex === ScheduleUtil.PeriodType.after_end) HTMLMap.timeText.innerHTML = TimeFormatUtil.asSmallTime(day);
+                else HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(day, curStuff[1].getEnd(zeroDay)) + " remaining";
+                this.lastIndex = curStuff[0];
+            }
+            else this.createTop(curStuff, day);
+        }   
+    }
+
+    private createTop(currStuff: [number, ScheduleUtil.Period], day: Date) {
+        //get current period
+        const zeroDay = new Date(day).setHours(0,0,0,0);
+        //store it so we can check it later
+        //this.lastIndex = indexAndPeriod[0];
+        if (currStuff[0] === ScheduleUtil.PeriodType.before_start) {
+            //before start code
+            HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(day, currStuff[1].getEnd(zeroDay)) + " remaining";
+            HTMLMap.periodText.innerHTML = "Before School";
+        }
+        else if (currStuff[0] === ScheduleUtil.PeriodType.after_end) {
+            //after end code
+            HTMLMap.timeText.innerHTML = TimeFormatUtil.asSmallTime(day);
+            HTMLMap.periodText.innerHTML = "After School";
+        }
+        else {
+            //current period code
+            const period: ScheduleUtil.Period = currStuff[1];
+            HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(day, period.getEnd(zeroDay)) + " remaining";
+            switch (period.getType()) {
+                case ScheduleUtil.PeriodType.class:
+                    HTMLMap.periodText.innerHTML = 'Period ' + period.getName();
+                    break;
+                case ScheduleUtil.PeriodType.lunch:
+                    HTMLMap.periodText.innerHTML = 'Lunch';
+                    break;
+                case ScheduleUtil.PeriodType.tutor_time:
+                    HTMLMap.periodText.innerHTML = 'Tutor Time';
+                    break;
+                case ScheduleUtil.PeriodType.assembly:
+                    HTMLMap.periodText.innerHTML = 'Assembly';
+                    break;
+                case ScheduleUtil.PeriodType.passing:
+                    HTMLMap.periodText.innerHTML = 'Passing';
+                    break;
             }
         }
+        this.lastIndex = currStuff[0];
     }
-    */
 }
 
 export = TopUI;

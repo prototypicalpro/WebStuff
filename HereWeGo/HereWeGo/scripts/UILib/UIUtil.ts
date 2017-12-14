@@ -69,7 +69,10 @@ namespace UIUtil {
         //build JS over the html from onInit
         abstract buildJS(): void;
         //update data, also give data to children, reconstructing HTML if needed
+        //only called if new data was fetched from the internet
         onUpdate?(data: Array<any>): void;
+        //update live feedback depending on time (called every minuete unless app is off)
+        onTimeChanged?(): void;
         //recv parameters, parsed from children at construction
         recvParams?: Array<UIUtil.RecvParams>;
     }

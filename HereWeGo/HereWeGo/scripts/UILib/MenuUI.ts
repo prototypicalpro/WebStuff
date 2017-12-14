@@ -101,6 +101,17 @@ class MenuUI extends UIUtil.UIItem {
         this.topItems.concat(this.botItems).map((item) => item.buildJS());
     }
 
+    //onUpdate calls the update function of all the children
+    onUpdate(data: Array<any>): void {
+        let ray: Array<UIUtil.UIItem> = this.botItems.concat(this.topItems);
+        for(let i = 0, len = ray.length; i < len; i++) if(ray[i].onUpdate) ray[i].onUpdate(data);
+    }
+
+    onTimeChanged(): void {
+        let ray: Array<UIUtil.UIItem> = this.botItems.concat(this.topItems);
+        for(let i = 0, len = ray.length; i < len; i++) if(ray[i].onTimeChanged) ray[i].onTimeChanged(); 
+    }
+
     private backButtonHandle(event) {
         event.preventDefault();
         this.closeMenu();

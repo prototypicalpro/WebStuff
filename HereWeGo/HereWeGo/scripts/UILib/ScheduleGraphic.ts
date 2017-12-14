@@ -47,6 +47,12 @@ class ScheduleGraphic extends UIUtil.UIItem {
     //event item template for inline with the schedule
     private readonly inlineEventTemplate: string = `<p class="evText">{{name}}</p>`;
 
+    //cached access to the wrapper div
+    private schedElem: HTMLElement;
+
+    //cahced schedule object
+    private sched: ScheduleUtil.Schedule;
+
     //constructor with schedule
     constructor(day: number) {
         super();
@@ -65,14 +71,17 @@ class ScheduleGraphic extends UIUtil.UIItem {
     onInit(data: Array<any>): string {
         let day = new Date();
         day.setHours(0, 0, 0, 0);
-        let sched: ScheduleUtil.Schedule = data[UIUtil.RecvType.CAL]["scheds"][day.setDate(day.getDate() + (<UIUtil.CalParams>this.recvParams[0]).schedDay)];
+        this.sched = data[UIUtil.RecvType.CAL]["scheds"][day.setDate(day.getDate() + (<UIUtil.CalParams>this.recvParams[0]).schedDay)];
         return UIUtil.templateEngine(this.wrap, {
             id: this.id,
-            stuff: sched ? this.makeSchedule(sched, new Date()) : '',
+            stuff: this.sched ? this.makeSchedule(this.sched, new Date()) : '',
         });
     }
-    //buildJS creates the scrolling div using IScroll
-    buildJS() { }
+
+    //buildJS grabs the element we made for later
+    buildJS() { 
+        this.schedElem = document.querySelector("#" + this.id);
+    }
 
     //utility makeScheduleHTML
     private makeSchedule(sched: ScheduleUtil.Schedule, day: Date): string {
@@ -105,36 +114,37 @@ class ScheduleGraphic extends UIUtil.UIItem {
             sched: schedStr,
         });
     }
+    
     //onUpdate function
     //handles the updates
-    /*
-    onUpdate(why: Array<UIUtil.TRIGGERED>) {
-        //if no schedule, do nothing
-        if (!this.sched) return;
-        //check for update all or schedule update
-        //cuz both of those mean update all
-        if (why.indexOf(UIUtil.TRIGGERED.UPDATE_ALL_DATA) != -1 ||
-            why.indexOf(UIUtil.TRIGGERED.SCHEDULE_UPDATE) != -1)
-            //replace the html with a newly updated one
-            (<HTMLElement>document.querySelector('#' + this.id)).innerHTML = this.makeSchedule();
-        else if (why.indexOf(UIUtil.TRIGGERED.TIME_UPDATE) != -1) {
+    //just rebuilds the entire thing for now
+    onUpdate(data: Array<any>): void {
+        let day = new Date();
+        day.setHours(0, 0, 0, 0);
+        this.sched = data[UIUtil.RecvType.CAL]["scheds"][day.setDate(day.getDate() + (<UIUtil.CalParams>this.recvParams[0]).schedDay)];
+        this.schedElem.innerHTML = this.sched ? this.makeSchedule(this.sched, day) : '';
+    }
+
+    onTimeChanged(): void {
+        if(this.sched) {
             //if nothing has changed, don't change anything
-            let currentIndex = this.sched.getCurrentPeriodIndex(this.day);
+            let currentStuff = this.sched.getCurrentPeriodAndIndex(new Date());
+            let currentIndex = currentStuff[0];
             if (this.lastIndex === currentIndex) return;
             //else remove the color from the last index, assuming it's not a passing period
-            if (this.lastIndex >= 0 && this.sched.getPeriod(this.lastIndex).getType() != ScheduleUtil.PeriodType.PASSING) {
+            if (this.lastIndex >= 0 && this.sched.getPeriod(this.lastIndex).getType() != ScheduleUtil.PeriodType.passing) {
                 let last = document.querySelector('#p' + this.lastIndex) as HTMLElement;
                 if (last) last.style.backgroundColor = '';
             }
             //and add it to the current period
-            if (currentIndex >= 0 && this.sched.getPeriod(currentIndex).getType() != ScheduleUtil.PeriodType.PASSING) {
+            if (currentIndex >= 0 && currentStuff[1].getType() != ScheduleUtil.PeriodType.passing) {
                 let current = document.querySelector('#p' + currentIndex) as HTMLElement;
                 if (current) current.style.backgroundColor = 'lightgreen';
             }
+            this.lastIndex = currentIndex;
         }
+        
     }
-    TODO: Fix for new system
-    */
 }
 
 export = ScheduleGraphic;

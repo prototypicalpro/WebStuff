@@ -79,12 +79,13 @@ class EventGraphic extends UIUtil.UIItem {
 
     //master update func
     //update if necessary
-
     onUpdate(data: Array<any>) {
+        let day = new Date();
         //if the event cahce has been populated
-        let temp = data[UIUtil.RecvType.CAL]["events"][new Date().setHours(0, 0, 0, 0)];
+        let temp = data[UIUtil.RecvType.CAL]["events"];
         //if updated, update!
-        if (temp) this.elem.innerHTML = this.buildEventHTML(temp, new Date().setHours(0, 0, 0, 0), new Date().setHours(23, 59, 59, 999));
+        if (temp) this.elem.innerHTML = this.buildEventHTML(temp, day.setHours(0, 0, 0, 0), day.setHours(23, 59, 59, 999));
+        else this.elem.innerHTML = '';
     }
 
     //actual html building func
