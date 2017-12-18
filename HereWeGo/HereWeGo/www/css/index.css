@@ -161,13 +161,19 @@ body {
 }
 
 #topPos {
-    width: 200vw;
     display: flex;
+    flex-flow: column nowrap;
+}
+
+/* Status Bar Gradient CSS */
+
+#menuShade {
+    flex-grow: 1;
+    background: linear-gradient(to top, rgba(0,0,0,0), rgba(0,0,0,0.55));
 }
 
 /* Menu Button CSS */
 #sideButton {
-    align-self: flex-end;
     z-index: 10; /* If there ever was a feature of CSS that clearly had good intentions, this would be it */
     background-image: url("../images/navicon.png");
     background-origin: content-box;

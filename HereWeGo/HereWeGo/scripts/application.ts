@@ -73,7 +73,6 @@ function onDeviceReady(): void {
     //grabby grabby
     data.initData().then(earlyInit).then(buildUI).then(() => {
         let end: number = performance.now();
-
         console.log("Init took: " + (end - start));
     }).catch((err) => {
         console.log(err);
@@ -120,7 +119,7 @@ function resizeStatusBar() {
         windowHeight = height;
     }
     //if on ios, reset timeout if nothing changed
-    //else if (cordova.platformId === "ios") setTimeout(resizeStatusBar, 50);
+    else if (cordova.platformId === "ios") setTimeout(resizeStatusBar, 50);
 }
 
 function earlyInit(): Promise<any> {

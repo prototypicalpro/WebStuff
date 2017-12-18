@@ -64,7 +64,7 @@ class TopUI extends UIUtil.UIItem {
     //we'll just operate in document quiries
     buildJS(): void { }
     //touchmove fixer
-    private fixScrollForIOS = (e) => e.preventDefault();
+    private fixScrollForIOS = e => e.preventDefault();
 
     recvParams: Array<UIUtil.RecvParams> = [
         <UIUtil.CalParams>{
@@ -82,16 +82,15 @@ class TopUI extends UIUtil.UIItem {
     onTimeChanged(): void {
         let day = new Date()
         if (!this.schedule) HTMLMap.timeText.innerHTML = TimeFormatUtil.asSmallTime(day);
-        else {
-            //cache today time
-            let todayTime = new Date(day).setHours(0, 0, 0, 0); 
+        else { 
             //if the period hasn't changed, just update the time remaining
             let curStuff = this.schedule.getCurrentPeriodAndIndex(day);
             if (curStuff[0] === this.lastIndex) {
-                let zeroDay = new Date(day).setHours(0, 0, 0, 0);
-                if (this.lastIndex === ScheduleUtil.PeriodType.before_start) HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(day, curStuff[1].getEnd(zeroDay)) + " remaining";
+                //cache today time
+                let todayTime = new Date(day).setHours(0, 0, 0, 0);
+                if (this.lastIndex === ScheduleUtil.PeriodType.before_start) HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(day, curStuff[1].getEnd(todayTime)) + " remaining";
                 else if (this.lastIndex === ScheduleUtil.PeriodType.after_end) HTMLMap.timeText.innerHTML = TimeFormatUtil.asSmallTime(day);
-                else HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(day, curStuff[1].getEnd(zeroDay)) + " remaining";
+                else HTMLMap.timeText.innerHTML = TimeFormatUtil.asTimeTo(day, curStuff[1].getEnd(todayTime)) + " remaining";
                 this.lastIndex = curStuff[0];
             }
             else this.createTop(curStuff, day);
