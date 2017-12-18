@@ -3,14 +3,20 @@
  * TODO: Add Error handling
  */
 
-import GetInterface = require('./GetInterface');
+import GetUtil = require('./GetUtil');
 import ErrorUtil = require('../ErrorUtil');
 
-class NativeGet implements GetInterface {
+class NativeGet implements GetUtil.GetInterface {
     //check to see whether cordova exists
     static initAPI(): boolean { 
         //console.log(cordovaHTTP.get);
         return typeof cordovaHTTP != 'undefined'; 
+    }
+
+    private fs: DirectoryEntry;
+
+    constructor(fs: DirectoryEntry) {
+        this.fs = fs;
     }
 
     //do the magic
@@ -28,25 +34,17 @@ class NativeGet implements GetInterface {
         });
     }
 
-    getAsBlob(URL: string, params: any): Promise<Blob> {
+    getAsBlob(URL: string, params: GetUtil.ParamInterface): Promise<string> {
         //fire away
-        //PARAMS MUST HAVE ID OBJECT
-        //fire away
-        return new Promise((resolve, reject) => { cordovaHTTP.downloadFile(URL, params, {}, cordova.file.cacheDirectory + params.id, resolve, reject); }).catch((err) => {
+        let fname = this.fs.toURL() + params.id;
+        if(params.isFullRez) fname += 'FR';
+        return new Promise((resolve, reject) => { cordovaHTTP.downloadFile(URL, params, {}, fname, resolve, reject); }).catch((err) => {
             console.log(err);
             throw ErrorUtil.code.NO_INTERNET;
         }).then((response: FileEntry) => {
-            console.log("Got Blob!");
-            console.log(response);
             if (!response) throw ErrorUtil.code.NO_INTERNET;
             if (!response.isFile) throw ErrorUtil.code.BAD_RESPONSE;
-            return <Promise<Blob>>new Promise((resolve, reject) => {
-                response.file((obj) => {
-                    let reader = new FileReader();
-                    reader.onloadend = () => resolve(new Blob([new Uint8Array(reader.result)]));
-                    reader.readAsArrayBuffer(obj);
-                });
-            });
+            return fname;
         });
     }
 }

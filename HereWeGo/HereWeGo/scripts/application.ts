@@ -63,32 +63,32 @@ function onDeviceReady(): void {
     else setTimeout(resizeStatusBar, 100);
     StatusBar.overlaysWebView(true);
 
+    let getNewData = false;
+
     let start: number = performance.now();
-    //start up http
-    if (!http.initAPI()) {
-        console.log("http failed");
-        throw ErrorUtil.code.HTTP_FAIL;
-    }
     const today = new Date();
     //grabby grabby
-    data.initData().then(earlyInit).then(buildUI).then(() => {
+    http.initAPI().then(data.initData.bind(data)).then(earlyInit).then(() => {
         let end: number = performance.now();
         console.log("Init took: " + (end - start));
-    }).catch((err) => {
+    }).then(() => {
+        //wait for paint to finish
+        return new Promise(resolve => requestAnimationFrame(resolve));
+    }).then(buildUI).catch((err) => {
         console.log(err);
-        if (err === ErrorUtil.code.NO_STORED) return true;
-        if (err === ErrorUtil.code.NO_IMAGE) return true;
+        if (err === ErrorUtil.code.NO_STORED) return getNewData = true;
+        if (err === ErrorUtil.code.NO_IMAGE) return getNewData = true;
         else throw err;
-    }).then((getNewDataVar: any): any => {
+    }).then((): any => {
         //grab them datums
-        if (getNewDataVar) return data.getNewData().then(buildUI);
-        return data.refreshDataAndUI().catch((err) => { console.log(err); return data.getNewData().then(buildUI); });
+        if (getNewData) return data.getNewData();
+        return data.refreshDataAndUI().catch((err) => { console.log(err); return data.getNewData(); });
     }).catch((err: any) => {
         console.log(err);
-        if (err === ErrorUtil.code.HTTP_FAIL) setTimeout(toastError, 1000, "This phone is unsupported!");
+        if (err === ErrorUtil.code.HTTP_FAIL || err === ErrorUtil.code.FS_FAIL) setTimeout(toastError, 1000, "This phone is unsupported!");
         else if (err === ErrorUtil.code.NO_INTERNET || err === ErrorUtil.code.BAD_RESPONSE) setTimeout(toastError, 1000, "No Internet available!");
         else throw err;
-    }).then(() => {
+    }).then(buildUI).then(() => {
         //also start callback for every min to update time
         setTimeout(updateTime, 60010);
         let end = performance.now();

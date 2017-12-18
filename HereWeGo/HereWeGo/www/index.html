@@ -5,7 +5,7 @@
         Customize the content security policy in the meta tag below as needed. Add 'unsafe-inline' to default-src to enable inline JavaScript.
         For details, see http://go.microsoft.com/fwlink/?LinkID=617521
     -->
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src * 'unsafe-inline'; font-src *; media-src *; connect-src *; img-src * blob:; ">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src * 'unsafe-inline'; font-src *; media-src *; connect-src *; img-src * blob: filesystem:; ">
         
         <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
         <meta name="format-detection" content="telephone=no">
@@ -18,8 +18,8 @@
         <!-- Here We Go! -->
         <!-- Top section, starting with the background -->
         <!-- Text is mixed around in there so the shader covers some of it -->
-        <div class="image" id="lowRes"></div>
-        <div class="image" id="img"></div>
+        <img class="image" id="lowRes"></img>
+        <img class="image" id="img"></img>
         <p class="backText"></p>
         <div class="shader"></div>
         <!-- Bottom Text stuff-->

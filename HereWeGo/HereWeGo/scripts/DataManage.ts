@@ -81,7 +81,7 @@ class DataManage {
             new Promise((resolve, reject) => {
                 //load last sync time from storage
                 let lastSync = localStorage.getItem('1');
-                if (!lastSync) throw ErrorUtil.code.NO_STORED;
+                if (!lastSync) return resolve(true);
                 this.lastSyncTime = parseInt(lastSync);
                 return resolve();
             }),
@@ -91,10 +91,10 @@ class DataManage {
                 else db = <IDBDatabase>dbThings;
                 for (let i = 0, len = this.dataObj.length; i < len; i++) this.dataObj[i].setDB(db);
                 //check for no stored
-                if (Array.isArray(dbThings) && dbThings[1]) throw ErrorUtil.code.NO_STORED;
+                if (Array.isArray(dbThings) && dbThings[1]) return true;
             })
         ];
-        return Promise.all(ray);
+        return Promise.all(ray).then((noStored: Array<boolean | false>) => { if(noStored[0] || noStored[1]) throw ErrorUtil.code.NO_STORED; });
     }
 
     //gets new data and overwrited any old data

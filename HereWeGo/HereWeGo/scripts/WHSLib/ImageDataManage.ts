@@ -42,7 +42,7 @@ class ImageDataManage implements DataInterface {
     //boolean to tell us if we failed to fetch an image, meaning it's time to get new ones
     private cacheRefresh: boolean = false;
     //promise to tell the app when we've finished fetching the full pictures
-    private picPromise: Array<Promise<Blob>>;
+    private picPromise: Array<Promise<string>>;
     //store the number of images to cache at once
     private storeNum: number;
     private index: number = 0;
@@ -132,7 +132,7 @@ class ImageDataManage implements DataInterface {
         }).then(() => { return this.fillPicPromises(this.storeNum); });
     }
 
-    getData(): Promise<Array<Promise<Blob>>> | [Promise<Blob>, Promise<Blob>] | Promise<[Promise<Blob>, Promise<Blob>]> | Promise<false>{
+    getData(): Promise<Array<Promise<string>>> | [Promise<string>, Promise<string>] | Promise<[Promise<string>, Promise<string>]> | Promise<false>{
         if (!this.picPromise) {
             //get crap from localstorage
             let lastDay: number = parseInt(localStorage.getItem(IMG_DAY_ID));
@@ -147,10 +147,10 @@ class ImageDataManage implements DataInterface {
             //get the database entry for the stored images
             return this.fillPicPromises(1);
         }
-        else return <[Promise<Blob>, Promise<Blob>]>this.picPromise.slice(0, 2);
+        else return <[Promise<string>, Promise<string>]>this.picPromise.slice(0, 2);
     }
 
-    private fillPicPromises(picNum: number): Promise<Array<Promise<Blob>>> {
+    private fillPicPromises(picNum: number): Promise<Array<Promise<string>>> {
         //fetch the thumbnail, then the full image, but stagger the full image until after the thumbnail
         //but still return the blobs for each
         //also ony fetch the # of images we want to store
@@ -178,8 +178,8 @@ class ImageDataManage implements DataInterface {
                     if (i > this.index || count >= 0) {
                         let tempScope = cursor.value;
                         let tH = window.innerHeight;
-                        let tempPromise = this.getAndStoreImage(tempScope, "thumb", THUMB_URL, Math.floor(tH / 4),  tempScope.id);
-                        let tempP2 = Promise.resolve(tempPromise).then(() => { return this.getAndStoreImage(tempScope, "image", THUMB_URL, tH, tempScope.id, true); });
+                        let tempPromise = this.getAndStoreImage(tempScope, "thumb", THUMB_URL, Math.floor(tH / 4),  tempScope.id, false);
+                        let tempP2 = Promise.resolve(tempPromise).then(() => { return this.getAndStoreImage(tempScope, "image", THUMB_URL, tH, tempScope.id, true, true); });
                         //push such that they end up in order, even though we may wrap around
                         if (count >= 0) endRay.push(tempPromise, tempP2);
                         else this.picPromise.push(tempPromise, tempP2);
@@ -190,7 +190,7 @@ class ImageDataManage implements DataInterface {
         });
     }
 
-    private getAndStoreImage(data: ImageInterface, key: string, url: string, height: number, id: string, loadThenSave?: boolean): Promise<Blob> {
+    private getAndStoreImage(data: ImageInterface, key: string, url: string, height: number, id: string, isFullRez: boolean, loadThenSave?: boolean): Promise<string> {
         //trip a boolean here that we got new images
         this.cacheRefresh = true;
         //if the database has the image, great! send it off
@@ -198,8 +198,9 @@ class ImageDataManage implements DataInterface {
             authuser: 0,
             sz: 'h' + height,
             id: id,
-        }).then((blob: Blob) => {
-            data[key] = blob;
+            isFullRez: isFullRez,
+        }).then((url: string) => {
+            data[key] = url;
             let obj = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
             return new Promise((resolve, reject) => {
                 const runFunc = (blurd: any) => {
@@ -211,7 +212,7 @@ class ImageDataManage implements DataInterface {
                     let req = obj.get(data.id);
                     req.onerror = reject;
                     req.onsuccess = (evt: any) => {
-                        evt.target.result[key] = blob;
+                        evt.target.result[key] = url;
                         runFunc(evt.target.result);
                     };
                 }
@@ -220,11 +221,11 @@ class ImageDataManage implements DataInterface {
         });
     }
 
-    private getUntilBlobSuccess(url: string, params: any): Promise<Blob> {
+    private getUntilBlobSuccess(url: string, params: any): Promise<string> {
         //...sigh
-        return this.http.getAsBlob(url, params).then((data: Blob) => {
-            if (!data) return this.getUntilBlobSuccess(url, params);
-            else return data;
+        return this.http.getAsBlob(url, params).then((url: string) => {
+            if (!url) return this.getUntilBlobSuccess(url, params);
+            else return url;
         });
     }
 

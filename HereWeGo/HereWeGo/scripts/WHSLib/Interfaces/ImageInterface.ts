@@ -8,10 +8,10 @@ interface ImageInterface {
     id: string;
     //cancelled or not
     cancelled?: boolean;
-    //the image blob, only present if gotten from database
-    image?: Blob;
+    //the image filesystem URL, only present if gotten from database
+    image?: string;
     //the thumbnail to start displaying, only present if gotten from database
-    thumb?: Blob;
+    thumb?: string;
 }
 
 export = ImageInterface;

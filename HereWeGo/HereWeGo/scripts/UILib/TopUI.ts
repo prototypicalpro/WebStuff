@@ -30,27 +30,19 @@ class TopUI extends UIUtil.UIItem {
         }
         //background image
         //get the promisi
-        let back: [Promise<Blob>, Promise<Blob>] = data[UIUtil.RecvType.IMAGE];
+        let back: [Promise<string>, Promise<string>] = data[UIUtil.RecvType.IMAGE];
         if (!back) {
             //display a waiting image?
             //TODO: something other than blank
         }
         if (!this.imageSet && back[0] && back[1]) {
-            back[0].then((thing: Blob) => {
-                //set it
-                let url = URL.createObjectURL(thing)
-                HTMLMap.setBackLowRes(url);
-
+            back[0].then((thing: string) => {
+                HTMLMap.backThumb.onload = navigator.splashscreen.hide;
+                HTMLMap.backThumb.src = thing;
                 this.imageSet = true;
-                //and set the splashscreen to hide after it finishes
-                let load = new Image();
-                load.onload = () => {
-                    navigator.splashscreen.hide();
-                };
-                load.src = url;
             });
             //set it to go 50ms after, for dat load speed increase
-            back[1].then((hqThing: Blob) => setTimeout(() => HTMLMap.setBackImg(URL.createObjectURL(hqThing)), 50));
+            back[1].then((hqThing: string) => setTimeout(() => HTMLMap.backImg.src = hqThing, 50));
         }
 
         //take all touch events on the body and prevent scrolling

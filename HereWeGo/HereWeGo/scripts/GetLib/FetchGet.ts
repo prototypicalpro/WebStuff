@@ -2,15 +2,21 @@
  * Non-Native HTTP Client Implementation
  */
 
-import GetInterface = require('./GetInterface');
+import GetUtil = require('./GetUtil');
 import ErrorUtil = require('../ErrorUtil');
 
-class FetchGet implements GetInterface {
+class FetchGet implements GetUtil.GetInterface {
     static initAPI(): boolean { return typeof fetch !== "undefined"; }
+
+    private fs: DirectoryEntry;
+    
+    constructor(fs: DirectoryEntry) {
+        this.fs = fs;
+    }
 
     get(URL: string, params: any): Promise<Object> {
         console.log("Using fetch!");
-        URL = this.generateURL(URL, params);
+        URL = GetUtil.generateURL(URL, params);
         //fire away
         return fetch(URL).catch((err) => {
             console.log(err);
@@ -24,8 +30,8 @@ class FetchGet implements GetInterface {
         });
     }
 
-    getAsBlob(URL: string, params: any): Promise<Blob> {
-        URL = this.generateURL(URL, params);
+    getAsBlob(URL: string, params: any): Promise<string> {
+        URL = GetUtil.generateURL(URL, params);
         console.log(URL);
         //fire away
         return fetch(URL).catch((err) => {
@@ -39,16 +45,11 @@ class FetchGet implements GetInterface {
                 throw ErrorUtil.code.BAD_RESPONSE;
             }
             return response.blob();
+        }).then((blurb: Blob) => { 
+            let fname = params.id;
+            if(params.isFullRez) fname += 'FR';
+            return GetUtil.writeBlob(this.fs, fname, blurb);
         });
-    }
-
-    private generateURL(URL: string, params: any): string {
-        //generate url
-        let keys = Object.keys(params);
-        if (keys.length === 0) return URL;
-        URL += '?'
-        for (let i = 0, len = keys.length; i < len; i++) URL += '&' + keys[i] + '=' + params[keys[i]];
-        return URL;
     }
 }
 

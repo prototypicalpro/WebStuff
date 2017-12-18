@@ -2,15 +2,21 @@
  * Non-Native HTTP Client Implementation for Older webviews
  */
 
-import GetInterface = require('./GetInterface');
+import GetUtil = require('./GetUtil');
 import ErrorUtil = require('../ErrorUtil');
 
-class FetchGet implements GetInterface {
+class FetchGet implements GetUtil.GetInterface {
     static initAPI(): boolean { return typeof XMLHttpRequest !== undefined; }
+
+    private fs: DirectoryEntry;
+
+    constructor(fs: DirectoryEntry) {
+        this.fs = fs;
+    }
 
     get(URL: string, params: any): Promise<Object> {
         console.log("Using XML!");
-        URL = this.generateURL(URL, params);
+        URL = GetUtil.generateURL(URL, params);
         //fire away
         let req = new XMLHttpRequest();
         return new Promise((resolve, reject) => {
@@ -27,8 +33,8 @@ class FetchGet implements GetInterface {
         });
     }
 
-    getAsBlob(URL: string, params: any): Promise<Blob> {
-        URL = this.generateURL(URL, params);
+    getAsBlob(URL: string, params: any): Promise<string> {
+        URL = GetUtil.generateURL(URL, params);
         console.log(URL);
         //fire away
         let req = new XMLHttpRequest();
@@ -36,22 +42,15 @@ class FetchGet implements GetInterface {
             req.open("GET", URL);
             req.onload = resolve;
             req.onerror = reject;
-            req.responseType = "arraybuffer";
+            req.responseType = "blob";
             req.send();
         }).then(() => {
-            if(!req.response) throw ErrorUtil.code.BAD_RESPONSE;
-            //parse to blob
-            return new Blob([req.response]);
+            if(req.status != 200) throw ErrorUtil.code.BAD_RESPONSE;
+            //store into temporary file
+            let fname = params.id;
+            if(params.isFullRez) fname += 'FR';
+            return GetUtil.writeBlob(this.fs, fname, req.response);
         });
-    }
-
-    private generateURL(URL: string, params: any): string {
-        //generate url
-        let keys = Object.keys(params);
-        if (keys.length === 0) return URL;
-        URL += '?'
-        for (let i = 0, len = keys.length; i < len; i++) URL += '&' + keys[i] + '=' + params[keys[i]];
-        return URL;
     }
 }
 

@@ -12,6 +12,7 @@ namespace ErrorUtil {
         NO_IMAGE,
         BAD_RESPONSE,
         HTTP_FAIL,
+        FS_FAIL,
     }
 }
 
