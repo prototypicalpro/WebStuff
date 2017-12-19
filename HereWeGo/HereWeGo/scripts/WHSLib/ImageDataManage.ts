@@ -195,37 +195,42 @@ class ImageDataManage implements DataInterface {
         //trip a boolean here that we got new images
         this.cacheRefresh = true;
         //if the database has the image, great! send it off
-        return this.verifyUrl(data[key]) ? Promise.resolve(data[key]) : this.getUntilBlobSuccess(url, {
-            authuser: 0,
-            sz: 'h' + height,
-            id: id,
-            isFullRez: isFullRez,
-        }).then((url: string) => {
-            data[key] = url;
-            let obj = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
-            return new Promise((resolve, reject) => {
-                const runFunc = (blurd: any) => {
-                    let req2 = obj.put(blurd);
-                    req2.onerror = reject;
-                    req2.onsuccess = () => resolve(data[key]);
-                };
-                if (loadThenSave) {
-                    let req = obj.get(data.id);
-                    req.onerror = reject;
-                    req.onsuccess = (evt: any) => {
-                        evt.target.result[key] = url;
-                        runFunc(evt.target.result);
+        return this.verifyUrl(data[key]).then((isValid: boolean) => {
+            return isValid ? data[key] : this.getUntilBlobSuccess(url, {
+                authuser: 0,
+                sz: 'h' + height,
+                id: id,
+                isFullRez: isFullRez,
+            }).then((url: string) => {
+                data[key] = url;
+                let obj = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
+                return new Promise((resolve, reject) => {
+                    const runFunc = (blurd: any) => {
+                        let req2 = obj.put(blurd);
+                        req2.onerror = reject;
+                        req2.onsuccess = () => resolve(data[key]);
                     };
-                }
-                else runFunc(data);
+                    if (loadThenSave) {
+                        let req = obj.get(data.id);
+                        req.onerror = reject;
+                        req.onsuccess = (evt: any) => {
+                            evt.target.result[key] = url;
+                            runFunc(evt.target.result);
+                        };
+                    }
+                    else runFunc(data);
+                });
             });
-        });
+        }); 
     }
 
-    private verifyUrl(url: string): boolean {
-        let temp = new Image();
-        temp.src = url;
-        return temp.height > 0;
+    private verifyUrl(url: string): Promise<boolean> {
+        return new Promise((resolve) => {
+            let temp = new Image();
+            temp.src = url;
+            temp.onload = () => resolve(temp.height > 0);
+            temp.onerror = () => resolve(false);
+        });
     }
 
     private getUntilBlobSuccess(url: string, params: any): Promise<string> {
