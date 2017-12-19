@@ -189,10 +189,7 @@ body {
 #topBar {
     position: absolute;
     left: 100vw;
-    /* Stick it off the screen so the slider can bring it back */
-    /* hnnnnng */
-    /* margin calculated from subtraction menu button from entire screen */
-    margin-right: auto;
+    top: 0;
     width: 100vw;
     background-color: #636363;
     z-index: 9; /* sigh */
