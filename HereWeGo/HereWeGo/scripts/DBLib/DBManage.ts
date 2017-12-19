@@ -9,7 +9,7 @@ namespace DBManage {
     //database name constant
     const dbName: string = 'nope';
     //database verison constant, increment to erase
-    const dbVersion: number = 5;
+    const dbVersion: number = 6;
     //interface to define propwerties of the database to be constructed
     export interface DBInfoInterface {
         //name of the object store to use
@@ -34,6 +34,8 @@ namespace DBManage {
             req.onerror = reject;
             //and if the database doesn't exist yet, build it!
             req.onupgradeneeded = (evt: any) => {
+                //clear localStorage
+                localStorage.clear();
                 //neds an upgrade
                 isUpgraded = true;
                 //delete every object store, so we're starting fresh

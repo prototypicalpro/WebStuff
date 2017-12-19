@@ -113,14 +113,15 @@ class ImageDataManage implements DataInterface {
         if (this.picPromise) thenme = Promise.all(this.picPromise);
         else thenme = Promise.resolve();
         //then do your stuff!
-        let obj = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
         return thenme.then(() => {
+            let obj = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
             return new Promise((resolve, reject) => {
                 let req = obj.clear();
                 req.onerror = reject;
                 req.onsuccess = resolve;
             })
         }).then(() => {
+            let obj = this.db.transaction([this.dbInfo.storeName], "readwrite").objectStore(this.dbInfo.storeName);
             let len = data.data.length;
             let ray: Array<Promise<any>> = new Array(len);
             for(let i = 0; i < len; i++) ray[i] = new Promise((resolve1, reject1) => {
@@ -129,7 +130,7 @@ class ImageDataManage implements DataInterface {
                 req2.onsuccess = resolve1;
             });
             return Promise.all(ray);
-        }).then(() => { return this.fillPicPromises(this.storeNum); });
+        }).then(() => { return this.fillPicPromises(this.storeNum); })
     }
 
     getData(): Promise<Array<Promise<string>>> | [Promise<string>, Promise<string>] | Promise<[Promise<string>, Promise<string>]> | Promise<false>{
@@ -194,7 +195,7 @@ class ImageDataManage implements DataInterface {
         //trip a boolean here that we got new images
         this.cacheRefresh = true;
         //if the database has the image, great! send it off
-        return data[key] ? Promise.resolve(data[key]) : this.getUntilBlobSuccess(url, {
+        return this.verifyUrl(data[key]) ? Promise.resolve(data[key]) : this.getUntilBlobSuccess(url, {
             authuser: 0,
             sz: 'h' + height,
             id: id,
@@ -219,6 +220,12 @@ class ImageDataManage implements DataInterface {
                 else runFunc(data);
             });
         });
+    }
+
+    private verifyUrl(url: string): boolean {
+        let temp = new Image();
+        temp.src = url;
+        return temp.height > 0;
     }
 
     private getUntilBlobSuccess(url: string, params: any): Promise<string> {

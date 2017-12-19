@@ -35,7 +35,6 @@ class FetchGet implements GetUtil.GetInterface {
 
     getAsBlob(URL: string, params: any): Promise<string> {
         URL = GetUtil.generateURL(URL, params);
-        console.log(URL);
         //fire away
         let req = new XMLHttpRequest();
         return new Promise((resolve, reject) => {
