@@ -10,8 +10,8 @@ import NativeGet = require('./NativeGet');
 import ErrorUtil = require('../ErrorUtil');
 
 //list of all drivers useable in the app, in order of priority
-const DRIVER_LIST: Array<any> = [NativeGet, FetchGet, XMLGet];
-//const DRIVER_LIST: Array<any> = [FetchGet, XMLGet]; //comment this one if on mobile
+//const DRIVER_LIST: Array<any> = [NativeGet, FetchGet, XMLGet];
+const DRIVER_LIST: Array<any> = [FetchGet, XMLGet]; //comment this one if on mobile
 
 class GetLib {
     private useClass: GetUtil.GetInterface;

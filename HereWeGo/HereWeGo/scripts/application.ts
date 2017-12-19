@@ -68,20 +68,14 @@ function onDeviceReady(): void {
     let start: number = performance.now();
     const today = new Date();
     //grabby grabby
-    http.initAPI().then(data.initData.bind(data)).then(earlyInit).then(() => {
-        let end: number = performance.now();
-        console.log("Init took: " + (end - start));
-    }).then(() => {
-        //wait for paint to finish
-        return new Promise(resolve => requestAnimationFrame(resolve));
-    }).then(buildUI).catch((err) => {
+    http.initAPI().then(data.initData.bind(data)).then(buildUI).catch((err) => {
         console.log(err);
         if (err === ErrorUtil.code.NO_STORED) return getNewData = true;
         if (err === ErrorUtil.code.NO_IMAGE) return getNewData = true;
         else throw err;
     }).then((): any => {
         //grab them datums
-        if (getNewData) return data.getNewData();
+        if (getNewData) return data.getNewData().then(buildUI);
         return data.refreshDataAndUI().catch((err) => { console.log(err); return data.getNewData(); });
     }).catch((err: any) => {
         console.log(err);
@@ -117,6 +111,8 @@ function resizeStatusBar() {
         }
         //recache
         windowHeight = height;
+        //hide splash
+        setTimeout(navigator.splashscreen.hide, 50);
     }
     //if on ios, reset timeout if nothing changed
     else if (cordova.platformId === "ios") setTimeout(resizeStatusBar, 50);

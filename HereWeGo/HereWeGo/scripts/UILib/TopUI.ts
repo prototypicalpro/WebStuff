@@ -37,7 +37,7 @@ class TopUI extends UIUtil.UIItem {
         }
         if (!this.imageSet && back[0] && back[1]) {
             back[0].then((thing: string) => {
-                HTMLMap.backThumb.onload = navigator.splashscreen.hide;
+                //if(typeof navigator.splashscreen != 'undefined') HTMLMap.backThumb.onload = navigator.splashscreen.hide;
                 HTMLMap.backThumb.src = thing;
                 this.imageSet = true;
             });
@@ -47,7 +47,7 @@ class TopUI extends UIUtil.UIItem {
 
         //take all touch events on the body and prevent scrolling
         //cuz, yknow, javascript
-        if(cordova.platformId === 'ios') document.addEventListener('touchmove', this.fixScrollForIOS, <any>{
+        if(typeof cordova != 'undefined' && cordova.platformId === 'ios') document.addEventListener('touchmove', this.fixScrollForIOS, <any>{
                 passive: false,
                 capture: false,
             });

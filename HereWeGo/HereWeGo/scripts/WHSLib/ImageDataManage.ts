@@ -196,6 +196,7 @@ class ImageDataManage implements DataInterface {
         this.cacheRefresh = true;
         //if the database has the image, great! send it off
         return this.verifyUrl(data[key]).then((isValid: boolean) => {
+            if(!isValid && !this.http) throw ErrorUtil.code.NO_STORED;
             return isValid ? data[key] : this.getUntilBlobSuccess(url, {
                 authuser: 0,
                 sz: 'h' + height,
@@ -225,6 +226,7 @@ class ImageDataManage implements DataInterface {
     }
 
     private verifyUrl(url: string): Promise<boolean> {
+        if(!url) return Promise.resolve(false);
         return new Promise((resolve) => {
             let temp = new Image();
             temp.src = url;

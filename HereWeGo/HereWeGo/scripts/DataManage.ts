@@ -89,7 +89,7 @@ class DataManage {
                 let db: IDBDatabase;
                 if (Array.isArray(dbThings)) db = <IDBDatabase>dbThings[0];
                 else db = <IDBDatabase>dbThings;
-                for (let i = 0, len = this.dataObj.length; i < len; i++) this.dataObj[i].setDB(db);
+                for (let i = 0, len = this.dataObj.length; i < len; i++) if(this.dataObj[i]) this.dataObj[i].setDB(db);
                 //check for no stored
                 if (Array.isArray(dbThings) && dbThings[1]) return true;
             })

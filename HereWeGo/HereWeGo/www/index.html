@@ -24,8 +24,8 @@
         <div class="shader"></div>
         <!-- Bottom Text stuff-->
         <div id="textWrap">
-            <p class="periodText"></p>
-            <p class="timeText"></p>
+            <p class="periodText">&nbsp</p>
+            <p class="timeText">&nbsp</p>
         </div>
         <!-- Sliding content div, contains the bulk of the app -->
         <div class="js_frame">
@@ -64,10 +64,12 @@
         <div id="SMHere"></div>
         <div id="toast" class="tHidden"></div>
 
+        <!-- QuickStart! -->
+        <!--script type="text/javascript" src="scripts/bundle.js"></script-->
         <!-- Cordova -->
         <script type="text/javascript" src="cordova.js"></script>
         <!-- The 'async' attribute is needed for RequireJS to work in a Windows app -->
-        <script type="text/javascript" data-main="scripts/startup" src="lib/require.2.1.8.js" async></script>
+        <script type="text/javascript" src="scripts/bundle.js"></script>
     </body>
 </html>
 

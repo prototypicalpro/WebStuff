@@ -4,6 +4,6 @@ declare var require: (modules: string[], ready: Function, errback: Function) => 
 
 // Try and load platform-specific code from the /merges folder.
 // More info at http://taco.visualstudio.com/en-us/docs/configure-app/#Content.
-require(["./platformOverrides"],
+require([],
     () => Application.initialize(),
     () => Application.initialize());
