@@ -15,8 +15,35 @@ import IScroll = require('../iscroll-lite');
 
 class SlideTabUI extends UIUtil.UIItem {
     id: string;
+    private readonly superWrapperTempalte: string = `
+        <!-- Grey Bar and Text -->
+        <div id="topBar" class="topH"><div id="textPos"><p id="barText"></p></div></div>
+        <!-- Top menu bar, which shows aup after the first slide -->
+        <div id="topPos" class="topH">
+            <!-- Shader Div -->
+            <div id="menuShade"></div>
+            <!-- Menu Button -->
+            <div id="sideButton"></div>
+        </div>
+        
+        <!-- Then the slides -->
+        <div class="js_slides">
+            <!-- Start the app with the essential text loaded (see through slide) -->
+            <div class="js_slide start"></div>
+            <!-- Anything after will be populated as the app loads -->
+            <div>{{stuff}}</div>
+            <!-- Debug stuff (I think) -->
+            <div class="js_slide" style="background-color: white">
+                <p class="benjamin">Photos by Kitrick Miller</p>
+                <a class="benjamin" href="https://www.flickr.com/photos/kitrickmiller/">Flickr</a>
+                <p class="benjamin"> <br> To my alpha testers: <br> Thank you for the support!</p>
+            </div>
+        </div>
+        <!-- Menu Placeholder div -->
+        <div style="height: 7.05vh"></div>
+    `;
     //wrapper template to make everything horizontally flatmapped
-    private readonly wrapperTemplate: string = `<div class="js_slide content">
+    private readonly slideWrapperTemplate: string = `<div class="js_slide content">
                                                     <div id="{{id}}" class="scrollHack full">                    
                                                         <div class="scrollHack"> 
                                                             {{stuff}} 
@@ -35,22 +62,42 @@ class SlideTabUI extends UIUtil.UIItem {
     //storage IScroll objects
     private iscroll: Array<any>;
     private scrollBody: Array<HTMLElement>;
+    //resize stuff
+    private resizePromise: Promise<number>;
     //fill them varlibles
-    constructor(pages: Array<Array<UIUtil.UIItem>>, names: Array<string>) {
+    constructor(pages: Array<Array<UIUtil.UIItem>>, names: Array<string>, resizePromise: Promise<number>) {
         super();
         this.pages = pages;
         this.names = names;
         this.recvParams = UIUtil.combineParams([].concat.apply([], pages));
+        this.resizePromise = resizePromise;
     }
     //and the getHTML
     onInit(data: Array<any>): void {
         //get all the htmls in parellel
         //this chaining is gonna be beutiful
         //for every array of pages
-        HTMLMap.setSliderHTML(this.pages.map((items: Array<UIUtil.UIItem>, index: number) => { return UIUtil.templateEngine(this.wrapperTemplate, { id: 's' + index, stuff: items.map((item) => { return item.onInit(data); }).join('') }); }).join('')); //one. freaking. line
+        HTMLMap.setSliderHTML(UIUtil.templateEngine(this.superWrapperTempalte, 
+            { 
+                stuff : this.pages.map((items: Array<UIUtil.UIItem>, index: number) => 
+                    { 
+                        return UIUtil.templateEngine(this.slideWrapperTemplate, 
+                            { 
+                                id: 's' + index, stuff: items.map((item) => 
+                                { 
+                                    return item.onInit(data); 
+                                }).join('') 
+                            }); 
+                    }).join('')
+            })); //one. freaking. line
     }
     
     buildJS() {
+        //resize menu to adjust to screen
+        this.resizePromise.then((num) => {
+            let list =  document.querySelectorAll('.topH');
+            for(let i = 0, len = list.length; i < len; i++) (list.item(i) as HTMLElement).style.height = 'calc(8.7vh + ' + num + 'px)';
+        });
         //start up lory
         let thing = document.querySelector('body');
         this.storly = lory.lory(thing, {
@@ -95,7 +142,7 @@ class SlideTabUI extends UIUtil.UIItem {
         //run all that menu javascript
         for (let i = 0, len = buttonRay.length; i < len; i++) buttonRay[i].buildJS();
         //set the top grey bar date correctly
-        HTMLMap.topBarText.innerHTML = TimeFormatUtil.asLongDayMonthText(new Date());
+        document.querySelector("#barText").innerHTML = TimeFormatUtil.asLongDayMonthText(new Date());
         this.dayUpdate = false;
         this.iscroll = new Array(this.pages.length);
         this.scrollBody = new Array(this.pages.length);

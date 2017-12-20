@@ -16,7 +16,6 @@ import TopUI = require('./UILib/TopUI');
 import ImageDataManage = require('./WHSLib/ImageDataManage');
 import CalDataManage = require('./WHSLib/CalDataManage');
 import QuoteDataManage = require('./WHSLib/QuoteDataManage');
-import App = require('./application');
 
 //do everything we can without internet access for now
 var data: DataManage = new DataManage([new CalDataManage(), new ImageDataManage(null, 7), new QuoteDataManage()], null);
@@ -32,8 +31,8 @@ var start;
 console.log("Quickstart load!");
 start = performance.now();
 console.log(start);
-promiseMe.then(data.initUI.bind(data)).catch((err) => {
+promiseMe.then(data.initUI.bind(data)).then(() => { return top.thumbPromise; }).catch((err) => {
     console.log("Quickstart error!");
     console.log(err);
     (<any>window).quickLoad = false;
-}).then(() => App.initialize());
+}).then(() => require(['./application'], (app) => app.initialize()));

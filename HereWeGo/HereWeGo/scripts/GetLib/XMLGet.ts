@@ -48,6 +48,7 @@ class FetchGet implements GetUtil.GetInterface {
             //store into temporary file
             let fname = params.id;
             if(params.isFullRez) fname += 'FR';
+            delete params.isFullRez;
             return GetUtil.writeBlob(this.fs, fname, req.response);
         });
     }

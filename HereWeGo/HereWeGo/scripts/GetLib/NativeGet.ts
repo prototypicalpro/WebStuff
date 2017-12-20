@@ -38,6 +38,7 @@ class NativeGet implements GetUtil.GetInterface {
         //fire away
         let fname = this.fs.toURL() + params.id;
         if(params.isFullRez) fname += 'FR';
+        delete params.isFullRez;
         return new Promise((resolve, reject) => { cordovaHTTP.downloadFile(URL, params, {}, fname, resolve, reject); }).catch((err) => {
             console.log(err);
             throw ErrorUtil.code.NO_INTERNET;

@@ -15,6 +15,9 @@ class TopUI extends UIUtil.UIItem {
     private schedule: ScheduleUtil.Schedule;
     //storage index
     private lastIndex: number;
+    //image promise
+    thumbPromise: Promise<any>;
+
     onInit(data: Array<any>): void {
         const day: Date = new Date();
         const zeroDay: number = new Date().setHours(0, 0, 0, 0);
@@ -36,7 +39,7 @@ class TopUI extends UIUtil.UIItem {
             //TODO: something other than blank
         }
         if (!this.imageSet && back[0] && back[1]) {
-            back[0].then((thing: string) => {
+            this.thumbPromise = back[0].then((thing: string) => {
                 //if(typeof navigator.splashscreen != 'undefined') HTMLMap.backThumb.onload = navigator.splashscreen.hide;
                 HTMLMap.backThumb.src = thing;
                 this.imageSet = true;

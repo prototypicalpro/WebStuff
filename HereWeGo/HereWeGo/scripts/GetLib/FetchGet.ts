@@ -31,6 +31,8 @@ class FetchGet implements GetUtil.GetInterface {
     }
 
     getAsBlob(URL: string, params: any): Promise<string> {
+        let fullRez = params.isFullRez;
+        delete params.isFullRez;
         URL = GetUtil.generateURL(URL, params);
         console.log(URL);
         //fire away
@@ -47,7 +49,7 @@ class FetchGet implements GetUtil.GetInterface {
             return response.blob();
         }).then((blurb: Blob) => { 
             let fname = params.id;
-            if(params.isFullRez) fname += 'FR';
+            if(fullRez) fname += 'FR';
             return GetUtil.writeBlob(this.fs, fname, blurb);
         });
     }

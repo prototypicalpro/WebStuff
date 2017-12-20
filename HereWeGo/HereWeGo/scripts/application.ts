@@ -39,16 +39,17 @@ var slide: SlideTabUI;
 //cached height for status bar css
 var windowHeight;
 
+var getNewData = false;
+var resolveResize;
+var resizePromise: Promise<number> = new Promise((resolve) => resolveResize = resolve);
+
 export function initialize(): void {
     document.addEventListener('deviceready', onDeviceReady, false);
-    //StatusBar.styleLightContent();
     console.log("init func: " + performance.now());
 }
 
 function onDeviceReady(): void {
     console.log("device ready: " + performance.now());
-    document.addEventListener('pause', onPause, false);
-    document.addEventListener('resume', onResume, false);
 
     //inappbrowser
     if ((<any>cordova).InAppBrowser) window.open = (<any>cordova).InAppBrowser.open;
@@ -63,8 +64,6 @@ function onDeviceReady(): void {
     else setTimeout(resizeStatusBar, 100);
     StatusBar.overlaysWebView(true);
 
-    let getNewData = false;
-
     let start: number = performance.now();
     const today = new Date();
     //grabby grabby
@@ -75,14 +74,16 @@ function onDeviceReady(): void {
         else throw err;
     }).then((): any => {
         //grab them datums
-        if (getNewData) return data.getNewData().then(buildUI);
+        if (getNewData) return data.getNewData();
         return data.refreshDataAndUI().catch((err) => { console.log(err); return data.getNewData(); });
     }).catch((err: any) => {
         console.log(err);
         if (err === ErrorUtil.code.HTTP_FAIL || err === ErrorUtil.code.FS_FAIL) setTimeout(toastError, 1000, "This phone is unsupported!");
         else if (err === ErrorUtil.code.NO_INTERNET || err === ErrorUtil.code.BAD_RESPONSE) setTimeout(toastError, 1000, "No Internet available!");
         else throw err;
-    }).then(buildUI).then(() => {
+    }).then(buildUI).then(() => { return top.thumbPromise; }).then(() => {
+        //hide splascreen if it's still there
+        navigator.splashscreen.hide();
         //also start callback for every min to update time
         setTimeout(updateTime, 60010);
         let end = performance.now();
@@ -92,6 +93,9 @@ function onDeviceReady(): void {
         console.log(err);
         throw err;
     });
+
+    document.addEventListener('pause', onPause, false);
+    document.addEventListener('resume', onResume, false);
 }
 
 function resizeStatusBar() {
@@ -100,19 +104,11 @@ function resizeStatusBar() {
     if(height != windowHeight) {
         //query the top bar element, and increase it's element size accordingly
         //8.7vh is the default height, and we add the px as the statusbar increases the viewport size
-        if(height > windowHeight && windowHeight - height < 50) {
-            let list =  document.querySelectorAll('.topH');
-            for(let i = 0, len = list.length; i < len; i++) (list.item(i) as HTMLElement).style.height = 'calc(8.7vh + ' + (height - windowHeight) + 'px)';
-        }
-        //else reset
-        else {
-            let list =  document.querySelectorAll('.topH');
-            for(let i = 0, len = list.length; i < len; i++) (list.item(i) as HTMLElement).style.height = '8.7vh';
-        }
+        if(height > windowHeight && windowHeight - height < 50) resolveResize(height - windowHeight);
         //recache
         windowHeight = height;
-        //hide splash
-        setTimeout(navigator.splashscreen.hide, 50);
+        //hide splash (after paint)
+        if((<any>window).quickLoad) setTimeout(() => setTimeout(navigator.splashscreen.hide, 0), 0);
     }
     //if on ios, reset timeout if nothing changed
     else if (cordova.platformId === "ios") setTimeout(resizeStatusBar, 50);
@@ -175,12 +171,12 @@ function buildUI(): Promise<any> {
         ]
         //second page?
         //naw
-    ], ['Home', 'Schedule', 'Credit']);
+    ], ['Home', 'Schedule', 'Credit'], resizePromise);
     //start up the early data stuff
     //give the top all the data it needs
     data.setUIObjs([top, slide, menu]);
     //init
-    return data.initUI();//.then(navigator.splashscreen.hide);
+    return data.initUI();
 }
 
 function onPause(): void {

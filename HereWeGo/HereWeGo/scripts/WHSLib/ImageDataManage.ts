@@ -13,6 +13,8 @@ import ErrorUtil = require('../ErrorUtil');
 const THUMB_URL: string = 'https://drive.google.com/thumbnail'
 const IMG_IND_ID: string = '2';
 const IMG_DAY_ID: string = '3';
+const THUMB_REZ: number = 1.0/4.0;
+
 
 interface CloudData {
     index: number;
@@ -179,7 +181,7 @@ class ImageDataManage implements DataInterface {
                     if (i > this.index || count >= 0) {
                         let tempScope = cursor.value;
                         let tH = window.innerHeight;
-                        let tempPromise = this.getAndStoreImage(tempScope, "thumb", THUMB_URL, Math.floor(tH / 4),  tempScope.id, false);
+                        let tempPromise = this.getAndStoreImage(tempScope, "thumb", THUMB_URL, Math.floor(tH * THUMB_REZ),  tempScope.id, false);
                         let tempP2 = Promise.resolve(tempPromise).then(() => { return this.getAndStoreImage(tempScope, "image", THUMB_URL, tH, tempScope.id, true, true); });
                         //push such that they end up in order, even though we may wrap around
                         if (count >= 0) endRay.push(tempPromise, tempP2);

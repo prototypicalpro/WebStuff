@@ -28,33 +28,7 @@
             <p class="timeText">&nbsp</p>
         </div>
         <!-- Sliding content div, contains the bulk of the app -->
-        <div class="js_frame">
-            <!-- Top menu bar, which shows aup after the first slide -->
-            <div id="topPos" class="topH">
-                <!-- Shader Div -->
-                <div id="menuShade"></div>
-                <!-- Menu Button -->
-                <div id="sideButton"></div>
-                <!-- Grey Bar and Text -->
-                <div id="topBar" class="topH"><div id="textPos"><p id="barText"></p></div></div>
-            </div>
-            
-            <!-- Then the slides -->
-            <div class="js_slides">
-                <!-- Start the app with the essential text loaded (see through slide) -->
-                <div class="js_slide start"></div>
-                <!-- Anything after will be populated as the app loads -->
-                <div id="addStuff"></div>
-                <!-- Debug stuff (I think) -->
-                <div class="js_slide" style="background-color: white">
-                    <p class="benjamin">Photos by Kitrick Miller</p>
-                    <a class="benjamin" href="https://www.flickr.com/photos/kitrickmiller/">Flickr</a>
-                    <p class="benjamin"> <br> To my alpha testers: <br> Thank you for the support!</p>
-                </div>
-            </div>
-            <!-- Menu Placeholder div -->
-            <div style="height: 7.05vh"></div>
-        </div>
+        <div class="js_frame"></div>
         <!-- Menu Bar, will have to be populated later -->
         <table id="menuBar"></table>
         <!-- Menu Bar line, which will get hecka moved around n stuff -->
@@ -65,11 +39,11 @@
         <div id="toast" class="tHidden"></div>
 
         <!-- QuickStart! -->
-        <!--script type="text/javascript" src="scripts/bundle.js"></script-->
-        <!-- Cordova -->
-        <script type="text/javascript" src="cordova.js"></script>
+        <!--script type="text/javascript" src="scripts/bundle.js"></script--> 
         <!-- The 'async' attribute is needed for RequireJS to work in a Windows app -->
-        <script type="text/javascript" src="scripts/bundle.js"></script>
+        <script type="text/javascript" data-main="scripts/QuickStart" src="lib/require.2.1.8.js" async></script>
+        <!-- Cordova -->
+        <script type="text/javascript" src="cordova.js" async></script>
     </body>
 </html>
 
