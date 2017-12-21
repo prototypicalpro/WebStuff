@@ -61,7 +61,7 @@ function onDeviceReady(): void {
     windowHeight = window.innerHeight;
     if(cordova.platformId != "ios") window.addEventListener("resize", resizeStatusBar);
     //oh ios, how you hurt me so
-    else setTimeout(resizeStatusBar, 100);
+    else setTimeout(resizeStatusBar, 50);
     StatusBar.overlaysWebView(true);
 
     let start: number = performance.now();
@@ -108,7 +108,10 @@ function resizeStatusBar() {
         //recache
         windowHeight = height;
         //hide splash (after paint)
-        if((<any>window).quickLoad) setTimeout(() => setTimeout(navigator.splashscreen.hide, 0), 0);
+        if((<any>window).quickLoad) {
+            if(cordova.platformId === 'ios') navigator.splashscreen.hide();
+            else setTimeout(() => setTimeout(navigator.splashscreen.hide, 0), 0);
+        }
     }
     //if on ios, reset timeout if nothing changed
     else if (cordova.platformId === "ios") setTimeout(resizeStatusBar, 50);
