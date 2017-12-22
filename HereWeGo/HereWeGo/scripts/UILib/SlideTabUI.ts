@@ -35,7 +35,7 @@ class SlideTabUI extends UIUtil.UIItem {
             <!-- Debug stuff (I think) -->
             <div class="js_slide" style="background-color: white">
                 <p class="benjamin">Photos by Kitrick Miller</p>
-                <a class="benjamin" href="https://www.flickr.com/photos/kitrickmiller/">Flickr</a>
+                <a class="benjamin" id="flk">Flickr</a>
                 <p class="benjamin"> <br> To my alpha testers: <br> Thank you for the support!</p>
             </div>
         </div>

@@ -5,22 +5,25 @@
         Customize the content security policy in the meta tag below as needed. Add 'unsafe-inline' to default-src to enable inline JavaScript.
         For details, see http://go.microsoft.com/fwlink/?LinkID=617521
     -->
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src * 'unsafe-inline'; font-src *; media-src *; connect-src *; img-src * blob: filesystem:; ">
+        <!-- So much for secure, if I allow through an entire scripting platform just to let in my script -->
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' gap: https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://script.google.com https://*.googleusercontent.com https://drive.google.com; img-src 'self' filesystem:; ">
         
         <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
         <meta name="format-detection" content="telephone=no">
         <meta name="msapplication-tap-highlight" content="no">
         <meta name="viewport" content="user-scalable=0, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, viewport-fit=cover">
-        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <link rel="stylesheet" type="text/css" href="css/QuickStart.css" />
         <title>HereWeGo</title>
     </head>
     <body>
         <!-- Here We Go! -->
+        <!-- Div to detect support of 3d transforms -->
+        <div id="d3" style="transform: translate3d(0, 0, 0);"></div>
         <!-- Top section, starting with the background -->
         <!-- Text is mixed around in there so the shader covers some of it -->
         <img class="image" id="lowRes"></img>
         <img class="image" id="img"></img>
-        <p class="backText"></p>
+        <p class="backText">&nbsp</p>
         <div class="shader"></div>
         <!-- Bottom Text stuff-->
         <div id="textWrap">
@@ -41,7 +44,7 @@
         <!-- QuickStart! -->
         <!--script type="text/javascript" src="scripts/bundle.js"></script--> 
         <!-- The 'async' attribute is needed for RequireJS to work in a Windows app -->
-        <script type="text/javascript" data-main="scripts/QuickStart" src="lib/require.2.1.8.js" async></script>
+        <script type="text/javascript" data-main="scripts/QuickStart" src="lib/require.js" async></script>
         <!-- Cordova -->
         <script type="text/javascript" src="cordova.js" async></script>
     </body>

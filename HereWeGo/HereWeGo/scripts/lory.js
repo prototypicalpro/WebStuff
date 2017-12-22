@@ -428,7 +428,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            index = _options5.defaultIndex;
 	        } else {
 	            ease = null;
-	            rewindSpeed = 0;
+				rewindSpeed = 0;
 	        }
 	
 	        translate(slides[index].offsetLeft * -1, rewindSpeed, ease);
@@ -714,10 +714,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            transform = prop;
 	        }
 	
-	        document.body.insertBefore(el, null);
-	        style[transform] = 'translate3d(0, 0, 0)';
-	        hasTranslate3d = !!global.getComputedStyle(el).getPropertyValue(transform);
-	        document.body.removeChild(el);
+	        hasTranslate3d = style["perspective"] === '';
 	    })();
 	
 	    return {

@@ -50,6 +50,12 @@ export function initialize(): void {
 
 function onDeviceReady(): void {
     console.log("device ready: " + performance.now());
+    //add the rest of the full CSS
+    let link = document.createElement("link");
+    link.type = "text/css";
+    link.rel = "stylesheet";
+    link.href = "css/index.css";
+    document.head.appendChild(link);
 
     //inappbrowser
     if ((<any>cordova).InAppBrowser) window.open = (<any>cordova).InAppBrowser.open;
@@ -74,16 +80,18 @@ function onDeviceReady(): void {
         else throw err;
     }).then((): any => {
         //grab them datums
-        if (getNewData) return data.getNewData();
-        return data.refreshDataAndUI().catch((err) => { console.log(err); return data.getNewData(); });
+        if (getNewData) return data.getNewData().then(buildUI);
+        return data.refreshDataAndUI().catch((err) => { console.log(err); return data.getNewData().then(buildUI); });
     }).catch((err: any) => {
         console.log(err);
         if (err === ErrorUtil.code.HTTP_FAIL || err === ErrorUtil.code.FS_FAIL) setTimeout(toastError, 1000, "This phone is unsupported!");
         else if (err === ErrorUtil.code.NO_INTERNET || err === ErrorUtil.code.BAD_RESPONSE) setTimeout(toastError, 1000, "No Internet available!");
         else throw err;
-    }).then(buildUI).then(() => { return top.thumbPromise; }).then(() => {
+    }).then(() => { return top.thumbPromise; }).then(() => {
         //hide splascreen if it's still there
         navigator.splashscreen.hide();
+        //add kits flickr link
+        document.querySelector("#flk").addEventListener("click", urlCallback("https://www.flickr.com/photos/kitrickmiller/"));
         //also start callback for every min to update time
         setTimeout(updateTime, 60010);
         let end = performance.now();

@@ -2,14 +2,6 @@
  * Jesus Fonts!
  */
 @font-face {
-    font-family: 'BenjaminFont';
-    src: url('../fonts/geometricslabserif703boldbt.eot') format('embedded-opentype'), 
-         url('../fonts/geometricslabserif703boldbt.woff') format('woff'), 
-         url('../fonts/geometricslabserif703boldbt.ttf') format('truetype'), 
-         url('../fonts/geometricslabserif703boldbt.svg#geometricslabserif703boldbt5942f8f8b47f4') format('svg');
-}
-
-@font-face {
     font-family: 'Open Sans';
     src: url('../fonts/OpenSans-Regular.eot');
     src: url('../fonts/OpenSans-Regular.eot?#iefix') format('embedded-opentype'), url('../fonts/OpenSans-Regular.woff') format('woff'), url('../fonts/OpenSans-Regular.ttf') format('truetype'), url('../fonts/OpenSans-Regular.svg#OpenSans-Regular') format('svg');
@@ -31,121 +23,6 @@
     src: url('../fonts/Montserrat-ExtraLight.eot?#iefix') format('embedded-opentype'), url('../fonts/Montserrat-ExtraLight.woff') format('woff'), url('../fonts/Montserrat-ExtraLight.ttf') format('truetype'), url('../fonts/Montserrat-ExtraLight.svg#Montserrat-ExtraLight') format('svg');
     font-weight: 200;
     font-style: normal;
-}
-
-@font-face {
-    font-family: 'Montserrat';
-    src: url('../fonts/Montserrat-Regular.eot');
-    src: url('../fonts/Montserrat-Regular.eot?#iefix') format('embedded-opentype'), url('../fonts/Montserrat-Regular.woff') format('woff'), url('../fonts/Montserrat-Regular.ttf') format('truetype'), url('../fonts/Montserrat-Regular.svg#Montserrat-Regular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Montserrat';
-    src: url('../fonts/Montserrat-SemiBold.eot');
-    src: url('../fonts/Montserrat-SemiBold.eot?#iefix') format('embedded-opentype'), url('../fonts/Montserrat-SemiBold.woff') format('woff'), url('../fonts/Montserrat-SemiBold.ttf') format('truetype'), url('../fonts/Montserrat-SemiBold.svg#Montserrat-SemiBold') format('svg');
-    font-weight: 600;
-    font-style: normal;
-}
-
-p {
-    margin: 0;
-}
-
-/*
- * Other Stuff
- */
-
-* {
-    -webkit-tap-highlight-color: rgba(0,0,0,0);
-}
-
-body {
-    -webkit-touch-callout: none;
-    -webkit-text-size-adjust: none;
-    -webkit-user-select: none;
-    font-family: 'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, sans-serif;
-    font-family: 'RobotoRegular', 'Droid Sans', 'Segoe UI', Segoe, 'San Francisco', 'Helvetica Neue', Helvetica, Arial, Geneva, sans-serif;
-    margin: 0;
-}
-
-.hidden {
-    display: none;
-}
-
-/*
- * Background CSS
- * Displays the image and fancy gradient thingy
- * Making the top of the app all pretty pretty
- */
-
-/* Background Image CSS */
-.image {
-    position: fixed;
-    min-height: 100vh;
-    min-width: 100vw;
-    /* centering hack */
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: -1;
-    /*background-image: url("../images/background.jpg");*/
-    /*background-image: url('https://imgur.com/download/YjfZHY1');*/
-}
-
-/* Background Trancperency Gradient */
-.shader {
-    position: fixed;
-    top: 50vh;
-    width: 100vw;
-    height: 43vh;
-    /* TODO: Replace with image
-    background-image: url("../images/gradient.png");
-    */
-    background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.5));
-}
-
-/*
- * Top Content CSS
- * Styles the text that shows the important nonsense that we actually
- * launched the app for
- */
-
-/* Global Top Section Text CSS */
-
-/* Background Text (A) */
-.backText {
-    font-family: "BenjaminFont"; /* Benjamin, this is for you */
-    color: white;
-    font-size: 170vw;
-    opacity: 0.5;
-    position: fixed;
-    bottom: -20vh;
-    left: -22vw;
-}
-
-/* Lower text wrapper stuff (for fancy animation) */
-#textWrap {
-    font-family: 'Montserrat', sans-serif;
-    position: absolute;
-    top: 75.5vh;
-    left: 5vw;
-}
-
-/* Period Text (Period 3) */
-.periodText {
-    font-size: 8vh;
-    font-weight: 600;
-    color: white;
-    margin-bottom: 0.5vh;
-}
-
-/* Time Left Text */
-.timeText {
-    text-transform: capitalize;
-    font-size: 7vw;
-    color: white;
 }
 
 /* Top Bar Positioning CSS */
@@ -209,16 +86,6 @@ body {
  * at the bottom of the screen
  */
 
-/* Whole bar CSS */
-#menuBar {
-    table-layout: fixed;
-    background-color: #636363;
-    width: 100vw;
-    height: 7.1vh;
-    position: fixed;
-    top: 92.95vh;
-}
-
 /* Text stuff */
 .menu {
     display: table-cell;
@@ -233,43 +100,15 @@ body {
     color: white;
 }
 
-/* Wrapper and CSS for line indicator */
-#menuWrap {
-    width: 100vw;
-    position: fixed;
-    top: 99.5vh;
-    background-color: #636363;
-}
-
-#menuLine {
-    width: 33.3vw;
-    height: 0.5vh;
-    background-color: white
-}
-
 /* 
  * Slidy Thingy CSS
  * Attempts to put a bunch of pages all side by side
  * Then allows you to swipe between them
  */
 
-/* Wrapper div, aka the viewport */
-.js_frame {
-    position: fixed;
-    height: 100vh;
-    width: 100vw;
-    overflow: hidden;
-    display: flex;
-    flex-flow: column nowrap;
-}
-
 /* Content div, contains all the elements we want to scroll through */
 .js_slides {
     /* Width must be adjusted to fit content */
-    /*
-    position: fixed;
-    top: 11.3vh;
-    */
     width: 400vw;
     white-space: nowrap;
     overflow: hidden;
@@ -573,4 +412,9 @@ body {
     font-family: 'Open Sans', sans-serif;
     margin-left: 5vw;
     font-size: 5.5vw;
+}
+
+#flk {
+    color: blue;
+    text-decoration: underline;
 }
