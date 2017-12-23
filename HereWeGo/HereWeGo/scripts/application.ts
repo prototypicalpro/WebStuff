@@ -118,7 +118,7 @@ function resizeStatusBar() {
         //hide splash (after paint)
         if((<any>window).quickLoad) {
             if(cordova.platformId === 'ios') navigator.splashscreen.hide();
-            else setTimeout(() => setTimeout(navigator.splashscreen.hide, 0), 0);
+            else navigator.splashscreen.hide();
         }
     }
     //if on ios, reset timeout if nothing changed

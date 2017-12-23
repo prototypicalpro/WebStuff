@@ -49,10 +49,12 @@ class ImageDataManage implements DataInterface {
     private storeNum: number;
     private index: number = 0;
     //the constructor
+    private readonly cheapData: boolean;
     //do file plugin stuff here since that stuff can run in the background (I think)
-    constructor(http: GetLib, cacheDays: number) {
+    constructor(http: GetLib, cacheDays: number, cheapData?: boolean) {
         this.http = http;
         this.storeNum = cacheDays;
+        this.cheapData = cheapData;
     }
     //set DB func
     setDB(db: IDBDatabase) { this.db = db; }
@@ -182,7 +184,9 @@ class ImageDataManage implements DataInterface {
                         let tempScope = cursor.value;
                         let tH = window.innerHeight;
                         let tempPromise = this.getAndStoreImage(tempScope, "thumb", THUMB_URL, Math.floor(tH * THUMB_REZ),  tempScope.id, false);
-                        let tempP2 = Promise.resolve(tempPromise).then(() => { return this.getAndStoreImage(tempScope, "image", THUMB_URL, tH, tempScope.id, true, true); });
+                        let tempP2;
+                        if(!this.cheapData) tempP2 = Promise.resolve(tempPromise).then(() => { return this.getAndStoreImage(tempScope, "image", THUMB_URL, tH, tempScope.id, true, true); });
+                        else tempP2 = tempPromise;
                         //push such that they end up in order, even though we may wrap around
                         if (count >= 0) endRay.push(tempPromise, tempP2);
                         else this.picPromise.push(tempPromise, tempP2);

@@ -18,12 +18,10 @@ import CalDataManage = require('./WHSLib/CalDataManage');
 import QuoteDataManage = require('./WHSLib/QuoteDataManage');
 
 //do everything we can without internet access for now
-var data: DataManage = new DataManage([new CalDataManage(), new ImageDataManage(null, 7), new QuoteDataManage()], null);
+var data: DataManage = new DataManage([new CalDataManage(), new ImageDataManage(null, 7, true), new QuoteDataManage()], null);
 
 //frontpage graphic
-var top: TopUI = new TopUI();
-
-var promiseMe: Promise<any> = data.initData().then(() => data.setUIObjs([top]));
+var top: TopUI = new TopUI(true);
 
 var start;
 
@@ -31,8 +29,14 @@ var start;
 console.log("Quickstart load!");
 start = performance.now();
 console.log(start);
-promiseMe.then(data.initUI.bind(data)).then(() => { return top.thumbPromise; }).catch((err) => {
-    console.log("Quickstart error!");
-    console.log(err);
-    (<any>window).quickLoad = false;
-}).then(() => require(['./application'], (app) => app.initialize()));
+
+var promiseMe: Promise<any> = 
+
+Promise.all([
+    data.initData().then(() => data.setUIObjs([top])).then(data.initUI.bind(data)).then(() => { return top.thumbPromise; }).catch((err) => {
+        console.log("Quickstart error!");
+        console.log(err);
+        (<any>window).quickLoad = false;
+    }), 
+    new Promise((resolve, reject) => require(['./application'], resolve, reject))
+]).then((ray: Array<any>) => ray[1].initialize());

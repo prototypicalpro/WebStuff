@@ -17,6 +17,13 @@ class TopUI extends UIUtil.UIItem {
     private lastIndex: number;
     //image promise
     thumbPromise: Promise<any>;
+    //wheter or not to tack on the better image
+    private readonly noHq: boolean;
+
+    constructor(noHq?: boolean) {
+        super();
+        this.noHq = noHq;
+    }
 
     onInit(data: Array<any>): void {
         const day: Date = new Date();
@@ -41,11 +48,14 @@ class TopUI extends UIUtil.UIItem {
         if (!this.imageSet && back[0] && back[1]) {
             this.thumbPromise = back[0].then((thing: string) => {
                 //if(typeof navigator.splashscreen != 'undefined') HTMLMap.backThumb.onload = navigator.splashscreen.hide;
-                HTMLMap.backThumb.src = thing;
                 this.imageSet = true;
+                return new Promise((resolve) => {
+                    HTMLMap.backThumb.onload = resolve;
+                    HTMLMap.backThumb.src = thing;
+                });
             });
             //set it to go 50ms after, for dat load speed increase
-            back[1].then((hqThing: string) => setTimeout(() => HTMLMap.backImg.src = hqThing, 50));
+            if(!this.noHq) back[1].then((hqThing: string) => HTMLMap.backImg.src = hqThing);
         }
 
         //take all touch events on the body and prevent scrolling
