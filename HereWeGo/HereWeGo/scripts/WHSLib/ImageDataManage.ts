@@ -167,7 +167,9 @@ class ImageDataManage implements DataInterface {
             req.onerror = reject;
             req.onsuccess = (evt: any) => {
                 //wrap index if it's over
-                if (this.index >= evt.target.result) localStorage.setItem(IMG_IND_ID, (this.index = 0).toString());
+                let tmp = this.index;
+                while (tmp >= evt.target.result) tmp -= evt.target.result;
+                if(this.index != tmp) localStorage.setItem(IMG_IND_ID, (this.index = tmp).toString());
                 //count the number of items to wrap around and fetch at the start of the cursor
                 let temp = picNum + this.index;
                 let count = temp - evt.target.result;
