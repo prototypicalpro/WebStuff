@@ -161,7 +161,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            style[prefixes.transition + 'TimingFunction'] = ease;
                 style[prefixes.transition + 'Duration'] = duration + 'ms';
 
-                indicators.forEach(function (obj) {
+                indicators.map(function (obj) {
                     //do style stuff to indicators as well
                     obj.element.style[prefixes.transition + 'TimingFunction'] = ease;
                     obj.element.style[prefixes.transition + 'Duration'] = duration + 'ms';
@@ -171,7 +171,7 @@ return /******/ (function(modules) { // webpackBootstrap
                     style[prefixes.transform] = 'translate3d(' + to + 'px, 0, 0)';
 
                     //moar for loops
-                    indicators.forEach(function (obj) {
+                    indicators.map(function (obj) {
                         //do style stuff to indicators as well
                         //if we maxed out sliding, only slide to max
                         var translateNum;
@@ -192,7 +192,7 @@ return /******/ (function(modules) { // webpackBootstrap
                     style[prefixes.transform] = 'translate(' + to + 'px, 0)';
 
                     //moar for loops
-                    indicators.forEach(function (obj) {
+                    indicators.map(function (obj) {
                         //do style stuff to indicators as well
                         //if we maxed out sliding, only slide to max
                         var translateNum;
@@ -322,8 +322,8 @@ return /******/ (function(modules) { // webpackBootstrap
             indicators = _options4.indicators;
 	
 	        position = {
-	            x: slideContainer.offsetLeft,
-	            y: slideContainer.offsetTop
+	            x: 0,//slideContainer.offsetLeft,
+	            y: 0//slideContainer.offsetTop
 	        };
 
             //more special sauce
