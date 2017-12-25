@@ -74,20 +74,20 @@ function onDeviceReady(): void {
     const today = new Date();
     //grabby grabby
     http.initAPI().then(data.initData.bind(data)).then(buildUI).catch((err) => {
-        console.log(err);
+        console.log(err.message || err.name || err);
         if (err === ErrorUtil.code.NO_STORED) return getNewData = true;
         if (err === ErrorUtil.code.NO_IMAGE) return getNewData = true;
-        else throw err;
+        throw err;
     }).then((): any => {
         //grab them datums
-        if (getNewData) {
+        if (getNewData || !(<any>window).quickLoad) {
             //setup splashcreen loading animation
             HTMLMap.startLoad();
             return data.getNewData().then(buildUI);
         } 
-        return data.refreshDataAndUI().catch((err) => { console.log(err); return data.getNewData().then(buildUI); });
+        return data.refreshDataAndUI().catch((err) => { console.log(err.message || err.name || err); return data.getNewData().then(buildUI); });
     }).catch((err: any) => {
-        console.log(err);
+        console.log(err.message || err.name || err);
         if (err === ErrorUtil.code.HTTP_FAIL || err === ErrorUtil.code.FS_FAIL) setTimeout(toastError, 1000, "This phone is unsupported!");
         else if (err === ErrorUtil.code.NO_INTERNET || err === ErrorUtil.code.BAD_RESPONSE) setTimeout(toastError, 1000, "No Internet available!");
         else throw err;
@@ -103,7 +103,7 @@ function onDeviceReady(): void {
         console.log("Second init took: " + (end - start));
     }).catch((err) => {
         console.log(ErrorUtil.code[err]);
-        console.log(err);
+        console.log(err.message || err.name || err);
         throw err;
     });
 
