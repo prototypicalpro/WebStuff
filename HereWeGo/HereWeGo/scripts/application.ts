@@ -80,7 +80,11 @@ function onDeviceReady(): void {
         else throw err;
     }).then((): any => {
         //grab them datums
-        if (getNewData) return data.getNewData().then(buildUI);
+        if (getNewData) {
+            //setup splashcreen loading animation
+            HTMLMap.startLoad();
+            return data.getNewData().then(buildUI);
+        } 
         return data.refreshDataAndUI().catch((err) => { console.log(err); return data.getNewData().then(buildUI); });
     }).catch((err: any) => {
         console.log(err);
@@ -89,6 +93,7 @@ function onDeviceReady(): void {
         else throw err;
     }).then(() => { return top.thumbPromise; }).then(() => {
         //hide splascreen if it's still there
+        HTMLMap.endLoad();
         navigator.splashscreen.hide();
         //add kits flickr link
         document.querySelector("#flk").addEventListener("click", urlCallback("https://www.flickr.com/photos/kitrickmiller/"));

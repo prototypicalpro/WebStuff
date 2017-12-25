@@ -9,6 +9,8 @@ namespace HTMLMap {
     export const backImg: HTMLImageElement = document.querySelector('#img') as HTMLImageElement;
     export const backThumb: HTMLImageElement = document.querySelector('#lowRes') as HTMLImageElement;
 
+    export const loadingGif: HTMLImageElement = document.querySelector("#load") as HTMLImageElement;
+
     export const timeText: Element = document.querySelector('.timeText');
 
     export const menuBar: HTMLElement = document.querySelector('#menuBar') as HTMLElement;
@@ -26,10 +28,21 @@ namespace HTMLMap {
     //add HTML to the bottom section
     export const setSliderHTML = (html: string): void => {
         slideFrame.innerHTML = html;
-    }
+    };
 
     export const setSideMenuHTML = (html: string): void => {
         sideMenu.innerHTML = html;
+    };
+
+    export const startLoad = (): void => {
+        backImg.classList.add("loadCover");
+        loadingGif.classList.add("loadGif");
+        setTimeout(() => requestAnimationFrame(navigator.splashscreen.hide), 300);
+    };
+
+    export const endLoad = (): void => {
+        backImg.classList.remove("loadCover");
+        loadingGif.classList.remove("loadGif");
     }
 }
 

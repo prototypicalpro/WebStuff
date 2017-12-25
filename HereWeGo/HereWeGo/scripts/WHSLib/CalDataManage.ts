@@ -10,6 +10,7 @@ import ScheduleUtil = require('./ScheduleUtil');
 import DataInterface = require('./Interfaces/DataInterface');
 import DBManage = require('../DBLib/DBManage');
 import UIUtil = require('../UILib/UIUtil');
+import { EventInterface } from './Interfaces/EventData';
 
 //special enum for crappy code
 enum DBInfoEnum {
@@ -172,8 +173,18 @@ class CalDataManage implements DataInterface {
         let nowDay = day.getDate();
         //create key range based on data above
         let range: IDBKeyRange;
-        if (!evRange[1] && onlySched) range = IDBKeyRange.only(day.setDate(nowDay + evRange[0]));
-        else range = IDBKeyRange.bound(new Date(day).setDate(nowDay + evRange[0]), new Date(day).setDate(nowDay + evRange[1] + 1) - 1);
+        let lower: number;
+        let upper: number;
+        if (!evRange[1] && onlySched) {
+            upper = lower =  day.setDate(nowDay + evRange[0]);
+            range = IDBKeyRange.only(lower);
+        } 
+        else {
+            lower = new Date(day).setDate(nowDay + evRange[0]);
+            upper = new Date(day).setDate(nowDay + evRange[1] + 1) - 1;
+            range = IDBKeyRange.upperBound(upper);
+        } 
+        const ONE_DAY = 86400000;
         //start running the query!
         return new Promise((resolve, reject) => {
             let evRet: any = {};
@@ -182,9 +193,25 @@ class CalDataManage implements DataInterface {
             req.onsuccess = (event: any) => {
                 let cursor: IDBCursorWithValue = event.target.result;
                 if (cursor) {
-                    if (!onlySched || cursor.value.schedule) {
-                        if (!evRet[cursor.value.startTime]) evRet[cursor.value.startTime] = [cursor.value];
-                        else evRet[cursor.value.startTime].push(cursor.value);
+                    let event: EventInterface = cursor.value;
+                    if ((!onlySched || event.schedule) && event.endTime >= lower) {
+                        if(onlySched) {
+                            if (!evRet[event.startTime]) evRet[event.startTime] = [event];
+                            else evRet[event.startTime].push(event);
+                        }
+                        //add the event to every day it happens on
+                        //if duration is greater than one day, we need to extend it across multiple days
+                        else {
+                            for(let day = lower; day < upper; day += ONE_DAY) {
+                                let dayEnd = day + ONE_DAY;
+                                if((event.startTime < dayEnd && event.startTime >= day)
+                                    || (event.endTime < dayEnd && event.endTime > day)
+                                    || (event.startTime < day && event.endTime > dayEnd)) {
+                                    if (!evRet[day]) evRet[day] = [event];
+                                    else evRet[day].push(event);
+                                }
+                            }
+                        }
                     }
                     cursor.continue();
                 }

@@ -68,7 +68,7 @@ class EventGraphic extends UIUtil.UIItem {
         day.setDate(day.getDate() + (<UIUtil.CalParams>this.recvParams[0]).dayStart);
         return UIUtil.templateEngine(this.wrap, {
             id: this.id,
-            stuff: this.buildEventHTML(data[UIUtil.RecvType.CAL]["events"], day.setHours(0, 0, 0, 0), day.setHours(23, 59, 59, 999), this.dispSched),
+            stuff: this.buildEventHTML(data[UIUtil.RecvType.CAL]["events"], day.setHours(0, 0, 0, 0), this.dispSched),
         });
     }
 
@@ -85,17 +85,17 @@ class EventGraphic extends UIUtil.UIItem {
         //if the event cahce has been populated
         let temp = data[UIUtil.RecvType.CAL]["events"];
         //if updated, update!
-        if (temp) this.elem.innerHTML = this.buildEventHTML(temp, day.setHours(0, 0, 0, 0), day.setHours(23, 59, 59, 999), this.dispSched);
+        if (temp) this.elem.innerHTML = this.buildEventHTML(temp, day.setHours(0, 0, 0, 0), this.dispSched);
         else this.elem.innerHTML = '';
     }
 
     //actual html building func
-    private buildEventHTML(eventData: any | false, start: number, end: number, displaySchedule: boolean) {
+    private buildEventHTML(eventData: any | false, startOfDayTime: number, displaySchedule: boolean) {
         if (eventData) {
-            let events: Array<EventData.EventInterface> = [].concat.apply([], Object.keys(eventData).filter((time: string) => { let num = parseInt(time); return num >= start && num <= end; }).map((key) => { return eventData[key]; }));
+            let events: Array<EventData.EventInterface> = eventData[startOfDayTime];
             if(!displaySchedule) events = events.filter(e => { return !e.schedule });
+            if(!events || events.length <= 0) return '';
             let length = events.length;
-            if (length <= 0) return ''
             //if there is a schedule title, it's in our storage member
             let eventStr = '';
             let schedNameIndex: number | boolean = false;
@@ -117,15 +117,16 @@ class EventGraphic extends UIUtil.UIItem {
             let inv = 1.0 / (schedNameIndex === false ? length - 1 : length);
             for (let i = 0; i < length; i++) {
                 if (i !== schedNameIndex) {
+                    let makeAllDay: boolean = events[i].isAllDay || events[i].startTime <= startOfDayTime || events[i].endTime >= startOfDayTime + 86400000;
                     let eventProp: any = {
                         //if it isn't all day, do templating, else use ALL DAY template instead
                         //beware nested conditional
-                        time: !events[i].isAllDay ? UIUtil.templateEngine(this.normalTime, {
+                        time: makeAllDay ? this.allDayTime : UIUtil.templateEngine(this.normalTime, {
                             start: TimeUtil.asSmallTime(events[i].startTime),
                             end: TimeUtil.asSmallTime(events[i].endTime),
-                        }) : this.allDayTime,
+                        }),
                         //add extra modifier class if it's all day as well
-                        modCl: !events[i].isAllDay ? '' : 'evSmall',
+                        modCl: makeAllDay ? 'evSmall' : '',
                         name: events[i].title,
                     };
                     //set linecolor
