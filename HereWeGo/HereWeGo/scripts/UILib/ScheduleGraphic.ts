@@ -93,7 +93,6 @@ class ScheduleGraphic extends UIUtil.UIItem {
         const inv = 1.0 / (sched.getNumPeriods() - 1);
         //all parrellel b/c we're already async so why not
         //cache today
-        let today = day.setHours(0, 0, 0, 0);
         for (let i = 0, len = sched.getNumPeriods(); i < len; i++) {
             //if it's not passing or whatever, we display it
             let period: ScheduleUtil.Period = sched.getPeriod(i);

@@ -6,7 +6,7 @@ import GetUtil = require('./GetUtil');
 import ErrorUtil = require('../ErrorUtil');
 
 class FetchGet implements GetUtil.GetInterface {
-    static initAPI(): boolean { return typeof XMLHttpRequest !== undefined; }
+    static initAPI(): boolean { return typeof XMLHttpRequest !== "undefined"; }
 
     private fs: DirectoryEntry;
 

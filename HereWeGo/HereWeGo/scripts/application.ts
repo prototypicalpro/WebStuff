@@ -21,8 +21,6 @@ import SlideTabUI = require('./UILib/SlideTabUI');
 import MenuUI = require('./UILib/MenuUI');
 import ButtonUI = require('./UILib/ButtonUI');
 
-"use strict";
-
 var http: GetLib = new GetLib();
 var data: DataManage = new DataManage([new CalDataManage(), new QuoteDataManage(), new ImageDataManage(http, 7)], http);
 var toast: ToastUI = new ToastUI(HTMLMap.toastBox);
@@ -71,7 +69,6 @@ function onDeviceReady(): void {
     StatusBar.overlaysWebView(true);
 
     let start: number = performance.now();
-    const today = new Date();
     //grabby grabby
     http.initAPI().then(data.initData.bind(data)).then(buildUI).catch((err) => {
         console.log(err.message || err.name || err);
@@ -121,10 +118,7 @@ function resizeStatusBar() {
         //recache
         windowHeight = height;
         //hide splash (after paint)
-        if((<any>window).quickLoad) {
-            if(cordova.platformId === 'ios') navigator.splashscreen.hide();
-            else navigator.splashscreen.hide();
-        }
+        if((<any>window).quickLoad) navigator.splashscreen.hide();
     }
     //if on ios, reset timeout if nothing changed
     else if (cordova.platformId === "ios") setTimeout(resizeStatusBar, 50);

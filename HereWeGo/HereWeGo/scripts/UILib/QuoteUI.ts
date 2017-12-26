@@ -60,8 +60,6 @@ class QuoteUI extends UIUtil.UIItem {
         else quotefix = tempQuote;
         //add the author after another breakline
         quotefix += `<br/>-` + (data.author ? data.author : 'Unknown');
-        //delete quoteStore
-        data = null;
         //return!
         return quotefix;
     }
