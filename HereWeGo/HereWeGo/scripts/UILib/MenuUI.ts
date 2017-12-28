@@ -84,7 +84,7 @@ class MenuUI extends UIUtil.UIItem {
         });
 
         //menu button check
-       document.querySelector("#sideButton").addEventListener('touchstart', (event) => {
+       document.querySelector("#menuButton").addEventListener('touchstart', (event) => {
             this.openMenu();
         });
 

@@ -20,6 +20,7 @@ import EventGraphic = require('./UILib/EventGraphic');
 import SlideTabUI = require('./UILib/SlideTabUI');
 import MenuUI = require('./UILib/MenuUI');
 import ButtonUI = require('./UILib/ButtonUI');
+import PopupUI = require('./UILib/PopupUI');
 
 var http: GetLib = new GetLib();
 var data: DataManage = new DataManage([new CalDataManage(), new QuoteDataManage(), new ImageDataManage(http, 7)], http);
@@ -34,6 +35,8 @@ var top: TopUI = new TopUI();
 var menu: MenuUI;
 //slider thingy
 var slide: SlideTabUI;
+//popup thingy
+var popup: PopupUI;
 //cached height for status bar css
 var windowHeight;
 
@@ -93,7 +96,7 @@ function onDeviceReady(): void {
         HTMLMap.endLoad();
         navigator.splashscreen.hide();
         //add kits flickr link
-        document.querySelector("#flk").addEventListener("click", urlCallback("https://www.flickr.com/photos/kitrickmiller/"));
+        //document.querySelector("#flk").addEventListener("click", urlCallback("https://www.flickr.com/photos/kitrickmiller/"));
         //also start callback for every min to update time
         setTimeout(updateTime, 60010);
         let end = performance.now();
@@ -182,9 +185,11 @@ function buildUI(): Promise<any> {
         //second page?
         //naw
     ], ['Home', 'Schedule', 'Credit'], resizePromise);
+    //create popup
+    popup = new PopupUI({});
     //start up the early data stuff
     //give the top all the data it needs
-    data.setUIObjs([top, slide, menu]);
+    data.setUIObjs([top, slide, menu, popup]);
     //init
     return data.initUI();
 }

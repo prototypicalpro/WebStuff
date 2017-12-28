@@ -15,7 +15,6 @@ const IMG_IND_ID: string = '2';
 const IMG_DAY_ID: string = '3';
 const THUMB_REZ: number = 1.0/4.0;
 
-
 interface CloudData {
     index: number;
     data: Array<ImageInterface>;

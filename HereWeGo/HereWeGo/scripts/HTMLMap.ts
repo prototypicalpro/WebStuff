@@ -25,6 +25,8 @@ namespace HTMLMap {
 
     export const toastBox: HTMLElement = document.querySelector('#toast') as HTMLElement;
 
+    export const pageBox: HTMLElement = document.querySelector("#page") as HTMLElement;
+
     //add HTML to the bottom section
     export const setSliderHTML = (html: string): void => {
         slideFrame.innerHTML = html;
