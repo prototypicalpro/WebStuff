@@ -49,8 +49,10 @@ class CreditUI extends UIUtil.UIItem {
         new IScroll(document.querySelector('#credScroll'));
         //I have no idea what you're talking about, I've never seen this before
         let hmmm = document.querySelector('#hmmm') as HTMLElement;
-        if(Math.random() > 0.5) hmmm.style.backgroundImage = 'url("./images/jesus.jpg")';
-        else hmmm.style.backgroundImage = 'url("./images/jesus2.png")';
+        let num = Math.random();
+        if(num < 0.33) hmmm.style.backgroundImage = 'url("./images/jesus.jpg")';
+        else if(num < 0.66) hmmm.style.backgroundImage = 'url("./images/jesus2.png")';
+        else hmmm.style.backgroundImage = 'url("./images/jesus3.jpg")';
     }
 }
 
