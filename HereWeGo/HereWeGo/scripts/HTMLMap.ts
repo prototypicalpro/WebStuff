@@ -29,6 +29,8 @@ namespace HTMLMap {
 
     export const pageBox: HTMLElement = document.querySelector("#page") as HTMLElement;
 
+    export const jsFrame: HTMLElement = document.querySelector('.js_frame') as HTMLElement;
+
     //add HTML to the bottom section
     export const setSliderHTML = (html: string): void => {
         slideAdd.innerHTML = html;

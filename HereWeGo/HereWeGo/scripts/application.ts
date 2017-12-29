@@ -62,7 +62,8 @@ function onDeviceReady(): void {
     windowHeight = window.innerHeight;
     if(cordova.platformId != "ios") window.addEventListener("resize", resizeStatusBar);
     //oh ios, how you hurt me so
-    else setTimeout(resizeStatusBar, 50);
+    else resizeStatusBar();
+
     StatusBar.overlaysWebView(true);
 
     let start: number = performance.now();
@@ -180,7 +181,6 @@ function buildUI(): Promise<any> {
             new ScheduleGraphic(0),
             new EventGraphic('Today', 0, false),
             new EventGraphic('Tomorrow', 1, true),
-            new EventGraphic(TimeFormatUtil.asFullDayText(new Date().getDay() + 2), 2, true),
         ]
         //second page?
         //naw

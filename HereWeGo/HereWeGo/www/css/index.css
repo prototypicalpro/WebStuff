@@ -250,6 +250,7 @@ p {
     overflow: hidden;
     display: flex;
     flex-flow: column nowrap;
+    transition: height 1ms;
 }
 
 /* Top Bar Positioning CSS */
@@ -580,8 +581,6 @@ p {
 #pageAdd {
     flex-grow: 1;
     width: 100vw;
-    display: flex;
-    flex-flow: column nowrap;
 }
 
 /**
@@ -670,7 +669,7 @@ p {
 
 #credScroll {
     width: 100vw;
-    flex-grow: 1;
+    height: 100vh;
 }
 
 .credCont {

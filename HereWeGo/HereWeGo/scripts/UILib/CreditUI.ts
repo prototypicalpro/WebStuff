@@ -36,7 +36,7 @@ class CreditUI extends UIUtil.UIItem {
                         Wilson Leadership <br>
                     </p>
                     <a class="benjamin" id="flk">Flickr</a>
-                    <p class="benjamin"> <br> To my alpha testers: <br> Thank you for the support!</p>
+                    <p class="benjamin"> <br> To my alpha testers: <br> Thank you for the support!<br><br><br><br><br><br></p>
                 </div>
             </div>
         </div>`;
