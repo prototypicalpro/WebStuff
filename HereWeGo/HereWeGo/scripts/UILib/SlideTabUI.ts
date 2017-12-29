@@ -15,20 +15,9 @@ import IScroll = require('../iscroll-lite');
 
 class SlideTabUI extends UIUtil.UIItem {
     id: string;
-    private readonly superWrapperTempalte: string = `
-        <div id="mainBar" class="topBar topH"><div class="textPos"><p id="mainBText" class="barText"></p></div></div>
-        <div class="topPos topH">
-            <div class="barShade"></div>
-            <div id="menuButton" class="sideButton"></div>
-        </div>
-        <div class="js_slides">
-            <div class="js_slide start"></div>
-            <div>{{stuff}}</div>
-        </div>
-        <div style="height: 7.05vh"></div>
-    `;
     //wrapper template to make everything horizontally flatmapped
-    private readonly slideWrapperTemplate: string = `<div class="js_slide content">
+    private readonly slideWrapperTemplate: string = `
+                                                <div class="js_slide content">
                                                     <div id="{{id}}" class="scrollHack full">                    
                                                         <div class="scrollHack"> 
                                                             {{stuff}} 
@@ -47,30 +36,22 @@ class SlideTabUI extends UIUtil.UIItem {
     //storage IScroll objects
     private iscroll: Array<any>;
     private scrollBody: Array<HTMLElement>;
-    //resize stuff
-    private resizePromise: Promise<number>;
     //fill them varlibles
-    constructor(pages: Array<Array<UIUtil.UIItem>>, names: Array<string>, resizePromise: Promise<number>) {
+    constructor(pages: Array<Array<UIUtil.UIItem>>, names: Array<string>) {
         super();
         this.pages = pages;
         this.names = names;
         this.recvParams = UIUtil.combineParams([].concat.apply([], pages));
-        this.resizePromise = resizePromise;
     }
     //and the getHTML
     onInit(data: Array<any>): void {
         //get all the htmls in parellel
         //this chaining is gonna be beutiful
         //for every array of pages
-        HTMLMap.setSliderHTML(UIUtil.templateEngine(this.superWrapperTempalte, { stuff : this.pages.map((items: Array<UIUtil.UIItem>, index: number) => { return UIUtil.templateEngine(this.slideWrapperTemplate, { id: 's' + index, stuff: items.map((item) => { return item.onInit(data); }).join('') }); }).join('') })); //one. freaking. line
+        HTMLMap.setSliderHTML(this.pages.map((items: Array<UIUtil.UIItem>, index: number) => { return UIUtil.templateEngine(this.slideWrapperTemplate, { id: 's' + index, stuff: items.map((item) => { return item.onInit(data); }).join('') }); }).join('') ); //one. freaking. line
     }
     
     buildJS() {
-        //resize menu to adjust to screen
-        this.resizePromise.then((num) => {
-            let list =  document.querySelectorAll('.topH');
-            for(let i = 0, len = list.length; i < len; i++) (list.item(i) as HTMLElement).style.minHeight = 'calc(8.7vh + ' + num + 'px)';
-        });
         //start up lory
         let thing = document.querySelector('body');
         this.storly = lory.lory(thing, {

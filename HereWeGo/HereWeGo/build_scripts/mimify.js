@@ -5,7 +5,7 @@ const path = require('path');
 var UglifyJS = require('uglify-js');
 
 const htmlFile = "index.html"
-const cssFiles = ["QuickStart.css", "index.css"];
+const cssFiles = ["index.css"];
 const androidHtmlPath = path.join("platforms", "android", "app", "src", "main", "assets", "www");
 const iosHtmlPath = path.join("platforms", "ios", "www");
 
@@ -28,7 +28,7 @@ const jsOps = {
     "compress": {
         "drop_console": true
     },
-    "mangle": false,
+    "mangle": {},
     "output": {
         "code": true
     }

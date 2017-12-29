@@ -22,6 +22,7 @@ import MenuUI = require('./UILib/MenuUI');
 import ButtonUI = require('./UILib/ButtonUI');
 import PopupUI = require('./UILib/PopupUI');
 import CreditUI = require('./UILib/CreditUI');
+import { NoSchool } from './WHSLib/ScheduleUtil';
 
 var http: GetLib = new GetLib();
 var data: DataManage = new DataManage([new CalDataManage(), new QuoteDataManage(), new ImageDataManage(http, 7)], http);
@@ -42,8 +43,6 @@ var popup: PopupUI;
 var windowHeight;
 
 var getNewData = false;
-var resolveResize;
-var resizePromise: Promise<number> = new Promise((resolve) => resolveResize = resolve);
 
 export function initialize(): void {
     document.addEventListener('deviceready', onDeviceReady, false);
@@ -52,12 +51,6 @@ export function initialize(): void {
 
 function onDeviceReady(): void {
     console.log("device ready: " + performance.now());
-    //add the rest of the full CSS
-    let link = document.createElement("link");
-    link.type = "text/css";
-    link.rel = "stylesheet";
-    link.href = "css/index.css";
-    document.head.appendChild(link);
 
     //inappbrowser
     if ((<any>cordova).InAppBrowser) window.open = (<any>cordova).InAppBrowser.open;
@@ -116,13 +109,19 @@ function resizeStatusBar() {
     //get the window height, and if it's different, unbind
     let height = window.innerHeight;
     if(height != windowHeight) {
+        //hide splash (after resize paint)
+        if((<any>window).quickLoad) {
+            let fn = () => { HTMLMap.topPos.removeEventListener("transitionend", fn); navigator.splashscreen.hide(); }
+            HTMLMap.topPos.addEventListener("transitionend", fn);
+        }
         //query the top bar element, and increase it's element size accordingly
         //8.7vh is the default height, and we add the px as the statusbar increases the viewport size
-        if(height > windowHeight && windowHeight - height < 50) resolveResize(height - windowHeight);
+        if(height > windowHeight && windowHeight - height < 50) {
+            let list =  document.querySelectorAll('.topH');
+            for(let i = 0, len = list.length; i < len; i++) (list.item(i) as HTMLElement).style.height = 'calc(8.7vh + ' + (height - windowHeight) + 'px)';
+        }
         //recache
         windowHeight = height;
-        //hide splash (after paint)
-        if((<any>window).quickLoad) navigator.splashscreen.hide();
     }
     //if on ios, reset timeout if nothing changed
     else if (cordova.platformId === "ios") setTimeout(resizeStatusBar, 50);
@@ -185,7 +184,7 @@ function buildUI(): Promise<any> {
         ]
         //second page?
         //naw
-    ], ['Home', 'Schedule'], resizePromise);
+    ], ['Home', 'Schedule']);
     //start up the early data stuff
     //give the top all the data it needs
     data.setUIObjs([top, slide, menu, popup]);

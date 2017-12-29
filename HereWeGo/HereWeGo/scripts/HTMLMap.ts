@@ -19,7 +19,9 @@ namespace HTMLMap {
     export const backText: Element = document.querySelector('.backText');
     export const periodText: Element = document.querySelector('.periodText');
 
-    export const slideFrame: HTMLElement = document.querySelector('.js_frame');
+    export const topPos: HTMLElement = document.querySelector('.topPos') as HTMLElement;
+
+    export const slideAdd: HTMLElement = document.querySelector('#add');
 
     export const sideMenu: HTMLElement = document.querySelector('#SMHere') as HTMLElement;
 
@@ -29,7 +31,7 @@ namespace HTMLMap {
 
     //add HTML to the bottom section
     export const setSliderHTML = (html: string): void => {
-        slideFrame.innerHTML = html;
+        slideAdd.innerHTML = html;
     };
 
     export const setSideMenuHTML = (html: string): void => {
