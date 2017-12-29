@@ -21,6 +21,7 @@ import SlideTabUI = require('./UILib/SlideTabUI');
 import MenuUI = require('./UILib/MenuUI');
 import ButtonUI = require('./UILib/ButtonUI');
 import PopupUI = require('./UILib/PopupUI');
+import CreditUI = require('./UILib/CreditUI');
 
 var http: GetLib = new GetLib();
 var data: DataManage = new DataManage([new CalDataManage(), new QuoteDataManage(), new ImageDataManage(http, 7)], http);
@@ -80,12 +81,12 @@ function onDeviceReady(): void {
         throw err;
     }).then((): any => {
         //grab them datums
-        if (getNewData || !(<any>window).quickLoad) {
+        if (getNewData) {
             //setup splashcreen loading animation
             HTMLMap.startLoad();
             return data.getNewData().then(buildUI);
         } 
-        return data.refreshDataAndUI().catch((err) => { console.log(err.message || err.name || err); return data.getNewData().then(buildUI); });
+        return data.refreshDataAndUI().catch((err) => { console.log(err); HTMLMap.startLoad(); return data.getNewData().then(buildUI); });
     }).catch((err: any) => {
         console.log(err.message || err.name || err);
         if (err === ErrorUtil.code.HTTP_FAIL || err === ErrorUtil.code.FS_FAIL) setTimeout(toastError, 1000, "This phone is unsupported!");
@@ -127,12 +128,9 @@ function resizeStatusBar() {
     else if (cordova.platformId === "ios") setTimeout(resizeStatusBar, 50);
 }
 
-function earlyInit(): Promise<any> {
-    data.setUIObjs([top]);
-    return data.initUI();
-}
-
 function buildUI(): Promise<any> {
+    //create popup
+    popup = new PopupUI({"Credits" : new CreditUI()});
     //contruct menu
     menu = new MenuUI(
         //top menu section buttons
@@ -166,9 +164,12 @@ function buildUI(): Promise<any> {
         (<Array<UIUtil.UIItem>>[new QuoteUI('quote', 36)]).concat(
             ButtonUI.Factory('SMItem', 'SMItemText', [
                 {
-                    text: 'Settings',
-                    icon: 'gear.png',
-                    callback: urlCallback('http://niceme.me/'),
+                    text: 'Credits',
+                    icon: 'heart.png',
+                    callback: () => {
+                        menu.closeMenu();
+                        popup.showPage("Credits");
+                    },
                 },
             ])
         ),
@@ -184,9 +185,7 @@ function buildUI(): Promise<any> {
         ]
         //second page?
         //naw
-    ], ['Home', 'Schedule', 'Credit'], resizePromise);
-    //create popup
-    popup = new PopupUI({});
+    ], ['Home', 'Schedule'], resizePromise);
     //start up the early data stuff
     //give the top all the data it needs
     data.setUIObjs([top, slide, menu, popup]);

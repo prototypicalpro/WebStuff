@@ -60,7 +60,7 @@ class CalDataManage implements DataInterface {
                     req.onerror = reject;
                 }));
                 else ray.push(new Promise((resolve, reject) => {
-                    let req = args[0].put(data[i]);
+                    let req = args[0].put(data[args[1].storeName][i]);
                     req.onsuccess = resolve;
                     req.onerror = reject;
                 }));

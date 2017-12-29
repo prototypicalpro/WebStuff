@@ -17,28 +17,7 @@
             <div class="barShade"></div>
             <div id="pageButton" class="sideButton"></div>
         </div>
-        <div id="pageAdd">
-            <p class="benjamin"> 
-                                Idea: Nico Machinski <br>
-                                Development: Noah Koontz <br>
-                                Design: Sam Lewis <br>
-                                Marketing: Elliot Chimenti <br>
-
-                                Photography by Kitrick Miller <br> 
-                                Additional Background Photos by: <br> 
-                                Thomas Lemione <br> 
-                                Benjamin Carlton <br> 
-                                Mateo Minato <br> 
-                                Christopher Schuring <br> 
-                                Eleanor Solomon <br>
-                                <br>
-                                Special Thanks:
-                                Wilson Peer Counselling
-                                Wilson Leadership
-                                </p>
-            <a class="benjamin" id="flk">Flickr</a>
-            <p class="benjamin"> <br> To my alpha testers: <br> Thank you for the support!</p>
-        </div>`;
+        <div id="pageAdd"></div>`;
     //css class to show the page
     private readonly showClass: string = "pShown";
     //storage members
@@ -88,23 +67,33 @@
         this.addDiv.innerHTML = <string>this.pages[pageId].onInit(this.lastData);
         //display!
         //once it's done moving, run the JS and bind the back button
+        //create event listener functions
         this.pageKey = pageId;
-        this.pageDiv.addEventListener("transitionend", this.transitionEnd.bind(this));
+        this.pageDiv.addEventListener("transitionend", this.transitionEndOpen);
         this.pageDiv.classList.add(this.showClass);
     }
 
-    private transitionEnd() {
-        this.pageDiv.removeEventListener("transistionend", this.transitionEnd.bind(this));
+    private transitionEndOpen = (() => {
+        this.pageDiv.removeEventListener("transitionend", this.transitionEndOpen);
         this.pages[this.pageKey].buildJS();
-        this.backButton.addEventListener("touchstart", this.hidePage.bind(this))
-    }
+        this.backButton.addEventListener("touchstart", this.hidePage, true);
+        document.addEventListener("backbutton", this.hidePage, true);
+    }).bind(this);
 
-    private hidePage() {
-        this.pageDiv.classList.remove(this.showClass);
+    private transitionEndClose = (()  => {
+        this.pageDiv.removeEventListener("transitionend", this.transitionEndClose);
         this.addDiv.innerHTML = '';
         this.textBox.innerHTML = '';
-        this.backButton.removeEventListener("touchstart", this.hidePage.bind(this));
-    }
+    }).bind(this);
+
+    private hidePage = ((evt: Event) => {
+        evt.preventDefault();
+        evt.stopPropagation();
+        this.backButton.removeEventListener("touchstart", this.hidePage, true);
+        document.removeEventListener("backbutton", this.hidePage, true);
+        this.pageDiv.addEventListener("transitionend", this.transitionEndClose);
+        this.pageDiv.classList.remove(this.showClass);
+    }).bind(this);
  }
 
  export = PopupUI;

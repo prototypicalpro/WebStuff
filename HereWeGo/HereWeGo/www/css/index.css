@@ -49,7 +49,7 @@
 
 /* Top Bar Positioning CSS */
 .topH {
-    height: 8.7vh;
+    min-height: 8.7vh;
 }
 
 .topPos {
@@ -85,7 +85,7 @@
     top: 0;
     width: 100vw;
     background-color: #636363;
-    z-index: -1; /* sigh */
+    z-index: 99; /* sigh */
     display: flex;
     align-items: flex-end;
 }
@@ -419,7 +419,7 @@
     position: fixed;
     top: 100vh;
     background-color: #EFEFEF;
-    transition: transform 250ms cubic-bezier(0.1, 0.57, 0.1, 1);
+    transition: transform 450ms cubic-bezier(0.1, 0.57, 0.1, 1) 100ms;
     z-index: 8;
     display: flex;
     flex-flow: column nowrap;
@@ -433,6 +433,8 @@
 #pageAdd {
     flex-grow: 1;
     width: 100vw;
+    display: flex;
+    flex-flow: column nowrap;
 }
 
 /**
@@ -470,7 +472,65 @@
     color: white;
 }
 
-/* Please remove */
+/**
+ * Credits page CSS
+ * If you're gonna have a credit, might as well make it fancy
+ */
+
+/* Top pretty display CSS */
+.credTop {
+    text-align: center;
+    width: 100vw;
+    height: 40vh;
+}
+
+.credShd {
+    width: 100vw;
+    height: 20vh;
+    position: relative;
+    top: 20vh;
+    background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.85));
+}
+
+.credIcon {
+    max-height: 12vh;
+    display: block;
+    margin: 0 auto 0 auto;
+    position: relative;
+    top: -6vh;
+    content: url('../model/icon.png');
+}
+
+.credIconText {
+    color: white;
+    font-family: "Montserrat";
+    font-size: 6vw;
+    position: relative;
+    top: 12vh;
+}
+
+.credImg {
+    position: absolute;
+    height: 50vh;
+    width: 100vw;
+    background-position: top center;
+    background-size: cover;
+    background-image: url('../images/devs.png');
+    box-shadow: inset 0px 2px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Credits body css */
+
+#credScroll {
+    width: 100vw;
+    flex-grow: 1;
+}
+
+.credCont {
+    width: 100vw;
+    background-color: #EFEFEF;
+}
+
 .benjamin {
     font-family: 'Open Sans', sans-serif;
     margin-left: 5vw;

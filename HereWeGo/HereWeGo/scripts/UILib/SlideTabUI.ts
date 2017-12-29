@@ -69,7 +69,7 @@ class SlideTabUI extends UIUtil.UIItem {
         //resize menu to adjust to screen
         this.resizePromise.then((num) => {
             let list =  document.querySelectorAll('.topH');
-            for(let i = 0, len = list.length; i < len; i++) (list.item(i) as HTMLElement).style.height = 'calc(8.7vh + ' + num + 'px)';
+            for(let i = 0, len = list.length; i < len; i++) (list.item(i) as HTMLElement).style.minHeight = 'calc(8.7vh + ' + num + 'px)';
         });
         //start up lory
         let thing = document.querySelector('body');

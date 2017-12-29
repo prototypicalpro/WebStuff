@@ -124,6 +124,7 @@ class DataManage {
     }
 
     initUI(): Promise<any> {
+        console.log("init UI");
         return Promise.all(this.dataObj.map((obj, index) => { return obj.getData(this.paramStore[index]); })).then((dataRay: Array<any>) => { for (let i = 0, len = this.uiItemStore.length; i < len; i++) { this.uiItemStore[i].onInit(dataRay); this.uiItemStore[i].buildJS(); }});
     }
 

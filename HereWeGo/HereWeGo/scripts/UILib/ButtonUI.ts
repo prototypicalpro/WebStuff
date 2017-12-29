@@ -60,17 +60,18 @@ class ButtonUI extends UIUtil.UIItem {
         //add members
         this.buttonStore = document.querySelector('#' + this.id) as HTMLElement;
         //register callbacks
-        this.buttonStore.addEventListener('touchstart', this.onTouchStart.bind(this));
-        this.buttonStore.addEventListener('touchmove', this.onTouchMove.bind(this));
-        this.buttonStore.addEventListener('touchend', this.onTouchEnd.bind(this));
-        this.buttonStore.addEventListener('touchcancel', this.onTouchCancel.bind(this));
+        const opts = { passive: true }; 
+        this.buttonStore.addEventListener('touchstart', this.onTouchStart.bind(this), opts);
+        this.buttonStore.addEventListener('touchmove', this.onTouchMove.bind(this), opts);
+        this.buttonStore.addEventListener('touchend', this.onTouchEnd.bind(this), opts);
+        this.buttonStore.addEventListener('touchcancel', this.onTouchCancel.bind(this), opts);
     }
 
     //callback functions for button, handles all touch events then passes through as necessary
     private onTouchStart(e: TouchEvent) {
         //we got a touch!
         //start the touch and hold animation for the button, but only if it's the first touch
-        if (!this.touchStore) {
+        if (typeof this.touchStore !== 'number' && typeof e.changedTouches.item(0).identifier === 'number') {
             //e.preventDefault();
             //store the client rect of the button
             this.rectStore = this.buttonStore.getBoundingClientRect();
@@ -124,11 +125,11 @@ class ButtonUI extends UIUtil.UIItem {
     }
 
     //utility touch search function
-    private findTouch(touches: TouchList): Touch | null {
+    private findTouch(touches: TouchList): Touch | false {
         //find our touch
-        let ourTouch: Touch;
-        for (let i = 0, len = touches.length; i < len; i++) if (touches.item(i).identifier == this.touchStore) ourTouch = touches.item(i);
-        return ourTouch;
+        if(typeof this.touchStore !== 'number') return false;
+        for (let i = 0, len = touches.length; i < len; i++) if (touches.item(i).identifier === this.touchStore) return touches.item(i);
+        return false;
     }
 }
 

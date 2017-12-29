@@ -112,19 +112,19 @@ class MenuUI extends UIUtil.UIItem {
         for(let i = 0, len = ray.length; i < len; i++) if(ray[i].onTimeChanged) ray[i].onTimeChanged(); 
     }
 
-    private backButtonHandle(event) {
+    private backButtonHandle = ((event) => {
         event.preventDefault();
         this.closeMenu();
-    }
+    }).bind(this);
 
     openMenu() {
         this.storly.slideTo(0);
-        document.addEventListener('backbutton', this.backButtonHandle.bind(this));
+        document.addEventListener('backbutton', this.backButtonHandle);
     }
 
     closeMenu() {
         this.storly.slideTo(1);
-        document.removeEventListener('backbutton', this.backButtonHandle.bind(this));
+        document.removeEventListener('backbutton', this.backButtonHandle);
     }
 }
 
