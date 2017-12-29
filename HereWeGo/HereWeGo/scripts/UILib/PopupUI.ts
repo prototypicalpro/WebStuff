@@ -9,15 +9,6 @@
  import HTMLMap = require("../HTMLMap");
 
  class PopupUI extends UIUtil.UIItem {
-    //the template string for the page
-    //in this, we duplicate the title bar except with a back button and custom text
-    private readonly template: string = `
-        <div class="topBar topH"><div class="textPos"><p id="pageText" class="barText"></p></div></div>
-        <div class="topPos topH">
-            <div class="barShade"></div>
-            <div id="pageButton" class="sideButton"></div>
-        </div>
-        <div id="pageAdd"></div>`;
     //css class to show the page
     private readonly showClass: string = "pShown";
     //storage members
@@ -45,12 +36,12 @@
     }
 
     onInit(data: Array<any>): void {
-        HTMLMap.pageBox.innerHTML = this.template;
         this.lastData = data;
     }
 
     buildJS() {
         this.pageDiv = document.querySelector("#page");
+        this.pageDiv.style.display = 'initial';
         this.addDiv = this.pageDiv.querySelector('#pageAdd');
         this.textBox = this.pageDiv.querySelector('#pageText');
         this.backButton = this.pageDiv.querySelector('#pageButton');
