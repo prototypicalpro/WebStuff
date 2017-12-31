@@ -643,7 +643,7 @@ p {
     display: block;
     margin: 0 auto 0 auto;
     position: relative;
-    top: -6vh;
+    top: -5vh;
     content: url('../model/icon.png');
 }
 
@@ -652,7 +652,7 @@ p {
     font-family: "Montserrat";
     font-size: 6vw;
     position: relative;
-    top: 12vh;
+    top: 13vh;
 }
 
 .credImg {
@@ -670,20 +670,39 @@ p {
 #credScroll {
     width: 100vw;
     height: 100vh;
+    overflow: hidden;
 }
 
 .credCont {
     width: 100vw;
     background-color: #EFEFEF;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: flex-start;
+}
+
+.credTitle {
+    align-self: center;
+    font-family: "Montserrat";
+    font-size: 5vw;
+    margin-top: 1.5vh;
+    margin-bottom: 1vh;
+}
+
+.credSubT {
+    align-self: center;
+    font-family: "Montserrat";
+    font-size: 4vw;
+    margin-bottom: 1vh;
 }
 
 .benjamin {
     font-family: 'Open Sans', sans-serif;
     margin-left: 5vw;
-    font-size: 4.5vw;
+    font-size: 4vw;
 }
 
-#flk {
+.link {
     color: blue;
     text-decoration: underline;
 }

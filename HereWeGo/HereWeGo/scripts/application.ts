@@ -130,7 +130,7 @@ function resizeStatusBar() {
 
 function buildUI(): Promise<any> {
     //create popup
-    popup = new PopupUI({"Credits" : new CreditUI()});
+    popup = new PopupUI({"Credits" : new CreditUI(urlCallback)});
     //contruct menu
     menu = new MenuUI(
         //top menu section buttons
