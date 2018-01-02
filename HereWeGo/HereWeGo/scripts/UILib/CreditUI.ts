@@ -42,11 +42,11 @@ class CreditUI extends UIUtil.UIItem {
                         Wilson Leadership <br>
                         Wilson Computer Science <br>
                         Wilson App Alpha Testers <br>
-                        Benjamin Carlton
                     </p>
                     <p class="credTitle">Open Source Licenses</p>
                     <a class="benjamin link" id="llory">Lory</a>
                     <a class="benjamin link" id="liscroll">IScroll</a>
+                    <a class="benjamin link" id="lquote">Forismatic</a>
                     <p class="benjamin"><br><br><br><br><br><br></p>
                 </div>
             </div>
@@ -69,6 +69,7 @@ class CreditUI extends UIUtil.UIItem {
         document.querySelector('#flk').addEventListener("click", this.makeCallback("https://www.flickr.com/photos/kitrickmiller/"));
         document.querySelector('#llory').addEventListener("click", this.makeCallback("https://github.com/meandmax/lory/blob/master/LICENSE"));
         document.querySelector('#liscroll').addEventListener("click", this.makeCallback("https://github.com/cubiq/iscroll/blob/master/LICENSE"));
+        document.querySelector('#lquote').addEventListener("click", this.makeCallback("http://forismatic.com/en/api/"));
 
         //I have no idea what you're talking about, I've never seen this before
         let hmmm = document.querySelector('#hmmm') as HTMLElement;
