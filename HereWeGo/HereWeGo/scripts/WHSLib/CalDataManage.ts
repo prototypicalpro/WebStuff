@@ -227,7 +227,8 @@ class CalDataManage implements DataInterface {
             else return Promise.all(schedList.map((schedNum: number) => {
                 //get the appropriete event
                 let find: EventData.EventInterface;
-                if (!ret[new Date(day).setDate(nowDay + schedNum)] || !(find = ret[day.setDate(nowDay + schedNum)].find((ev) => { return ev.schedule; }))) return false;
+                let searchDay = day.setDate(nowDay + schedNum);
+                if (!ret[searchDay] || !(find = ret[searchDay].find((ev) => { return ev.schedule; }))) return false;
                 //and search the database for that key
                 //double nested database search 
                 return new Promise((resolve, reject) => {
@@ -235,7 +236,7 @@ class CalDataManage implements DataInterface {
                     let req = tx.objectStore(this.dbInfo[DBInfoEnum.sched].storeName).get(find.title);
                     req.onsuccess = (evt: any) => {
                         if (!evt.target.result) return resolve(false);
-                        let req2 = tx.objectStore(this.dbInfo[DBInfoEnum.time].storeName).get(evt.target.result.timeName);
+                        let req2 = tx.objectStore(this.dbInfo[DBInfoEnum.time].storeName).get(evt.target.result.timeName.toLowerCase());
                         req2.onsuccess = (evt1: any) => {
                             if (!evt1.target.result) return resolve(false);
                             resolve([find.startTime, new ScheduleUtil.Schedule(evt.target.result, evt1.target.result)]);
