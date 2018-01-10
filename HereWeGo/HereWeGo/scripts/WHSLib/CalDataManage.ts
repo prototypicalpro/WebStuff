@@ -71,20 +71,16 @@ class CalDataManage implements DataInterface {
         let transactions: Array<IDBObjectStore> = this.dbInfo.map((dbInf) => { return this.db.transaction([dbInf.storeName], "readwrite").objectStore(dbInf.storeName); });
         return Promise.all([
             new Promise((resolve, reject) => {
-                //moar promises!
-                let objectStore = transactions[DBInfoEnum.cal];
                 //decompress the calendar data
                 data[this.dbInfo[DBInfoEnum.cal].storeName] = this.inflateCalCloudData(data[this.dbInfo[DBInfoEnum.cal].storeName]);
-                //iterate through all elements, removing the ones before today
-                let nowTime: number = new Date().setHours(0, 0, 0, 0);
-                //remove if old
-                objectStore.openCursor(IDBKeyRange.upperBound(nowTime, true)).onsuccess = (event: any) => {
+                //iterate through all elements, removing the ones that end before today
+                transactions[DBInfoEnum.cal].index('endTime').openCursor(IDBKeyRange.upperBound(new Date().setHours(0, 0, 0, 0), true)).onsuccess = (event: any) => {
                     let cursor = event.target.result as IDBCursorWithValue;
                     if (cursor) {
                         cursor.delete();
                         cursor.continue();
                     }
-                    else resolve([objectStore, this.dbInfo[DBInfoEnum.cal]]);
+                    else resolve([transactions[DBInfoEnum.cal], this.dbInfo[DBInfoEnum.cal]]);
                 };
             }).then(nextFunc),
             nextFunc([transactions[DBInfoEnum.sched], this.dbInfo[DBInfoEnum.sched]]),

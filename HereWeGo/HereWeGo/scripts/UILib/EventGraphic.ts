@@ -91,7 +91,7 @@ class EventGraphic extends UIUtil.UIItem {
 
     //actual html building func
     private buildEventHTML(eventData: any | false, startOfDayTime: number, displaySchedule: boolean) {
-        if (eventData) {
+        if (eventData && eventData[startOfDayTime]) {
             let events: Array<EventData.EventInterface> = eventData[startOfDayTime];
             if(!displaySchedule) events = events.filter(e => { return !e.schedule });
             if(!events || events.length <= 0) return '';
