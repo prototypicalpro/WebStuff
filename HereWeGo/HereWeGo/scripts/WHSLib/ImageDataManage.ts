@@ -164,14 +164,16 @@ class ImageDataManage implements DataInterface {
             //count the number of entries so we can wrap around in the cursor
             let req = obj.count();
             req.onerror = reject;
-            req.onsuccess = (evt: any) => {
+            req.onsuccess = (evtCount: any) => {
                 //wrap index if it's over
                 let tmp = this.index;
-                while (tmp >= evt.target.result) tmp -= evt.target.result;
+                let objCount = evtCount.target.result;
+                while (tmp >= objCount) tmp -= objCount;
                 if(this.index != tmp) localStorage.setItem(IMG_IND_ID, (this.index = tmp).toString());
                 //count the number of items to wrap around and fetch at the start of the cursor
                 let temp = picNum + this.index;
-                let count = temp - evt.target.result;
+                let count = temp - objCount;
+                if(objCount < temp) temp = objCount;
                 let endRay = [];
                 let i = 0;
                 let req2 = obj.openCursor();
@@ -179,9 +181,7 @@ class ImageDataManage implements DataInterface {
                 req2.onsuccess = (evt: any) => {
                     //iterate through database, fetching any blobs that are needed, and caching all teh things
                     let cursor = evt.target.result as IDBCursorWithValue;
-                    if (!cursor || ++i > temp) return resolve(this.picPromise = this.picPromise.concat(endRay));
-                    count--;
-                    if (i > this.index || count >= 0) {
+                    if (cursor && i >= this.index || count > 0) {
                         let tempScope = cursor.value;
                         let tH = window.innerHeight;
                         let tempPromise = this.getAndStoreImage(tempScope, "thumb", THUMB_URL, Math.floor(tH * THUMB_REZ),  tempScope.id, false);
@@ -189,9 +189,13 @@ class ImageDataManage implements DataInterface {
                         if(!this.cheapData) tempP2 = Promise.resolve(tempPromise).then(() => { return this.getAndStoreImage(tempScope, "image", THUMB_URL, tH, tempScope.id, true, true); });
                         else tempP2 = tempPromise;
                         //push such that they end up in order, even though we may wrap around
-                        if (count >= 0) endRay.push(tempPromise, tempP2);
+                        if (count > 0)  {
+                            endRay.push(tempPromise, tempP2);
+                            count--;
+                        }
                         else this.picPromise.push(tempPromise, tempP2);
                     }
+                    if(++i >= temp || !cursor) return resolve(this.picPromise = this.picPromise.concat(endRay))
                     cursor.continue();
                 };
             };
@@ -234,12 +238,12 @@ class ImageDataManage implements DataInterface {
 
     private verifyUrl(url: string): Promise<boolean> {
         if(!url) return Promise.resolve(false);
-        return new Promise((resolve) => {
+        return <any>new Promise((resolve) => {
             let temp = new Image();
             temp.src = url;
             temp.onload = () => resolve(temp.height > 0);
             temp.onerror = () => resolve(false);
-        });
+        }).catch((err) => { console.log(err); return false; });
     }
 
     private getUntilBlobSuccess(url: string, params: any): Promise<string> {
