@@ -14,13 +14,18 @@ namespace EventData {
         isAllDay,
     }
 
-    export interface EventInterface {
+    export interface CancelledEventInterface {
+        cancelled?: boolean;
+        id: string;
+    }
+
+    export interface EventInterface extends CancelledEventInterface {
         isAllDay: boolean;
         startTime: number;
         endTime: number;
         schedule: boolean;
         title: string;
-        id: string;
+        cancelled: false;
     }
 }
 

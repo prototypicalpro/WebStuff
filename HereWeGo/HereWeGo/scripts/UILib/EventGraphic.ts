@@ -106,7 +106,7 @@ class EventGraphic extends UIUtil.UIItem {
                     eventStr += UIUtil.templateEngine(this.eventTemplate, {
                         modCl: 'evSmall',
                         time: this.allDayTime,
-                        name: schedName ? schedName + ' Schedule' : 'No School',
+                        name: schedName ? schedName : 'No School',
                         lineColor: '#00ff00',
                     });
                 }

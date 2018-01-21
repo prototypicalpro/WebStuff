@@ -29,6 +29,8 @@ namespace UIUtil {
         dayCount?: number;
         //constructing a schedule is expensive, so we'll assume that if we want a schedule we'll ony need a single one
         schedDay?: number;
+        //also have a boolean on whether or not we care if the schedule is marked "special"
+        excludeNormal?: boolean;
         //database runs this function for every event, so this should store all the data you need 
         //to do the thing
     }

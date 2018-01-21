@@ -119,8 +119,12 @@ class CalDataManage implements DataInterface {
     }
 
     //private utility function to uncompress data from the cloud
-    protected inflateCalCloudData(data: Array<Array<any>>): Array<EventData.EventInterface> {
+    protected inflateCalCloudData(data: Array<Array<any>>): Array<EventData.CancelledEventInterface | EventData.EventInterface> {
         return data.map((item: Array<any>) => {
+            if(!item[0]) return {
+                cancelled: true,
+                id: item[1],
+            };
             return {
                 id: item[EventData.CloudEventEnum.id],
                 schedule: item[EventData.CloudEventEnum.schedule],
@@ -140,7 +144,8 @@ class CalDataManage implements DataInterface {
     getData(params: Array<UIUtil.CalParams>): Promise<any> | false {
         //create a range of events to fetch, then an array of schedules to fetch
         let evRange = [null, null];
-        let schedList = [];
+        let schedList: Array<number> = [];
+        let schedExNormList: Array<boolean> = [];
         let onlySched = true;
         //utility function to expand range
         const expandRange = (start: number, count?: number): void => {
@@ -158,6 +163,7 @@ class CalDataManage implements DataInterface {
             }
             if (typeof params[i].schedDay === 'number' && schedList.indexOf(params[i].schedDay) === -1) {
                 schedList.push(params[i].schedDay);
+                schedExNormList.push(!!params[i].excludeNormal);
                 expandRange(params[i].schedDay);
             }
         }
@@ -220,7 +226,7 @@ class CalDataManage implements DataInterface {
             //search events, matching each event to it's schedule, and storing it
             //query the schedule types and then the times
             //with a buncha on-off queries
-            else return Promise.all(schedList.map((schedNum: number) => {
+            else return Promise.all(schedList.map((schedNum: number, index: number) => {
                 //get the appropriete event
                 let find: EventData.EventInterface;
                 let searchDay = day.setDate(nowDay + schedNum);
@@ -231,7 +237,9 @@ class CalDataManage implements DataInterface {
                     let tx = this.db.transaction([this.dbInfo[DBInfoEnum.sched].storeName, this.dbInfo[DBInfoEnum.time].storeName], "readonly");
                     let req = tx.objectStore(this.dbInfo[DBInfoEnum.sched].storeName).get(find.title);
                     req.onsuccess = (evt: any) => {
-                        if (!evt.target.result) return resolve(false);
+                        //if we couldn't find a schedule, or we are excluding normal schedules and the schedule is normal
+                        if (!evt.target.result || (schedExNormList[index] && !<ScheduleData.SchedCloudData>(evt.target.result).spec)) return resolve(false);
+                        //else go looking for a matching time
                         let req2 = tx.objectStore(this.dbInfo[DBInfoEnum.time].storeName).get(evt.target.result.timeName.toLowerCase());
                         req2.onsuccess = (evt1: any) => {
                             if (!evt1.target.result) return resolve(false);

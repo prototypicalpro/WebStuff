@@ -14,6 +14,7 @@ namespace ScheduleData {
         name: string;
         timeName: string;
         periodNames: Array<[string, string]>;
+        spec: 0 | 1; //"special" as in unusual
     }
     //time data enum
     export const enum TimeCloudEnum {

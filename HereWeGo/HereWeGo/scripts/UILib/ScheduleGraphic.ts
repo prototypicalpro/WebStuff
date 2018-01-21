@@ -54,13 +54,14 @@ class ScheduleGraphic extends UIUtil.UIItem {
     private sched: ScheduleUtil.Schedule;
 
     //constructor with schedule
-    constructor(day: number) {
+    constructor(day: number, excludeNormal?: boolean) {
         super();
         this.recvParams = [
             //and the schedule
             <UIUtil.CalParams>{
                 type: UIUtil.RecvType.CAL,
                 schedDay: day,
+                excludeNormal: excludeNormal,
             },
         ];
     }
@@ -103,7 +104,7 @@ class ScheduleGraphic extends UIUtil.UIItem {
                     lowTime: period.getEndStr(),
                     lineColor: ColorUtil.blendColors('#00ff00', '#004700', i * inv),
                     name: period.getName(),
-                    backColor: this.lastIndex === i ? 'lightgreen' : '',
+                    backColor: this.lastIndex === i && (this.recvParams[0] as UIUtil.CalParams).schedDay === 0 ? 'lightgreen' : '',
                     id: 'p' + i,
                 });
             }
@@ -125,7 +126,7 @@ class ScheduleGraphic extends UIUtil.UIItem {
     }
 
     onTimeChanged(): void {
-        if(this.sched) {
+        if(this.sched && (this.recvParams[0] as UIUtil.CalParams).schedDay === 0) {
             //if nothing has changed, don't change anything
             let currentStuff = this.sched.getCurrentPeriodAndIndex(new Date());
             let currentIndex = currentStuff[0];
