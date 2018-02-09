@@ -60,7 +60,7 @@ function onDeviceReady(): void {
 
     //statusbar?
     windowHeight = window.innerHeight;
-    if(cordova.platformId != "ios") window.addEventListener("resize", resizeStatusBar);
+    if(cordova.platformId !== "ios") window.addEventListener("resize", resizeStatusBar);
     //oh ios, how you hurt me so
     else resizeStatusBar();
 
@@ -109,7 +109,7 @@ function onDeviceReady(): void {
 function resizeStatusBar() {
     //get the window height, and if it's different, unbind
     let height = window.innerHeight;
-    if(height != windowHeight) {
+    if(height !== windowHeight) {
         //hide splash (after resize paint)
         if((<any>window).quickLoad) {
             let fn = () => { HTMLMap.topPos.removeEventListener("transitionend", fn); navigator.splashscreen.hide(); }

@@ -27,7 +27,6 @@ class NativeGet implements GetUtil.GetInterface {
             console.log(err);
             throw ErrorUtil.code.NO_INTERNET;
         }).then((response: any) => {
-            console.log("here2");
             if (!response) throw ErrorUtil.code.NO_INTERNET;
             if (response.status != 200) throw ErrorUtil.code.BAD_RESPONSE;
             return JSON.parse(response.data);

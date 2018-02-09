@@ -44,7 +44,7 @@ class FetchGet implements GetUtil.GetInterface {
             req.responseType = "blob";
             req.send();
         }).then(() => {
-            if(req.status != 200) throw ErrorUtil.code.BAD_RESPONSE;
+            if(req.status !== 200) throw ErrorUtil.code.BAD_RESPONSE;
             //store into temporary file
             let fname = params.id;
             if(params.isFullRez) fname += 'FR';

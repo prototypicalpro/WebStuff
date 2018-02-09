@@ -21,7 +21,7 @@ namespace TimeFormatUtil {
     }
     //format as day of the week text (Tuesday)
     export const asFullDayText = (weekDay: Date | number): string => {
-        if (typeof weekDay != 'number') weekDay = weekDay.getDay();
+        if (typeof weekDay !== 'number') weekDay = weekDay.getDay();
         if (weekDay > 6) weekDay -= 7;
         //hahaha the string literals, enums are the best
         return Days[weekDay];
@@ -60,7 +60,7 @@ namespace TimeFormatUtil {
     //format as human readable day of year
     //e.g. Sunday, September 2
     export const asLongDayMonthText = (day: Date | number): string => {
-        if (typeof day == 'number') day = new Date(day);
+        if (typeof day === 'number') day = new Date(day);
         return day.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
     };
 }

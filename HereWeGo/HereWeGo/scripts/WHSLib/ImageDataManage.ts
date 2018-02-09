@@ -60,7 +60,7 @@ class ImageDataManage implements DataInterface {
     //update data func
     updateData(data: CloudData): Promise<boolean> | false {
         //check if emptey array
-        if(<any>data == []) return false;
+        if(<any>data === []) return false;
         //check index
         if(typeof data.index === 'number') {
             //refresh index

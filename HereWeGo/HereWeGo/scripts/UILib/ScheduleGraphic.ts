@@ -132,12 +132,12 @@ class ScheduleGraphic extends UIUtil.UIItem {
             let currentIndex = currentStuff[0];
             if (this.lastIndex === currentIndex) return;
             //else remove the color from the last index, assuming it's not a passing period
-            if (this.lastIndex >= 0 && this.sched.getPeriod(this.lastIndex).getType() != ScheduleUtil.PeriodType.passing) {
+            if (this.lastIndex >= 0 && this.sched.getPeriod(this.lastIndex).getType() !== ScheduleUtil.PeriodType.passing) {
                 let last = document.querySelector('#p' + this.lastIndex) as HTMLElement;
                 if (last) last.style.backgroundColor = '';
             }
             //and add it to the current period
-            if (currentIndex >= 0 && currentStuff[1].getType() != ScheduleUtil.PeriodType.passing) {
+            if (currentIndex >= 0 && currentStuff[1].getType() !== ScheduleUtil.PeriodType.passing) {
                 let current = document.querySelector('#p' + currentIndex) as HTMLElement;
                 if (current) current.style.backgroundColor = 'lightgreen';
             }
