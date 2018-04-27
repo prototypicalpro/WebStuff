@@ -135,6 +135,8 @@ class DataManage {
         //single line: for every data object, get the data, then for every ui item, update the data
         return Promise.all(this.dataObj.map((obj, index) => { return obj.getData(this.paramStore[index]); })).then((dataRay: Array<any>) => { for (let i = 0, len = this.uiItemStore.length; i < len; i++) if(this.uiItemStore[i].onUpdate) this.uiItemStore[i].onUpdate(dataRay); });
     }
+
+    //TODO: Apply data to specific item so we don't have to figure it out at launch
 }
 
 export = DataManage

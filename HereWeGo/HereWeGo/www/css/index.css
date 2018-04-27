@@ -547,6 +547,15 @@ p {
 }
 
 /**
+ * Button to show more events CSS
+ */
+
+.evButton {
+     width: 100vw;
+     margin-top: 1.6vh;
+ }
+
+/**
  * Global button effect CSS
  */
 

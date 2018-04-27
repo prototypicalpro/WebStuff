@@ -21,7 +21,6 @@ class SlideTabUI extends UIUtil.UIItem {
                                                     <div id="{{id}}" class="scrollHack full">                    
                                                         <div class="scrollHack"> 
                                                             {{stuff}} 
-                                                            <p><br></p>
                                                         </div>
                                                     </div>
                                                 </div>`;

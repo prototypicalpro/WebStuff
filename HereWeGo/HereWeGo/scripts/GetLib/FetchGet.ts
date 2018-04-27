@@ -34,7 +34,6 @@ class FetchGet implements GetUtil.GetInterface {
         let fullRez = params.isFullRez;
         delete params.isFullRez;
         URL = GetUtil.generateURL(URL, params);
-        console.log(URL);
         //fire away
         return fetch(URL).catch((err) => {
             console.log("Fetch Error!");

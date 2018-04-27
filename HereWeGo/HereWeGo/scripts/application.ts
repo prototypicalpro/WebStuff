@@ -175,15 +175,21 @@ function buildUI(): Promise<any> {
         ),
     );
     //and slider tab thingy
+    const dayNum: number = new Date().getDay();
     slide = new SlideTabUI([
-        //first page 
+        //look ahead for five days
         [
             new ScheduleGraphic(0),
             new EventGraphic('Today', 0, false),
             new EventGraphic('Tomorrow', 1, true),
             new ScheduleGraphic(1, true),
-            new EventGraphic(TimeFormatUtil.asFullDayText(new Date().getDay() + 2), 2, true),
+            new EventGraphic(TimeFormatUtil.asFullDayText(dayNum + 2), 2, true),
             new ScheduleGraphic(2, true),
+            new EventGraphic(TimeFormatUtil.asFullDayText(dayNum + 3), 3, true),
+            new ScheduleGraphic(3, true),
+            new EventGraphic(TimeFormatUtil.asFullDayText(dayNum + 4), 4, true),
+            new ScheduleGraphic(4, true),
+            new ButtonUI("SMItem evButton", "SMItemText SMItems", "Show More Events", () => { console.log("click") }, "right.png")
         ]
         //second page?
         //naw
