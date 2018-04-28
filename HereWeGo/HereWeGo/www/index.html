@@ -6,7 +6,7 @@
         For details, see http://go.microsoft.com/fwlink/?LinkID=617521
     -->
         <!-- So much for secure, if I allow through an entire scripting platform just to let in my script -->
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self' gap: https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://script.google.com https://*.googleusercontent.com https://drive.google.com; img-src 'self' filesystem:;">
+        <!--meta http-equiv="Content-Security-Policy" content="default-src 'self' gap: https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://script.google.com https://*.googleusercontent.com https://drive.google.com; img-src 'self' filesystem:;"-->
         
         <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
         <meta name="format-detection" content="telephone=no">
@@ -62,7 +62,8 @@
                 <div class="barShade"></div>
                 <div id="pageButton" class="sideButton"></div>
             </div>
-        <div id="pageAdd"></div></div>
+            <div id="pageAdd"></div>
+        </div>
 
         <!-- QuickStart! -->
         <!-- The 'async' attribute is needed for RequireJS to work in a Windows app -->

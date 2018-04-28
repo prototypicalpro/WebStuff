@@ -22,9 +22,6 @@ class DataManage {
     private http: GetLib;
     private dataObj: Array<DataInterface>;
     private lastSyncTime: number;
-    //storage UI parameter objects
-    private uiItemStore: Array<UIUtil.UIItem>;
-    private paramStore: Array<Array<UIUtil.RecvParams>>;
 
     /*
      * Stupid promise chaining functions
@@ -103,37 +100,18 @@ class DataManage {
         return this.getNewDataFunc().then(this.overwriteData.bind(this));
     }
 
-    refreshDataAndUI(): Promise<Array<boolean>> {
-        return this.getData().then(this.updateData.bind(this)).then(this.refreshUI.bind(this));
+    refreshData(): Promise<Array<boolean>> {
+        return this.getData().then(this.updateData.bind(this));
     }
 
     /**
-     * UI Updating functions
-     * Take the data we have and serve it to the UI Objects
-     * Some fnagling b/c it's easier to build the first page first
-     * but no more than usual
+     * Generate data needed by UI objects (specified in recv params) then
+     * return it to be used by main code
+     * Call this anytime you want to change what the UI is displaying
      */
 
-    setUIObjs(obj: Array<UIUtil.UIItem>) {
-        //store items
-        this.uiItemStore = obj;
-        //create array of arrays
-        this.paramStore = new Array(UIUtil.RecvType.length).fill([]);
-        //create cached array of recv parameters
-        for (let i = 0, len = obj.length; i < len; i++) if (obj[i].recvParams) for (let o = 0, len1 = obj[i].recvParams.length; o < len1; o++) this.paramStore[obj[i].recvParams[o].type].push(obj[i].recvParams[o]);
-    }
-
-    initUI(): Promise<any> {
-        return Promise.all(this.dataObj.map((obj, index) => { return obj.getData(this.paramStore[index]); })).then((dataRay: Array<any>) => { for (let i = 0, len = this.uiItemStore.length; i < len; i++) { this.uiItemStore[i].onInit(dataRay); this.uiItemStore[i].buildJS(); }});
-    }
-
-    timeUpdateUI(): void {
-        for(let i = 0, len = this.uiItemStore.length; i < len; i++) if(this.uiItemStore[i].onTimeChanged) this.uiItemStore[i].onTimeChanged();
-    }
-
-    private refreshUI(): Promise<any> {
-        //single line: for every data object, get the data, then for every ui item, update the data
-        return Promise.all(this.dataObj.map((obj, index) => { return obj.getData(this.paramStore[index]); })).then((dataRay: Array<any>) => { for (let i = 0, len = this.uiItemStore.length; i < len; i++) if(this.uiItemStore[i].onUpdate) this.uiItemStore[i].onUpdate(dataRay); });
+    generateData(items: Array<UIUtil.UIItem>): Promise<Array<any>> {
+        return Promise.all(this.dataObj.map((obj, index) => { return obj.getData(items); }));
     }
 
     //TODO: Apply data to specific item so we don't have to figure it out at launch

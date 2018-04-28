@@ -18,14 +18,14 @@ class EventGraphic extends UIUtil.UIItem {
     //storage document item
     private elem: HTMLElement;
     //template for overall
-    private readonly wrap: string = `<div id="{{id}}">{{stuff}}</div>`
-    private readonly templateStr: string = `
+    private static readonly wrap: string = `<div id="{{id}}">{{stuff}}</div>`
+    private static readonly templateStr: string = `
             <p class="header">{{head}}</p>
             {{stuff}}`;
     //and template for each item
     //100% certified unreadable
     //event item template
-    private readonly eventTemplate: string = `
+    private static readonly eventTemplate: string = `
         <div class="evRow {{modCl}}">
             <div class="leftCell"> 
                 <div class="incep"> 
@@ -37,14 +37,14 @@ class EventGraphic extends UIUtil.UIItem {
             </div>
         </div>`;
     //time templates
-    private readonly normalTime: string = `
+    private static readonly normalTime: string = `
     <p class="leftUp">{{start}}</p> 
     <p class="leftLow">{{end}}</p>`
 
-    private readonly allDayTime: string = `
+    private static readonly allDayTime: string = `
     <p class='leftUp' style='margin:0'>ALL DAY</p>`
 
-    private readonly charLineMax: number = 30;
+    private static readonly charLineMax: number = 30;
 
     //constructor for teh evenents
     constructor(header: string, day: number, displaySchedule?: boolean) {
@@ -66,7 +66,7 @@ class EventGraphic extends UIUtil.UIItem {
         //we only need the events for the today, so start with that
         let day = new Date();
         day.setDate(day.getDate() + (<UIUtil.CalParams>this.recvParams[0]).dayStart);
-        return UIUtil.templateEngine(this.wrap, {
+        return UIUtil.templateEngine(EventGraphic.wrap, {
             id: this.id,
             stuff: this.buildEventHTML(data[UIUtil.RecvType.CAL]["events"], day.setHours(0, 0, 0, 0), this.dispSched),
         });
@@ -103,9 +103,9 @@ class EventGraphic extends UIUtil.UIItem {
                 schedNameIndex = events.findIndex((ev) => { return ev.schedule; });
                 if (schedNameIndex != -1) {
                     let schedName = events[schedNameIndex].title;
-                    eventStr += UIUtil.templateEngine(this.eventTemplate, {
+                    eventStr += UIUtil.templateEngine(EventGraphic.eventTemplate, {
                         modCl: 'evSmall',
-                        time: this.allDayTime,
+                        time: EventGraphic.allDayTime,
                         name: schedName ? schedName : 'No School',
                         lineColor: '#00ff00',
                     });
@@ -121,7 +121,7 @@ class EventGraphic extends UIUtil.UIItem {
                     let eventProp: any = {
                         //if it isn't all day, do templating, else use ALL DAY template instead
                         //beware nested conditional
-                        time: makeAllDay ? this.allDayTime : UIUtil.templateEngine(this.normalTime, {
+                        time: makeAllDay ? EventGraphic.allDayTime : UIUtil.templateEngine(EventGraphic.normalTime, {
                             start: TimeUtil.asSmallTime(events[i].startTime),
                             end: TimeUtil.asSmallTime(events[i].endTime),
                         }),
@@ -136,10 +136,10 @@ class EventGraphic extends UIUtil.UIItem {
                     let eventfix = '';
                     let tempEvent: string = eventProp.name;
                     //add breaklines to quote so we don't overflow
-                    while (tempEvent.length > this.charLineMax) {
+                    while (tempEvent.length > EventGraphic.charLineMax) {
                         //work on the substring ending at the 64th char
                         //starting at the 64th char, and work backwards until we find a space
-                        let breakPoint = tempEvent.slice(0, this.charLineMax).lastIndexOf(' ');
+                        let breakPoint = tempEvent.slice(0, EventGraphic.charLineMax).lastIndexOf(' ');
                         //add a break tag to that space
                         eventfix += tempEvent.slice(0, breakPoint) + `<br/>`;
                         tempEvent = tempEvent.slice(breakPoint + 1);
@@ -147,11 +147,11 @@ class EventGraphic extends UIUtil.UIItem {
                     if (eventfix.length) eventProp.name = eventfix + tempEvent;
                     else eventProp.name = tempEvent;
                     //add the str
-                    eventStr += UIUtil.templateEngine(this.eventTemplate, eventProp);
+                    eventStr += UIUtil.templateEngine(EventGraphic.eventTemplate, eventProp);
                 }
             }
             //return!
-            return UIUtil.templateEngine(this.templateStr, {
+            return UIUtil.templateEngine(EventGraphic.templateStr, {
                 head: this.header,
                 stuff: eventStr,
             });

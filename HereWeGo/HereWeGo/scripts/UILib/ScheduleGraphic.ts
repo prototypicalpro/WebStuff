@@ -17,14 +17,14 @@ class ScheduleGraphic extends UIUtil.UIItem {
     //stored date
     //HTML Template
     //It's gonna be ugly, that's just how it is
-    private readonly wrap: string = `<div id="{{id}}">{{stuff}}</div>`;
+    private static readonly wrap: string = `<div id="{{id}}">{{stuff}}</div>`;
     //schedule table template
-    private readonly tableTemplate: string = `
+    private static readonly tableTemplate: string = `
         <p class="header">{{head}}</p>   
         {{sched}}`;
 
     //period item template
-    private readonly itemTemplate: string = `
+    private static readonly itemTemplate: string = `
          <div class="justRow" style="background-color:{{backColor}};" id="{{id}}">
             <div class="leftCell">
                 <div class="incep">
@@ -39,13 +39,13 @@ class ScheduleGraphic extends UIUtil.UIItem {
             </div>
         </div>`
 
-    private readonly inlineEventWrapper: string = `
+    private static readonly inlineEventWrapper: string = `
     <div class="evWrap">
         {{events}}
     </div>`;
 
     //event item template for inline with the schedule
-    private readonly inlineEventTemplate: string = `<p class="evText">{{name}}</p>`;
+    private static readonly inlineEventTemplate: string = `<p class="evText">{{name}}</p>`;
 
     //cached access to the wrapper div
     private schedElem: HTMLElement;
@@ -73,7 +73,7 @@ class ScheduleGraphic extends UIUtil.UIItem {
         let day = new Date();
         day.setHours(0, 0, 0, 0);
         this.sched = data[UIUtil.RecvType.CAL]["scheds"][day.setDate(day.getDate() + (<UIUtil.CalParams>this.recvParams[0]).schedDay)];
-        return UIUtil.templateEngine(this.wrap, {
+        return UIUtil.templateEngine(ScheduleGraphic.wrap, {
             id: this.id,
             stuff: this.sched ? this.makeSchedule(this.sched, new Date()) : '',
         });
@@ -99,7 +99,7 @@ class ScheduleGraphic extends UIUtil.UIItem {
             let period: ScheduleUtil.Period = sched.getPeriod(i);
             //make a buncha row templates
             if (period.getType() >= 0) {
-                schedStr += UIUtil.templateEngine(this.itemTemplate, {
+                schedStr += UIUtil.templateEngine(ScheduleGraphic.itemTemplate, {
                     upTime: period.getStartStr(),
                     lowTime: period.getEndStr(),
                     lineColor: ColorUtil.blendColors('#00ff00', '#004700', i * inv),
@@ -109,7 +109,7 @@ class ScheduleGraphic extends UIUtil.UIItem {
                 });
             }
         }
-        return UIUtil.templateEngine(this.tableTemplate, {
+        return UIUtil.templateEngine(ScheduleGraphic.tableTemplate, {
             head: sched.getName() + ' Schedule',
             sched: schedStr,
         });

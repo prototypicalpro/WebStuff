@@ -588,8 +588,8 @@ p {
 }
 
 #pageAdd {
-    flex-grow: 1;
-    width: 100vw;
+    position: absolute;
+    height: 91.3vh;
 }
 
 /**

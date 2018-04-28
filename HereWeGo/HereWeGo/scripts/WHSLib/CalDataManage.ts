@@ -11,6 +11,7 @@ import DataInterface = require('./Interfaces/DataInterface');
 import DBManage = require('../DBLib/DBManage');
 import UIUtil = require('../UILib/UIUtil');
 import { EventInterface } from './Interfaces/EventData';
+import { RecvType, CalParams } from '../UILib/UIUtil';
 
 //special enum for crappy code
 enum DBInfoEnum {
@@ -141,7 +142,7 @@ class CalDataManage implements DataInterface {
      */
 
     //only one data function, takes the days needed and returns the events and schedules for each
-    getData(params: Array<UIUtil.CalParams>): Promise<any> | false {
+    getData(items: Array<UIUtil.UIItem>): Promise<any> | false {
         //create a range of events to fetch, then an array of schedules to fetch
         let evRange = [null, null];
         let schedList: Array<number> = [];
@@ -155,16 +156,26 @@ class CalDataManage implements DataInterface {
             //end of range
             if (start + count > evRange[1]) evRange[1] = start + count;
         };
-
-        for (let i = 0, len = params.length; i < len; i++) {
-            if (params[i].dayStart) {
-                onlySched = false;
-                expandRange(params[i].dayStart, params[i].dayCount);
-            }
-            if (typeof params[i].schedDay === 'number' && schedList.indexOf(params[i].schedDay) === -1) {
-                schedList.push(params[i].schedDay);
-                schedExNormList.push(!!params[i].excludeNormal);
-                expandRange(params[i].schedDay);
+        //for every UI item
+        for(let i = 0, len = items.length; i < len; i++) {
+            //if items params are null or emptey, ignore it
+            if(!items[i].recvParams || items[i].recvParams.length === 0) continue;
+            let params = items[i].recvParams;
+            //for every param
+            for(let o = 0, len1 = params.length; o < len1; o++) {
+                let parPoint = <CalParams>params[o];
+                //if the param is not for calendar, ignore it
+                if(parPoint.type !== RecvType.CAL) continue;
+                //else figure out what days we want to get calendar data for
+                if (parPoint.dayStart) {
+                    onlySched = false;
+                    expandRange(parPoint.dayStart, parPoint.dayCount);
+                }
+                if (typeof parPoint.schedDay === 'number' && schedList.indexOf(parPoint.schedDay) === -1) {
+                    schedList.push(parPoint.schedDay);
+                    schedExNormList.push(!!parPoint.excludeNormal);
+                    expandRange(parPoint.schedDay);
+                }
             }
         }
         //check if there's a reason to search

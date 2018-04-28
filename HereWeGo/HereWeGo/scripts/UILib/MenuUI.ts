@@ -10,7 +10,7 @@ import lory = require('../lory');
 
 class MenuUI extends UIUtil.UIItem {
     //main HTML for sidemenu
-    private readonly templateStr: string = `
+    private static readonly templateStr: string = `
     <div class="SMFrame" id="{{id}}">
             <!-- div for shadow effect -->
             <div class="SMShadow"></div>
@@ -52,7 +52,7 @@ class MenuUI extends UIUtil.UIItem {
         //join bottom
         let botStr = this.botItems.map((item) => { return item.onInit(data); }).join('');
         //template and set
-        HTMLMap.setSideMenuHTML(UIUtil.templateEngine(this.templateStr, {
+        HTMLMap.setSideMenuHTML(UIUtil.templateEngine(MenuUI.templateStr, {
             id: this.id,
             topItems: topStr,
             botItems: botStr,

@@ -12,42 +12,33 @@ import lory = require('../lory');
 import ButtonUI = require('./ButtonUI');
 import TimeFormatUtil = require('../TimeFormatUtil');
 import IScroll = require('../iscroll-lite');
+import ScrollPageUI = require('./ScrollPageUI');
 
 class SlideTabUI extends UIUtil.UIItem {
     id: string;
     //wrapper template to make everything horizontally flatmapped
-    private readonly slideWrapperTemplate: string = `
-                                                <div class="js_slide content">
-                                                    <div id="{{id}}" class="scrollHack full">                    
-                                                        <div class="scrollHack"> 
-                                                            {{stuff}} 
-                                                        </div>
-                                                    </div>
-                                                </div>`;
+    private static readonly slideWrapperTemplate: string = `<div class="js_slide content">{{c}}</div>`;
     //stored pages, to be flatmapped and shiz
-    private readonly pages: Array<Array<UIUtil.UIItem>>;
+    private readonly pages: Array<ScrollPageUI>;
     //stored names for buttons later on
     private readonly names: Array<string>;
     //stored date
     private dayUpdate: boolean;
     //storeage lory object
     private storly: any;
-    //storage IScroll objects
-    private iscroll: Array<any>;
-    private scrollBody: Array<HTMLElement>;
     //fill them varlibles
-    constructor(pages: Array<Array<UIUtil.UIItem>>, names: Array<string>) {
+    constructor(pages: Array<ScrollPageUI>, names: Array<string>) {
         super();
         this.pages = pages;
         this.names = names;
-        this.recvParams = UIUtil.combineParams([].concat.apply([], pages));
+        this.recvParams = UIUtil.combineParams(pages);
     }
     //and the getHTML
     onInit(data: Array<any>): void {
         //get all the htmls in parellel
         //this chaining is gonna be beutiful
         //for every array of pages
-        HTMLMap.setSliderHTML(this.pages.map((items: Array<UIUtil.UIItem>, index: number) => { return UIUtil.templateEngine(this.slideWrapperTemplate, { id: 's' + index, stuff: items.map((item) => { return item.onInit(data); }).join('') }); }).join('') ); //one. freaking. line
+        HTMLMap.setSliderHTML(this.pages.map((page) => UIUtil.templateEngine(SlideTabUI.slideWrapperTemplate, {c : page.onInit(data)})).join('')); //one. freaking. line
     }
     
     buildJS() {
@@ -97,31 +88,17 @@ class SlideTabUI extends UIUtil.UIItem {
         //set the top grey bar date correctly
         document.querySelector("#mainBText").innerHTML = TimeFormatUtil.asLongDayMonthText(new Date());
         this.dayUpdate = false;
-        this.iscroll = new Array(this.pages.length);
-        this.scrollBody = new Array(this.pages.length);
-        for (let i = 0, len = this.pages.length; i < len; i++) {
-            //cache id
-            let id = '#s' + i;
-            //store element
-            this.scrollBody[i] = document.querySelector(id);
-            //add IScroll
-            this.iscroll[i] = new IScroll(id);
-            //finally, run the JS of all the little dudes
-            for (let o = 0, len1 = this.pages[i].length; o < len1; o++) this.pages[i][o].buildJS();
-        } 
+        //finally, run the pages js
+        for (let i = 0, len = this.pages.length; i < len; i++) this.pages[i].buildJS();
     }
 
     //onUpdate calls the update function of all the children
     onUpdate(data: Array<any>): void {
-        let ray: Array<UIUtil.UIItem> = [].concat.apply([], this.pages);
-        for(let i = 0, len = ray.length; i < len; i++) if(ray[i].onUpdate) ray[i].onUpdate(data);
-        //recalc iscroll
-        for(let i = 0, len = this.pages.length; i < len; i++) this.iscroll[i].refresh();
+        for(let i = 0, len = this.pages.length; i < len; i++) if(this.pages[i].onUpdate) if(this.pages[i].onUpdate) this.pages[i].onUpdate(data);
     }
 
     onTimeChanged(): void {
-        let ray: Array<UIUtil.UIItem> = [].concat.apply([], this.pages);
-        for(let i = 0, len = ray.length; i < len; i++) if(ray[i].onTimeChanged) ray[i].onTimeChanged(); 
+        for(let i = 0, len = this.pages.length; i < len; i++) if(this.pages[i].onUpdate) if(this.pages[i].onTimeChanged) this.pages[i].onTimeChanged();
     }
 }
 

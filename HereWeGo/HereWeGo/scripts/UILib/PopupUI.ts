@@ -7,36 +7,32 @@
 
  import UIUtil = require("./UIUtil");
  import HTMLMap = require("../HTMLMap");
+ import DataManage = require('../DataManage');
 
  class PopupUI extends UIUtil.UIItem {
     //css class to show the page
-    private readonly showClass: string = "pShown";
+    private static readonly showClass: string = "pShown";
     //storage members
     private addDiv: HTMLElement;
     private textBox: HTMLElement;
     private pageDiv: HTMLElement;
     private backButton: HTMLElement;
-    //store the last recieved data object so we can pass it to the page later
-    private lastData: Array<any>;
     //the array of items
-    private pages: { [key:string]:UIUtil.UIItem; };
-    private pageKey: string;
-    //and the recv params
-    recvParams: Array<UIUtil.RecvParams>;
+    private page: UIUtil.UIItem;
+    //datamanage class to generate the data on click
+    private readonly data: DataManage;
     //teh settings
     //pass the object of possible pages to open formatted as such:
     // {"page1" : new UIItem(), "page2": new thing(), etc. }
     // that way, later on we can reference each page by a string id
     // e.g. Popup.open("page1");
-    constructor(pages: { [key:string]:UIUtil.UIItem; }) {
+    constructor(data: DataManage) {
         super();
-        this.pages = pages;
-        //convert to array, then store in recv params
-        this.recvParams = UIUtil.combineParams(Object.keys(pages).map((key: string) => { return pages[key]; }));
+        this.data = data;
     }
 
-    onInit(data: Array<any>): void {
-        this.lastData = data;
+    onInit(): void {
+
     }
 
     buildJS() {
@@ -47,33 +43,35 @@
         this.backButton = this.pageDiv.querySelector('#pageButton');
     }
 
-    onUpdate(data: Array<any>) {
-        this.lastData = data;
+    onUpdate(): void {
+
     }
 
-    showPage(pageId: string) {
-        if(!this.pages[pageId]) throw "Wrong PageID dumbo";
-        //initialize with last known data, filling the html as we go
-        this.textBox.innerHTML = pageId;
-        this.addDiv.innerHTML = <string>this.pages[pageId].onInit(this.lastData);
-        //display!
-        //once it's done moving, run the JS and bind the back button
-        //create event listener functions
-        this.pageKey = pageId;
-        this.pageDiv.addEventListener("transitionend", this.transitionEndOpen);
-        this.pageDiv.classList.add(this.showClass);
+    showPage(page: UIUtil.UIItem, name: string): Promise<any> {
+        if(!page) throw "Wrong PageID dumbo";
+        //initialize with new data, filling the html as we go
+        return this.data.generateData([page]).then(((dataRay) => {
+            this.textBox.innerHTML = name;
+            this.addDiv.innerHTML = <string>page.onInit(dataRay);
+            //display!
+            //once it's done moving, run the JS and bind the back button
+            //create event listener functions
+            this.page = page
+            this.pageDiv.addEventListener("transitionend", this.transitionEndOpen);
+            this.pageDiv.classList.add(PopupUI.showClass);
+        }).bind(this));
     }
 
     private transitionEndOpen = (() => {
         this.pageDiv.removeEventListener("transitionend", this.transitionEndOpen);
-        this.pages[this.pageKey].buildJS();
+        this.page.buildJS();
         this.backButton.addEventListener("touchstart", this.hidePage, true);
         document.addEventListener("backbutton", this.hidePage, true);
     }).bind(this);
 
     private transitionEndClose = (()  => {
         this.pageDiv.removeEventListener("transitionend", this.transitionEndClose);
-        this.addDiv.innerHTML = '';
+        delete this.page;
         this.textBox.innerHTML = '';
     }).bind(this);
 
@@ -83,7 +81,8 @@
         this.backButton.removeEventListener("touchstart", this.hidePage, true);
         document.removeEventListener("backbutton", this.hidePage, true);
         this.pageDiv.addEventListener("transitionend", this.transitionEndClose);
-        this.pageDiv.classList.remove(this.showClass);
+        this.addDiv.innerHTML = '';
+        this.pageDiv.classList.remove(PopupUI.showClass);
     }).bind(this);
  }
 

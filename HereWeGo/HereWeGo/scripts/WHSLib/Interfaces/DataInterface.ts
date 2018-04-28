@@ -23,9 +23,10 @@ interface DataInterface {
     //overwrite function, deletes any existing data and replaces it with the passed data
     overwriteData(data: any): Promise<any>;
     //get the data to be served to the UIItems
-    //an object depending on the implementation
+    //what data to fetch is stored in the recvparams in each UIItem
+    //it is up to the data management class to parse the appropriete recvparam component
     //be sure to document what you're returning in an interface or something
-    getData(params?: Array<UIUtil.RecvParams>): Promise<any> | any;
+    getData(objs: Array<UIUtil.UIItem>): Promise<any> | any;
 }
 
 export = DataInterface;

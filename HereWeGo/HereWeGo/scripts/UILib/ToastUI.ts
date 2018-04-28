@@ -7,13 +7,13 @@ import UIUtil = require('./UIUtil');
 
 class ToastUI {
     //toast text template
-    private readonly template = `<p class="tText">{{msg}}</p>`;
+    private static readonly template = `<p class="tText">{{msg}}</p>`;
     //show toast class
-    private readonly toastShowClass = 'tShown';
+    private static readonly toastShowClass = 'tShown';
     //toast transition duration in ms
-    private readonly toastAnimDuration = 300;
+    private static readonly toastAnimDuration = 300;
     //toast show duration in ms
-    private readonly toastShowDuration = 3000;
+    private static readonly toastShowDuration = 3000;
     //element to toast in
     private readonly toastBox: HTMLElement;
     //toast queue so we don't multi-toast
@@ -41,27 +41,27 @@ class ToastUI {
         switch (this.toastState) {
             case TOAST_STATE.TOAST_HIDDEN:
                 //fill the toast
-                this.toastBox.innerHTML = UIUtil.templateEngine(this.template, { msg: this.toastQueue[0] });
+                this.toastBox.innerHTML = UIUtil.templateEngine(ToastUI.template, { msg: this.toastQueue[0] });
                 //show the toast
-                this.toastBox.classList.add(this.toastShowClass);
+                this.toastBox.classList.add(ToastUI.toastShowClass);
                 //update state
                 this.toastState = TOAST_STATE.TOAST_SHOW_TRANSITION;
                 //call this function again when the animation finishes
-                setTimeout(this.updateToast.bind(this), this.toastAnimDuration);
+                setTimeout(this.updateToast.bind(this), ToastUI.toastAnimDuration);
                 break;
             case TOAST_STATE.TOAST_SHOW_TRANSITION:
                 //update state
                 this.toastState = TOAST_STATE.TOAST_SHOWN;
                 //wait for toast to be read
-                setTimeout(this.updateToast.bind(this), this.toastShowDuration);
+                setTimeout(this.updateToast.bind(this), ToastUI.toastShowDuration);
                 break;
             case TOAST_STATE.TOAST_SHOWN:
                 //start the hiding animation
-                this.toastBox.classList.remove(this.toastShowClass);
+                this.toastBox.classList.remove(ToastUI.toastShowClass);
                 //update state
                 this.toastState = TOAST_STATE.TOAST_HIDE_TRANSITION;
                 //call this function when it finishes
-                setTimeout(this.updateToast.bind(this), this.toastAnimDuration);
+                setTimeout(this.updateToast.bind(this), ToastUI.toastAnimDuration);
                 break;
             case TOAST_STATE.TOAST_HIDE_TRANSITION:
                 //remove toast from queue

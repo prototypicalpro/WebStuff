@@ -26,14 +26,16 @@ var top: TopUI = new TopUI(true);
 var start;
 
 (<any>window).quickLoad = true;
-console.log("Quickstart load!");
-start = performance.now();
-console.log(start);
+//console.log("Quickstart load!");
+//start = performance.now();
+//console.log(start);
 
-var promiseMe: Promise<any> = 
-
-Promise.all([
-    data.initData().then(() => data.setUIObjs([top])).then(data.initUI.bind(data)).then(() => { return top.thumbPromise; }).catch((err) => {
+var promiseMe: Promise<any> = Promise.all([
+    data.initData().then(data.generateData.bind(data, [top])).then((dataRay) => { 
+        top.onInit(dataRay);
+        top.buildJS();
+        return top.thumbPromise; 
+    }).catch((err) => {
         console.log("Quickstart error!");
         console.log(err);
         (<any>window).quickLoad = false;

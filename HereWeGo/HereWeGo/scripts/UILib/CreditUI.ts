@@ -7,7 +7,7 @@ import UIUtil = require('./UIUtil');
 import IScroll = require('../iscroll-lite');
 
 class CreditUI extends UIUtil.UIItem {
-    private readonly template: string = `
+    private static readonly template: string = `
         <div class="credImg"></div>
         <div class="credImg" id="hmmm" style="height:30vh;top:70vh;background-image:none;box-shadow:none;"></div>
         <div id="credScroll" class="scrollHack" style="position:relative"> 
@@ -60,7 +60,7 @@ class CreditUI extends UIUtil.UIItem {
     }
 
     onInit(): string {
-        return this.template;
+        return CreditUI.template;
     }
 
     buildJS() {

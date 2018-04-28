@@ -17,6 +17,7 @@ import QuoteDataManage = require('./WHSLib/QuoteDataManage');
 import QuoteUI = require('./UILib/QuoteUI');
 import ScheduleGraphic = require('./UILib/ScheduleGraphic');
 import EventGraphic = require('./UILib/EventGraphic');
+import ScrollPageUI = require('./UILib/ScrollPageUI');
 import SlideTabUI = require('./UILib/SlideTabUI');
 import MenuUI = require('./UILib/MenuUI');
 import ButtonUI = require('./UILib/ButtonUI');
@@ -39,6 +40,8 @@ var menu: MenuUI;
 var slide: SlideTabUI;
 //popup thingy
 var popup: PopupUI;
+//array of ui objs
+var uiRay: Array<UIUtil.UIItem>;
 //cached height for status bar css
 var windowHeight;
 
@@ -79,8 +82,11 @@ function onDeviceReady(): void {
             //setup splashcreen loading animation
             HTMLMap.startLoad();
             return data.getNewData().then(buildUI);
-        } 
-        return data.refreshDataAndUI().catch((err) => { console.log(err); HTMLMap.startLoad(); return data.getNewData().then(buildUI); });
+        }
+        //else refresh and stuff into the items
+        return data.refreshData().then(data.generateData.bind(data, uiRay)).then((dataRay) => { 
+            for(let i = 0, len = uiRay.length; i < len; i++) uiRay[i].onUpdate(dataRay);
+        }).catch((err) => { console.log(err); HTMLMap.startLoad(); return data.getNewData().then(buildUI); });
     }).catch((err: any) => {
         console.log(err.message || err.name || err);
         if (err === ErrorUtil.code.HTTP_FAIL || err === ErrorUtil.code.FS_FAIL) setTimeout(toastError, 1000, "This phone is unsupported!");
@@ -90,8 +96,6 @@ function onDeviceReady(): void {
         //hide splascreen if it's still there
         HTMLMap.endLoad();
         navigator.splashscreen.hide();
-        //add kits flickr link
-        //document.querySelector("#flk").addEventListener("click", urlCallback("https://www.flickr.com/photos/kitrickmiller/"));
         //also start callback for every min to update time
         setTimeout(updateTime, 60010);
         let end = performance.now();
@@ -130,7 +134,7 @@ function resizeStatusBar() {
 
 function buildUI(): Promise<any> {
     //create popup
-    popup = new PopupUI({"Credits" : new CreditUI(urlCallback)});
+    popup = new PopupUI(data);
     //contruct menu
     menu = new MenuUI(
         //top menu section buttons
@@ -168,7 +172,7 @@ function buildUI(): Promise<any> {
                     icon: 'heart.png',
                     callback: () => {
                         menu.closeMenu();
-                        popup.showPage("Credits");
+                        popup.showPage(new CreditUI(urlCallback), "Credits");
                     },
                 },
             ])
@@ -178,7 +182,7 @@ function buildUI(): Promise<any> {
     const dayNum: number = new Date().getDay();
     slide = new SlideTabUI([
         //look ahead for five days
-        [
+        new ScrollPageUI([
             new ScheduleGraphic(0),
             new EventGraphic('Today', 0, false),
             new EventGraphic('Tomorrow', 1, true),
@@ -189,16 +193,35 @@ function buildUI(): Promise<any> {
             new ScheduleGraphic(3, true),
             new EventGraphic(TimeFormatUtil.asFullDayText(dayNum + 4), 4, true),
             new ScheduleGraphic(4, true),
-            new ButtonUI("SMItem evButton", "SMItemText SMItems", "Show More Events", () => { console.log("click") }, "right.png")
-        ]
-        //second page?
+            new ButtonUI("SMItem evButton", "SMItemText SMItems", "Show More Events", () => popup.showPage(new ScrollPageUI([
+                new EventGraphic(TimeFormatUtil.asFullDayText(dayNum + 5), 5, true),
+                new ScheduleGraphic(5, true),
+                new EventGraphic(TimeFormatUtil.asFullDayText(dayNum + 6), 6, true),
+                new ScheduleGraphic(6, true),
+                new EventGraphic(TimeFormatUtil.asFullDayText(dayNum + 7), 7, true),
+                new ScheduleGraphic(7, true),
+                new EventGraphic(TimeFormatUtil.asFullDayText(dayNum + 8), 8, true),
+                new ScheduleGraphic(8, true),
+                new EventGraphic(TimeFormatUtil.asFullDayText(dayNum + 9), 9, true),
+                new ScheduleGraphic(9, true),
+                new EventGraphic(TimeFormatUtil.asFullDayText(dayNum + 10), 10, true),
+                new ScheduleGraphic(10, true),
+            ], true), "Events"), "right.png"),
+        ]),
+        //TODO: second page doesn't actually work
+        //probably css?
         //naw
     ], ['Home', 'Schedule']);
     //start up the early data stuff
     //give the top all the data it needs
-    data.setUIObjs([top, slide, menu, popup]);
-    //init
-    return data.initUI();
+    uiRay = [top, slide, menu, popup];
+    //generate the data and stuff it into the items
+    return data.generateData(uiRay).then((dataRay: Array<any>) => {
+        for(let i = 0, len = uiRay.length; i < len; i++){
+            uiRay[i].onInit(dataRay);
+            uiRay[i].buildJS();
+        }
+    });
 }
 
 function onPause(): void {
@@ -219,12 +242,16 @@ var lastUpdateTime: Date;
 //sixty second timeupdate callback
 function updateTime(): void {
     //triggered!
-    data.timeUpdateUI();
+    for(let i = 0, len = uiRay.length; i < len; i++) if(uiRay[i].onTimeChanged) uiRay[i].onTimeChanged();
     //if date has changed
     let day = new Date();
     //get the time to the next min
     let time = new Date(day).setHours(day.getHours(), day.getMinutes() + 1) + 10;
-    if(lastUpdateTime && lastUpdateTime.getDate() != day.getDate()) data.refreshDataAndUI().then(() => timeCallbackID = setTimeout(updateTime, time - day.getTime()));
+    //if day has changed, get new data from the cloud and refresh the ui items
+    if(lastUpdateTime && lastUpdateTime.getDate() != day.getDate()) data.refreshData().then(data.generateData.bind(data, uiRay)).then((dataRay) => { 
+            for(let i = 0, len = uiRay.length; i < len; i++) uiRay[i].onUpdate(dataRay);
+            timeCallbackID = setTimeout(updateTime, time - day.getTime());
+        });
     //reset callback
     else timeCallbackID = setTimeout(updateTime, time - day.getTime());
     //reset day

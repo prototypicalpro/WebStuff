@@ -8,7 +8,7 @@ import UIUtil = require('./UIUtil');
 
 class ButtonUI extends UIUtil.UIItem {
     //main html! pretty simple, just a lot of varibles
-    private readonly strTemplate: string = `
+    private static readonly strTemplate: string = `
     <div class="{{wrapClass}}" id="{{id}}" style="{{image}}">
         <p class="{{textClass}}">{{text}}</p>
     </div>`
@@ -35,7 +35,7 @@ class ButtonUI extends UIUtil.UIItem {
         this.callback = callback;
         this.longPress = longPressCallback;
         this.disableAnim = disableAnim;
-        this.strStore = UIUtil.templateEngine(this.strTemplate, {
+        this.strStore = UIUtil.templateEngine(ButtonUI.strTemplate, {
             id: this.id,
             wrapClass: wrapClass,
             textClass: textClass,
