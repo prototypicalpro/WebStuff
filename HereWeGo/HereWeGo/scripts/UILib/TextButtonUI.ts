@@ -12,26 +12,36 @@
         <p class="{{textClass}}">{{text}}</p>
     </div>`
     private readonly imgTemplate: string = `background-image: url('./images/{{image}}')`;
-    //storage string (we'll just go straight to a string since nothing we get needs data)
-    private readonly strStore: string;
-
+    //storage members
+    private readonly wrapClass: string;
+    private readonly textClass: string;
+    private readonly text: string;
+    private readonly icon: string;
+    protected readonly callback: () => void;
+    protected readonly longPress?: () => void;
+    //do yo thang
     constructor(wrapClass: string, textClass: string, text: string, callback: () => void, icon?: string, longPressCallback?: () => void, disableAnim?: boolean) {
-        super(callback, longPressCallback, disableAnim);
-        this.strStore = UIUtil.templateEngine(TextButtonUI.strTemplate, {
-            id: this.id,
-            wrapClass: wrapClass,
-            textClass: textClass,
-            text: text,
-            image: icon ? UIUtil.templateEngine(this.imgTemplate, { image: icon }) : '',
-        });
+        super(disableAnim);
+        this.callback = callback;
+        this.longPress = longPressCallback;
+        this.wrapClass = wrapClass;
+        this.textClass = textClass;
+        this.text = text;
+        this.icon = icon;
     }
     //make a whole buncha that thing
-    static Factory(wrapClass: string, textClass: string, params: Array<UIUtil.ButtonParam>, disableAnim?: boolean): Array<ButtonUI> {
-        return params.map((param) => new TextButtonUI(wrapClass, textClass, param.text, param.callback, param.icon, param.longPressCallback, disableAnim));
+    static Factory(wrapClass: string, textClass: string, params: Array<UIUtil.ButtonParam>, disableAnim?: boolean): Array<TextButtonUI> {
+        return params.map(param => new TextButtonUI(wrapClass, textClass, param.text, param.callback, param.icon, param.longPressCallback, disableAnim));
     }
     //init dat HTML
     onInit(): string {
-        return this.strStore;
+        return UIUtil.templateEngine(TextButtonUI.strTemplate, {
+            id: this.id,
+            wrapClass: this.wrapClass,
+            textClass: this.textClass,
+            text: this.text,
+            image: this.icon ? UIUtil.templateEngine(this.imgTemplate, { image: this.icon }) : '',
+        });
     }
     //the rest (buildJS, etc.) is handled by the super class
  }

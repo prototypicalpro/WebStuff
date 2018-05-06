@@ -293,7 +293,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        dispatchSliderEvent('after', 'slide', {
 	            currentSlide: index
-	        });
+			});
+			
+			console.log("Slide: " + nextIndex);
 	    }
 	
 	    /**
@@ -383,7 +385,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        reset();
 
-            slide(options.defaultIndex);
+            if(options.defaultIndex) slide(options.defaultIndex);
 	
 	        if (prevCtrl && nextCtrl) {
 	            prevCtrl.addEventListener('click', prev);
@@ -566,7 +568,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            isScrolling = !!(isScrolling || Math.abs(delta.x) < Math.abs(delta.y));
 			}
             if (!isScrolling && touchOffset) {
-				//event.preventDefault();
+				event.preventDefault();
                 //USER MOD
                 //disable overflow scrolling
 				if (options.overflowScroll || !(!index && delta.x > 0 || index === slides.length - 1 && delta.x < 0)) translate(position.x + delta.x, 0, null);
@@ -619,7 +621,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                slide(false, direction);
 	            } else {
 	                translate(position.x, options.snapBackSpeed);
-	            }
+				}
+				event.preventDefault();
 	        }
 	
 	        touchOffset = undefined;
@@ -752,7 +755,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	function dispatchEvent(target, type, detail) {
 	    var event = new _customEvent2.default(type, {
-	        bubbles: true,
+	        bubbles: false,
 	        cancelable: true,
 	        detail: detail
 	    });

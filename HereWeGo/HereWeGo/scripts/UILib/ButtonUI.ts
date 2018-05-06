@@ -17,8 +17,8 @@ abstract class ButtonUI extends UIUtil.UIItem {
     private static readonly longPressTime: number = 500;
     //storage stuff
     private readonly disableAnim: boolean;
-    private readonly callback: () => void; //TODO: make protected
-    private readonly longPress: () => void;
+    private readonly maxXDelta: number;
+    private readonly maxYDelta: number;
     //storage document element for the button
     private buttonStore: HTMLElement;
     //storage bounding rect
@@ -26,14 +26,19 @@ abstract class ButtonUI extends UIUtil.UIItem {
     //storage touch id
     private touchStore: number; 
     private touchStart: number;
+    private touchX: number;
+    private touchY: number;
+    //callbacks
+    protected abstract callback: () => void;
+    protected longPress?: () => void;
     //make that thing
-    constructor(callback: () => void, longPressCallback?: () => void, disableAnim?: boolean) {
+    constructor(disableAnim?: boolean, maxXDelta?: number, maxYDelta?: number) {
         super();
-        this.callback = callback;
-        this.longPress = longPressCallback;
         this.disableAnim = disableAnim;
-        
+        this.maxXDelta = maxXDelta;
+        this.maxYDelta = maxYDelta;
     }
+    //the callbacks
 
     //handle all the selector stuff to make button work
     buildJS() {
@@ -52,12 +57,15 @@ abstract class ButtonUI extends UIUtil.UIItem {
         //we got a touch!
         //start the touch and hold animation for the button, but only if it's the first touch
         if (typeof this.touchStore !== 'number' && typeof e.changedTouches.item(0).identifier === 'number') {
+            //store the touch
+            let touch = e.changedTouches.item(0);
+            this.touchStore = touch.identifier;
+            this.touchX = touch.clientX;
+            this.touchY = touch.clientY;
+            this.touchStart = Date.now();
             //e.preventDefault();
             //store the client rect of the button
             this.rectStore = this.buttonStore.getBoundingClientRect();
-            //store the touch
-            this.touchStore = e.changedTouches.item(0).identifier;
-            this.touchStart = Date.now();
             if (!this.disableAnim) this.buttonStore.classList.add(ButtonUI.touchClass);
         }
     }
@@ -70,7 +78,9 @@ abstract class ButtonUI extends UIUtil.UIItem {
         //e.preventDefault();
         //check to make sure the pointer is still within the button
         if (ourTouch.clientX < this.rectStore.left || ourTouch.clientX > this.rectStore.left + this.rectStore.width ||
-            ourTouch.clientY < this.rectStore.top || ourTouch.clientY > this.rectStore.top + this.rectStore.height) {
+            ourTouch.clientY < this.rectStore.top || ourTouch.clientY > this.rectStore.top + this.rectStore.height ||
+            (this.maxXDelta && Math.abs(this.touchX - ourTouch.clientX) > this.maxXDelta) ||
+            (this.maxYDelta && Math.abs(this.touchY - ourTouch.clientY) > this.maxYDelta)) {
             this.touchStore = null;
             if (!this.disableAnim) this.buttonStore.classList.remove(ButtonUI.touchClass);
         }

@@ -65,6 +65,7 @@
     private transitionEndOpen = (() => {
         this.pageDiv.removeEventListener("transitionend", this.transitionEndOpen);
         this.page.buildJS();
+        if(this.page.onFocus) this.page.onFocus();
         this.backButton.addEventListener("touchstart", this.hidePage, true);
         document.addEventListener("backbutton", this.hidePage, true);
     }).bind(this);
