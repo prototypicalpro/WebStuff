@@ -142,23 +142,27 @@ class EventGraphic extends UIUtil.UIItem {
         //event item template
         //100% certified(!) unreadable
         private static readonly eventTemplate: string = `
-        <div id="{{id}}" class="evRow {{modCl}}">
-            <div class="leftCell"> 
-                <div class="incep"> 
-                    {{time}}
-                </div> 
-            </div>
-            <div class="rWrap" style="border-left: 2px solid {{lineColor}}">
-                <p class="evRight">{{name}}</p> 
+        <div id="{{id}}">
+            <div class="evRow {{modCl}}">
+                <div class="leftCell"> 
+                    <div class="incep"> 
+                        {{time}}
+                    </div> 
+                </div>
+                <div class="rWrap" style="border-left: 2px solid {{lineColor}}">
+                    <p class="evRight">{{name}}</p> 
+                </div>
             </div>
         </div>`;
         //setting which controls how long each line is
         private static readonly charLineMax: number = 30;
         //member varibles
+        protected readonly callback: () => void;
         private readonly strStore: string;
         //constructor
         constructor(modCl: string, time: string, lineColor: string, name: string) {
-            super(() => console.log("Click! " + this.id), null, false, 50);
+            super(false, 50);
+            //start by creating our HTML
             //add breakline tags to long titles
             let eventFix: string = '';
             //add breaklines to quote so we don't overflow

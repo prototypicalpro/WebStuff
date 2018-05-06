@@ -13,12 +13,12 @@
     </div>`
     private readonly imgTemplate: string = `background-image: url('./images/{{image}}')`;
     //storage members
+    protected readonly callback: () => void;
+    protected readonly longPress?: () => void;
     private readonly wrapClass: string;
     private readonly textClass: string;
     private readonly text: string;
     private readonly icon: string;
-    protected readonly callback: () => void;
-    protected readonly longPress?: () => void;
     //do yo thang
     constructor(wrapClass: string, textClass: string, text: string, callback: () => void, icon?: string, longPressCallback?: () => void, disableAnim?: boolean) {
         super(disableAnim);
