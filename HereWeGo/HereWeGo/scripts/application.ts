@@ -20,7 +20,7 @@ import EventGraphic = require('./UILib/EventGraphic');
 import ScrollPageUI = require('./UILib/ScrollPageUI');
 import SlideTabUI = require('./UILib/SlideTabUI');
 import MenuUI = require('./UILib/MenuUI');
-import ButtonUI = require('./UILib/ButtonUI');
+import TextButtonUI = require('./UILib/TextButtonUI');
 import PopupUI = require('./UILib/PopupUI');
 import CreditUI = require('./UILib/CreditUI');
 import { NoSchool } from './WHSLib/ScheduleUtil';
@@ -138,7 +138,7 @@ function buildUI(): Promise<any> {
     //contruct menu
     menu = new MenuUI(
         //top menu section buttons
-        ButtonUI.Factory('SMItem', 'SMItemText', [
+        TextButtonUI.Factory('SMItem', 'SMItemText', [
             {
                 text: 'Map',
                 icon: 'map.png',
@@ -166,7 +166,7 @@ function buildUI(): Promise<any> {
             }
         ]),
         (<Array<UIUtil.UIItem>>[new QuoteUI('quote', 36)]).concat(
-            ButtonUI.Factory('SMItem', 'SMItemText', [
+            TextButtonUI.Factory('SMItem', 'SMItemText', [
                 {
                     text: 'Credits',
                     icon: 'heart.png',
@@ -193,7 +193,7 @@ function buildUI(): Promise<any> {
             new ScheduleGraphic(3, true),
             new EventGraphic(TimeFormatUtil.asFullDayText(dayNum + 4), 4, true),
             new ScheduleGraphic(4, true),
-            new ButtonUI("SMItem evButton", "SMItemText SMItems", "Show More Events", () => popup.showPage(new ScrollPageUI([
+            new TextButtonUI("SMItem evButton", "SMItemText SMItems", "Show More Events", () => popup.showPage(new ScrollPageUI([
                 new EventGraphic(TimeFormatUtil.asFullDayText(dayNum + 5), 5, true),
                 new ScheduleGraphic(5, true),
                 new EventGraphic(TimeFormatUtil.asFullDayText(dayNum + 6), 6, true),

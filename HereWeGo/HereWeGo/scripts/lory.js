@@ -545,9 +545,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        delta = {};
 	
-	        dispatchSliderEvent('on', 'touchstart', {
-	            event: event
-	        });
+	        //dispatchSliderEvent('on', 'touchstart', {
+	        //    event: event
+	        //});
 	    }
 	
 	    function onTouchmove(event) {
@@ -573,9 +573,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        // may be
-	        dispatchSliderEvent('on', 'touchmove', {
-	            event: event
-			});
+	        //dispatchSliderEvent('on', 'touchmove', {
+	        //    event: event
+			//});
 			
 			//if the scrolling is false, cancel the touch
 			if(isScrolling) onTouchend();
@@ -633,9 +633,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        frame.removeEventListener('mouseup', onTouchend);
 	        frame.removeEventListener('mouseleave', onTouchend);
 	
-	        dispatchSliderEvent('on', 'touchend', {
-	            event: event
-	        });
+	        //dispatchSliderEvent('on', 'touchend', {
+	        //    event: event
+	        //});
 	    }
 	
 	    function onClick(event) {

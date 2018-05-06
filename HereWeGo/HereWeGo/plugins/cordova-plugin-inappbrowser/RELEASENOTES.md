@@ -20,6 +20,31 @@
 -->
 # Release Notes
 
+### 3.0.0 (Apr 12, 2018)
+* [CB-13659](https://issues.apache.org/jira/browse/CB-13659) **iOS** Add hidespinner option
+* In file `AppBrowser.java`: New code within `shouldOverrideUrlLoading()` to check for whitelisting custom schemes via a new `AllowedSchemes` preference configuration item.  Allows custom schemes like `mycoolapp://` or `wevotetwitterscheme://`
+* `InAppBrowser.java`: New method `isURLWhileListed` to check for whitelisting of `AllowedSchemes` in a new preference configuration item. There is a new check in `shouldOverrideUrlLoading`, to allow whitelisted custom schemes like "mycoolapp://"
+* Add customisation of the navigation buttons for **iOS**
+* Fix navigation buttons on **iOS**
+
+### 2.0.2 (Jan 24, 2018)
+* [CB-13791](https://issues.apache.org/jira/browse/CB-13791) Add **Android** support for a footer close button
+* [CB-13409](https://issues.apache.org/jira/browse/CB-13409) restore gitignore to default
+* [CB-13409](https://issues.apache.org/jira/browse/CB-13409) restore gitignore to default
+* [CB-13409](https://issues.apache.org/jira/browse/CB-13409) restore gitignore to default
+* [CB-13409](https://issues.apache.org/jira/browse/CB-13409) restore gitignore to default
+* [CB-13409](https://issues.apache.org/jira/browse/CB-13409) ignore idea folder
+* [CB-13409](https://issues.apache.org/jira/browse/CB-13409) change hidetoolbarnavigationbuttons to hidenavigationbuttons in iso
+* [CB-13409](https://issues.apache.org/jira/browse/CB-13409) **Android** works well now, all changes are now documented
+* [CB-13409](https://issues.apache.org/jira/browse/CB-13409) Lets user adjust color of toolbar, hide navigation buttons and set custom text on close button
+* [CB-13746](https://issues.apache.org/jira/browse/CB-13746) Add build-tools-26.0.2 to travis
+
+### 2.0.1 (Dec 27, 2017)
+* [CB-13699](https://issues.apache.org/jira/browse/CB-13699) Fix to allow 2.0.0 version install
+
+### 2.0.0 (Dec 15, 2017)
+* [CB-13662](https://issues.apache.org/jira/browse/CB-13662) remove deprecated platforms
+
 ### 1.7.2 (Nov 06, 2017)
 * [CB-13473](https://issues.apache.org/jira/browse/CB-13473) (CI) Removed **Browser** builds from AppVeyor
 * [CB-13472](https://issues.apache.org/jira/browse/CB-13472) (CI) Fixed Travis **Android** builds again

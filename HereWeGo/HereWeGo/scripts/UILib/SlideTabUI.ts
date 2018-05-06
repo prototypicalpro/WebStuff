@@ -4,12 +4,14 @@
  * and then displays them in android-style moving tab thingys
  * IDK how I'm going to handle touch and stuff yet
  * LOL NVM FUCK TOUCH. LIBRARY HERE WE COME
+ * 
+ * onFocus is called when the slide is done sliding on the screen
  */
 
 import UIUtil = require('./UIUtil');
 import HTMLMap = require('../HTMLMap');
 import lory = require('../lory');
-import ButtonUI = require('./ButtonUI');
+import TextButtonUI = require('./TextButtonUI');
 import TimeFormatUtil = require('../TimeFormatUtil');
 import IScroll = require('../iscroll-lite');
 import ScrollPageUI = require('./ScrollPageUI');
@@ -77,7 +79,7 @@ class SlideTabUI extends UIUtil.UIItem {
         let htmlStr = '';
         //create a bunch of button objects, bind thier callbacks, then destroy them b/c they don't need updating
         let buttonRay = this.names.map((name, index) => {
-            let button = new ButtonUI('menu', 'menuText', name, (() => this.storly.slideTo(index)).bind(this), null, null, true);
+            let button = new TextButtonUI('menu', 'menuText', name, (() => this.storly.slideTo(index)).bind(this), null, null, true);
             htmlStr += button.onInit();
             return button;
         });
@@ -88,8 +90,16 @@ class SlideTabUI extends UIUtil.UIItem {
         //set the top grey bar date correctly
         document.querySelector("#mainBText").innerHTML = TimeFormatUtil.asLongDayMonthText(new Date());
         this.dayUpdate = false;
-        //finally, run the pages js
+        //run the pages js
         for (let i = 0, len = this.pages.length; i < len; i++) this.pages[i].buildJS();
+        //bind the onSlideChanged function
+        thing.addEventListener('after.lory.slide', this.onSlideChanged.bind(this), { passive : true });
+    }
+
+    //call the onFocus of the children if thier slide has been slidden to
+    private onSlideChanged(evt: CustomEvent): void {
+        let currentSlide: number = evt.detail.currentSlide;
+        if(currentSlide !== 0 && this.pages[currentSlide - 1].onFocus) this.pages[currentSlide - 1].onFocus();
     }
 
     //onUpdate calls the update function of all the children

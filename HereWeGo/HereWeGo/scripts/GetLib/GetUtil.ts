@@ -20,16 +20,18 @@ namespace GetUtil {
     };
 
     //static utility functions
-    export let generateURL = (URL: string, params: any): string => {
+    export const generateURL = (URL: string, params: any): string => {
         //generate url
         let keys = Object.keys(params);
         if (keys.length === 0) return URL;
         URL += '?'
         for (let i = 0, len = keys.length; i < len; i++) URL += '&' + keys[i] + '=' + params[keys[i]];
+        //always remember to sanitize folks!
+        URL = encodeURI(URL);
         return URL;
     };
 
-    export let writeBlob = (fs: DirectoryEntry, fname: string, data: Blob): Promise<string>  => {
+    export const writeBlob = (fs: DirectoryEntry, fname: string, data: Blob): Promise<string>  => {
         return new Promise((resolve, reject) => {
             let error = (err) => { console.log(err); reject(ErrorUtil.code.FS_FAIL); };
             fs.getFile(fname, { create : true }, (file: FileEntry) => {

@@ -1,27 +1,24 @@
 ﻿/**
  * Simple UI Item to implement a clickable button
- * accepts classes in getHTML, meaning the css is meant to change
- * hopefully will include some fancy animations as well
+ * Handles all the javascript to detect if a touch is on/off your button
+ * and has short and long press actions
+ * includes some fancy animations as well
+ * 
+ * extending class MUST create an element selectable by '#(this.id)' where (this.id) is the id
+ * of the object
+ * ButtonUI will create a button around that element
  */
 
 import UIUtil = require('./UIUtil');
 
-class ButtonUI extends UIUtil.UIItem {
-    //main html! pretty simple, just a lot of varibles
-    private static readonly strTemplate: string = `
-    <div class="{{wrapClass}}" id="{{id}}" style="{{image}}">
-        <p class="{{textClass}}">{{text}}</p>
-    </div>`
-    private readonly imgTemplate: string = `background-image: url('./images/{{image}}')`;
+abstract class ButtonUI extends UIUtil.UIItem {
     //perminant class members for animations
-    private readonly touchClass: string = 'bTouch';
-    private readonly longPressTime: number = 500;
+    private static readonly touchClass: string = 'bTouch';
+    private static readonly longPressTime: number = 500;
     //storage stuff
     private readonly disableAnim: boolean;
     private readonly callback: () => void; //TODO: make protected
     private readonly longPress: () => void;
-    //storage string (we'll just go straight to a string since nothing we get needs data)
-    private readonly strStore: string;
     //storage document element for the button
     private buttonStore: HTMLElement;
     //storage bounding rect
@@ -30,32 +27,15 @@ class ButtonUI extends UIUtil.UIItem {
     private touchStore: number; 
     private touchStart: number;
     //make that thing
-    constructor(wrapClass: string, textClass: string, text: string, callback: () => void, icon?: string, longPressCallback?: () => void, disableAnim?: boolean) {
+    constructor(callback: () => void, longPressCallback?: () => void, disableAnim?: boolean) {
         super();
         this.callback = callback;
         this.longPress = longPressCallback;
         this.disableAnim = disableAnim;
-        this.strStore = UIUtil.templateEngine(ButtonUI.strTemplate, {
-            id: this.id,
-            wrapClass: wrapClass,
-            textClass: textClass,
-            text: text,
-            image: icon ? UIUtil.templateEngine(this.imgTemplate, { image: icon }) : '',
-        });
+        
     }
 
-    //make a whole buncha that thing
-    static Factory(wrapClass: string, textClass: string, params: Array<UIUtil.ButtonParam>, disableAnim?: boolean): Array<ButtonUI> {
-        return params.map((param) => { return new ButtonUI(wrapClass, textClass, param.text, param.callback, param.icon, param.longPressCallback, disableAnim); });
-    }
-
-
-    //init dat HTML
-    onInit(): string {
-        return this.strStore;
-    }
-
-    //init dat javascript
+    //handle all the selector stuff to make button work
     buildJS() {
         //add members
         this.buttonStore = document.querySelector('#' + this.id) as HTMLElement;
@@ -78,7 +58,7 @@ class ButtonUI extends UIUtil.UIItem {
             //store the touch
             this.touchStore = e.changedTouches.item(0).identifier;
             this.touchStart = Date.now();
-            if (!this.disableAnim) this.buttonStore.classList.add(this.touchClass);
+            if (!this.disableAnim) this.buttonStore.classList.add(ButtonUI.touchClass);
         }
     }
 
@@ -92,7 +72,7 @@ class ButtonUI extends UIUtil.UIItem {
         if (ourTouch.clientX < this.rectStore.left || ourTouch.clientX > this.rectStore.left + this.rectStore.width ||
             ourTouch.clientY < this.rectStore.top || ourTouch.clientY > this.rectStore.top + this.rectStore.height) {
             this.touchStore = null;
-            if (!this.disableAnim) this.buttonStore.classList.remove(this.touchClass);
+            if (!this.disableAnim) this.buttonStore.classList.remove(ButtonUI.touchClass);
         }
     }
 
@@ -104,11 +84,11 @@ class ButtonUI extends UIUtil.UIItem {
         //mine
         //e.preventDefault();
         //click button!
-        if (!this.disableAnim) this.buttonStore.classList.remove(this.touchClass);
+        if (!this.disableAnim) this.buttonStore.classList.remove(ButtonUI.touchClass);
         //clear touch cache
         this.touchStore = null;
         //run code!
-        if (this.longPress && Date.now() - this.touchStart > this.longPressTime) this.longPress();
+        if (this.longPress && Date.now() - this.touchStart > ButtonUI.longPressTime) this.longPress();
         else this.callback();
     }
 
@@ -120,7 +100,7 @@ class ButtonUI extends UIUtil.UIItem {
         //mine
         //e.preventDefault();
         //clear cache and classes
-        if (!this.disableAnim) this.buttonStore.classList.remove(this.touchClass);
+        if (!this.disableAnim) this.buttonStore.classList.remove(ButtonUI.touchClass);
         this.touchStore = null;
     }
 

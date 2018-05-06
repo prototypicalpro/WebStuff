@@ -84,9 +84,7 @@ class MenuUI extends UIUtil.UIItem {
         });
 
         //menu button check
-       document.querySelector("#menuButton").addEventListener('touchstart', (event) => {
-            this.openMenu();
-        });
+       document.querySelector("#menuButton").addEventListener('touchstart', (event) => this.openMenu());
 
         //tap outside of menu to close check
         document.querySelector('#' + this.id).addEventListener('touchend', (event) => {
@@ -96,6 +94,9 @@ class MenuUI extends UIUtil.UIItem {
                 this.closeMenu();
             }
         });
+
+        //onFocus check
+        HTMLMap.sideMenu.addEventListener('after.lory.slide', this.onSlideChanged.bind(this), { passive : true });
 
         //run the js of all our little dudes
         this.topItems.concat(this.botItems).map((item) => item.buildJS());
@@ -125,6 +126,14 @@ class MenuUI extends UIUtil.UIItem {
     closeMenu() {
         this.storly.slideTo(1);
         document.removeEventListener('backbutton', this.backButtonHandle);
+    }
+
+    //handle onslideend so we can call onFocus of the children
+    private onSlideChanged(evt: CustomEvent): void {
+        if(evt.detail.currentSlide === 0) {
+            for(let i = 0, len = this.topItems.length; i < len; i++) if(this.topItems[i].onFocus) this.topItems[i].onFocus();
+            for(let i = 0, len = this.botItems.length; i < len; i++) if(this.botItems[i].onFocus) this.botItems[i].onFocus();
+        }
     }
 }
 

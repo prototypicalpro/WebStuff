@@ -56,6 +56,13 @@
         for(let i = 0, len = this.items.length; i < len; i++) if(this.items[i].onTimeChanged) this.items[i].onTimeChanged();
         this.iscroll.refresh();
     }
+    //onFocus as well
+    onFocus(): void {
+        for(let i = 0, len = this.items.length; i < len; i++) if(this.items[i].onFocus) this.items[i].onFocus();
+        //also recalc IScroll
+        //just in case
+        this.iscroll.refresh();
+    }
  }
 
  export = ScrollPageUI;

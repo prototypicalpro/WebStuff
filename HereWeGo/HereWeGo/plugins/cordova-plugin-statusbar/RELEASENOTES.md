@@ -20,6 +20,15 @@
 -->
 # Release Notes
 
+### 2.4.2 (Apr 12, 2018)
+* [CB-12679](https://issues.apache.org/jira/browse/CB-12679) Remove Permissions section
+
+### 2.4.1 (Dec 27, 2017)
+* [CB-13712](https://issues.apache.org/jira/browse/CB-13712) (iOS): fix overlaysWebView reset on rotation (#92)
+
+### 2.4.0 (Dec 15, 2017)
+* [CB-13623](https://issues.apache.org/jira/browse/CB-13623) (iOS): Remove **iOS** 6-7 code
+
 ### 2.3.0 (Nov 06, 2017)
 * [CB-13476](https://issues.apache.org/jira/browse/CB-13476) (iOS): handle double size statusbar on SDK 10 for **iOS 11**
 * [CB-13394](https://issues.apache.org/jira/browse/CB-13394) (iOS): fix `iPhone X` StatusBar rendering in landscape

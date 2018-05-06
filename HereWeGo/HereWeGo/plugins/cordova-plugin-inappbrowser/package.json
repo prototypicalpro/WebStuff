@@ -1,73 +1,46 @@
 {
-  "_args": [
-    [
-      {
-        "raw": "cordova-plugin-inappbrowser@1.7.2",
-        "scope": null,
-        "escapedName": "cordova-plugin-inappbrowser",
-        "name": "cordova-plugin-inappbrowser",
-        "rawSpec": "1.7.2",
-        "spec": "1.7.2",
-        "type": "version"
-      },
-      "C:\\Users\\Noah\\Documents\\Visual Studio 2017\\Projects\\ReSpec\\ReSpec\\node_modules"
-    ]
-  ],
-  "_from": "cordova-plugin-inappbrowser@1.7.2",
-  "_id": "cordova-plugin-inappbrowser@1.7.2",
-  "_inCache": true,
+  "_from": "cordova-plugin-inappbrowser@3.0.0",
+  "_id": "cordova-plugin-inappbrowser@3.0.0",
+  "_inBundle": false,
+  "_integrity": "sha1-1K4A02Z2IQdRBXrSWK5K1KkWGto=",
   "_location": "/cordova-plugin-inappbrowser",
-  "_nodeVersion": "6.6.0",
-  "_npmOperationalInternal": {
-    "host": "s3://npm-registry-packages",
-    "tmp": "tmp/cordova-plugin-inappbrowser-1.7.2.tgz_1510361671053_0.9235093193128705"
-  },
-  "_npmUser": {
-    "name": "stevegill",
-    "email": "stevengill97@gmail.com"
-  },
-  "_npmVersion": "4.6.1",
   "_phantomChildren": {},
   "_requested": {
-    "raw": "cordova-plugin-inappbrowser@1.7.2",
-    "scope": null,
-    "escapedName": "cordova-plugin-inappbrowser",
+    "type": "version",
+    "registry": true,
+    "raw": "cordova-plugin-inappbrowser@3.0.0",
     "name": "cordova-plugin-inappbrowser",
-    "rawSpec": "1.7.2",
-    "spec": "1.7.2",
-    "type": "version"
+    "escapedName": "cordova-plugin-inappbrowser",
+    "rawSpec": "3.0.0",
+    "saveSpec": null,
+    "fetchSpec": "3.0.0"
   },
   "_requiredBy": [
     "#USER",
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/cordova-plugin-inappbrowser/-/cordova-plugin-inappbrowser-1.7.2.tgz",
-  "_shasum": "64763495be87eb2e7adb1a08f0209b96ea5ceee0",
-  "_shrinkwrap": null,
-  "_spec": "cordova-plugin-inappbrowser@1.7.2",
-  "_where": "C:\\Users\\Noah\\Documents\\Visual Studio 2017\\Projects\\ReSpec\\ReSpec\\node_modules",
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-inappbrowser/-/cordova-plugin-inappbrowser-3.0.0.tgz",
+  "_shasum": "d4ae00d36676210751057ad258ae4ad4a9161ada",
+  "_spec": "cordova-plugin-inappbrowser@3.0.0",
+  "_where": "/Users/dumbos/Documents/code/WebStuff/HereWeGo/HereWeGo",
   "author": {
     "name": "Apache Software Foundation"
   },
   "bugs": {
     "url": "https://issues.apache.org/jira/browse/CB"
   },
+  "bundleDependencies": false,
   "cordova": {
     "id": "cordova-plugin-inappbrowser",
     "platforms": [
       "android",
-      "amazon-fireos",
-      "ubuntu",
+      "browser",
       "ios",
       "osx",
-      "wp7",
-      "wp8",
-      "windows8",
-      "windows",
-      "firefoxos"
+      "windows"
     ]
   },
-  "dependencies": {},
+  "deprecated": false,
   "description": "Cordova InAppBrowser Plugin",
   "devDependencies": {
     "eslint": "^4.0.0",
@@ -78,17 +51,12 @@
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1"
   },
-  "directories": {},
-  "dist": {
-    "shasum": "64763495be87eb2e7adb1a08f0209b96ea5ceee0",
-    "tarball": "https://registry.npmjs.org/cordova-plugin-inappbrowser/-/cordova-plugin-inappbrowser-1.7.2.tgz"
-  },
   "engines": {
     "cordovaDependencies": {
       "0.2.3": {
         "cordova": ">=3.1.0"
       },
-      "2.0.0": {
+      "4.0.0": {
         "cordova": ">100"
       }
     }
@@ -102,54 +70,13 @@
     "inappbrowser",
     "ecosystem:cordova",
     "cordova-android",
-    "cordova-amazon-fireos",
-    "cordova-ubuntu",
+    "cordova-browser",
     "cordova-ios",
     "cordova-osx",
-    "cordova-wp7",
-    "cordova-wp8",
-    "cordova-windows8",
-    "cordova-windows",
-    "cordova-firefoxos"
+    "cordova-windows"
   ],
   "license": "Apache-2.0",
-  "maintainers": [
-    {
-      "name": "bowserj",
-      "email": "bowserj@apache.org"
-    },
-    {
-      "name": "csantanapr",
-      "email": "csantana23@gmail.com"
-    },
-    {
-      "name": "filmaj",
-      "email": "maj.fil@gmail.com"
-    },
-    {
-      "name": "kotikov.vladimir",
-      "email": "kotikov.vladimir@gmail.com"
-    },
-    {
-      "name": "purplecabbage",
-      "email": "purplecabbage@gmail.com"
-    },
-    {
-      "name": "sgrebnov",
-      "email": "sergei.grebnov@gmail.com"
-    },
-    {
-      "name": "shazron",
-      "email": "shazron@gmail.com"
-    },
-    {
-      "name": "stevegill",
-      "email": "stevengill97@gmail.com"
-    }
-  ],
   "name": "cordova-plugin-inappbrowser",
-  "optionalDependencies": {},
-  "readme": "ERROR: No README data found!",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/apache/cordova-plugin-inappbrowser.git"
@@ -159,5 +86,5 @@
     "test": "npm run eslint"
   },
   "types": "./types/index.d.ts",
-  "version": "1.7.2"
+  "version": "3.0.0"
 }

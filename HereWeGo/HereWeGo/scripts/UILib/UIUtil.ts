@@ -75,6 +75,11 @@ namespace UIUtil {
         onUpdate?(data: Array<any>): void;
         //update live feedback depending on time (called every minuete unless app is off)
         onTimeChanged?(): void;
+        //fires when the item has come into focus on the page
+        //may or may not be implemented in the parent class, but will always fire based
+        //off of the state rather than document queries
+        //ex. fires when the menu is opened
+        onFocus?(): void;
         //recv parameters, parsed from children at construction
         recvParams?: Array<UIUtil.RecvParams>;
     }

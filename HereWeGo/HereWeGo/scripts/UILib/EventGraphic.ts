@@ -4,6 +4,7 @@
  */
 
 import UIUtil = require('./UIUtil');
+import ButtonUI = require('./ButtonUI');
 import TimeUtil = require('../TimeFormatUtil');
 import EventData = require('../WHSLib/Interfaces/EventData');
 import ColorUtil = require('./ColorUtil');
@@ -19,11 +20,10 @@ class EventGraphic extends UIUtil.UIItem {
     private elem: HTMLElement;
     //template for overall
     private static readonly wrap: string = `<div id="{{id}}">{{stuff}}</div>`
-    private static readonly templateStr: string = `
-            <p class="header">{{head}}</p>
-            {{stuff}}`;
+    private static readonly templateStr: string = `<p class="header">{{head}}</p>
+                                                   {{stuff}}`;
     //and template for each item
-    //100% certified unreadable
+    //100% certified(!) unreadable
     //event item template
     private static readonly eventTemplate: string = `
         <div class="evRow {{modCl}}">
@@ -74,7 +74,7 @@ class EventGraphic extends UIUtil.UIItem {
 
     //store document objects
     buildJS() {
-       this.elem = document.querySelector('#' + this.id) as HTMLElement;
+        this.elem = document.querySelector('#' + this.id) as HTMLElement;
     }
 
     //master update func
@@ -157,6 +157,10 @@ class EventGraphic extends UIUtil.UIItem {
             });
         }
         else return '';
+    }
+    //on click of the event box
+    private onClick() {
+        console.log("Click! " + this.id);
     }
 }
 
