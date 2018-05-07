@@ -10,8 +10,8 @@ import NativeGet = require('./NativeGet');
 import ErrorUtil = require('../ErrorUtil');
 
 //list of all drivers useable in the app, in order of priority
-//const DRIVER_LIST: Array<any> = [NativeGet, FetchGet, XMLGet];
-const DRIVER_LIST: Array<any> = [FetchGet, XMLGet]; //comment this one if on mobile
+const DRIVER_LIST: Array<any> = [NativeGet, FetchGet, XMLGet];
+//const DRIVER_LIST: Array<any> = [FetchGet, XMLGet]; //comment this one if on mobile
 
 class GetLib {
     private useClass: GetUtil.GetInterface;
@@ -20,13 +20,13 @@ class GetLib {
     initAPI(): Promise<any> {
         //initialize filesystem
         return new Promise((resolve, reject) => {
-            /*(<any>window).resolveLocalFileSystemURL(cordova.file.cacheDirectory*/window.requestFileSystem(window.TEMPORARY, 0, resolve, e => {
+            (<any>window).resolveLocalFileSystemURL(cordova.file.cacheDirectory, resolve, e => {
                 console.log(e);
                 return reject(ErrorUtil.code.FS_FAIL);
             });
-        }).then((fs: FileSystem) => {
+        }).then((fs: FileEntry) => {
             for (let i = 0, len = DRIVER_LIST.length; i < len; i++) if (DRIVER_LIST[i].initAPI()) {
-                this.useClass = new DRIVER_LIST[i](fs.root);
+                this.useClass = new DRIVER_LIST[i](fs);
                 return;
             } 
             throw ErrorUtil.code.HTTP_FAIL;
