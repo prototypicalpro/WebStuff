@@ -9,6 +9,10 @@ import TimeUtil = require('../TimeFormatUtil');
 import EventData = require('../WHSLib/Interfaces/EventData');
 import ColorUtil = require('./ColorUtil');
 
+//this is cancerous, but store a callback to close each event menu
+//so there's only one open at a time
+var evClose: () => void = null;
+
 class EventGraphic extends UIUtil.UIItem {
     //template for overall
     private static readonly wrap: string = `<div id="{{id}}">{{stuff}}</div>`;
@@ -218,15 +222,25 @@ class EventGraphic extends UIUtil.UIItem {
         }
         //click callback func
         protected readonly callback: () => void = () => {
-            if(!this.descShown) this.descEl.classList.add(EventGraphic.EventRow.descShowClass);
-            else this.descEl.classList.remove(EventGraphic.EventRow.descShowClass);
+            if(!this.descShown) {
+                //close the last event description that was open
+                if(evClose) evClose();
+                //open ours
+                this.descEl.classList.add(EventGraphic.EventRow.descShowClass);
+                evClose = this.callback;
+            }
+            else {
+                //close ours
+                this.descEl.classList.remove(EventGraphic.EventRow.descShowClass);
+                evClose = null;
+            }
             this.descShown = !this.descShown;
             //resize so IScroll fixes it's sh*t
-            const callback = (() => {
+            const trans = (() => {
                 window.dispatchEvent(new Event('resize'))
-                this.descEl.removeEventListener('transitionend', callback, <any>{ passive : true, once : true });
+                this.descEl.removeEventListener('transitionend', trans, <any>{ passive : true, once : true });
             }).bind(this);
-            this.descEl.addEventListener('transitionend', callback, { passive : true, once : true });
+            this.descEl.addEventListener('transitionend', trans, { passive : true, once : true });
         }
     }
 }

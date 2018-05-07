@@ -12,6 +12,7 @@ namespace EventData {
         startTime,
         endTime,
         isAllDay,
+        desc,
     }
 
     export interface CancelledEventInterface {

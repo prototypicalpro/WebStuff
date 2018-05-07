@@ -22,6 +22,10 @@
         <img class="image" id="lowRes"></img>
         <img class="image" id="img"></img>
         <img id="load" style="display: none"></img>
+        <!-- what is this? a non breaking space? what use could this possibly have? -->
+        <!-- well as it turns out webviews are smart and only load fonts that are currently displayed -->
+        <!-- if we want the app to launch quickly, we need the font to be loaded by the time we have the data ready -->
+        <!-- so how can we tell the webview that there is a text there and not display any text? -->
         <p class="backText">&nbsp</p>
         <div class="shader"></div>
         <!-- Bottom Text stuff-->
