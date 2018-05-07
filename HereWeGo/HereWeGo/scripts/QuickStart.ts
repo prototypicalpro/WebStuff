@@ -18,7 +18,7 @@ import CalDataManage = require('./WHSLib/CalDataManage');
 import QuoteDataManage = require('./WHSLib/QuoteDataManage');
 
 //do everything we can without internet access for now
-var data: DataManage = new DataManage([new CalDataManage(), new ImageDataManage(null, 7, true), new QuoteDataManage()], null);
+var data: DataManage = new DataManage([new CalDataManage(null), new ImageDataManage(null, 7, true), new QuoteDataManage()], null);
 
 //frontpage graphic
 var top: TopUI = new TopUI(true);
