@@ -23,7 +23,8 @@ class NativeGet implements GetUtil.GetInterface {
     get(URL: string, params:any): Promise<Object> {
         console.log("Using native!");
         //fire away
-        return new Promise((resolve, reject) => { cordovaHTTP.get(URL, params, {}, resolve, reject); }).catch((err) => {
+        URL = GetUtil.generateURL(URL, params);
+        return new Promise((resolve, reject) => { cordovaHTTP.get(URL, {}, {}, resolve, reject); }).catch((err) => {
             console.log(err);
             throw ErrorUtil.code.NO_INTERNET;
         }).then((response: any) => {
