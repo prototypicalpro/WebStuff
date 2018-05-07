@@ -26,7 +26,7 @@ import CreditUI = require('./UILib/CreditUI');
 import { NoSchool } from './WHSLib/ScheduleUtil';
 
 var http: GetLib = new GetLib();
-var data: DataManage = new DataManage([new CalDataManage(), new QuoteDataManage(), new ImageDataManage(http, 7)], http);
+var data: DataManage = new DataManage([new CalDataManage(http), new QuoteDataManage(), new ImageDataManage(http, 7)], http);
 var toast: ToastUI = new ToastUI(HTMLMap.toastBox);
 
 var timeCallbackID;

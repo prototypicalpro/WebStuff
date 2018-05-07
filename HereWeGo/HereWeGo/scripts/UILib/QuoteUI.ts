@@ -8,7 +8,7 @@ import QuoteDataInterface = require('../WHSLib/Interfaces/QuoteDataInterface');
 
 class QuoteUI extends UIUtil.UIItem {
     //template, pretty simple
-    private static readonly templateStr: string = `<p class="{{className}}" id="{{id}}">{{text}}</p>`;
+    private static readonly templateStr: string = `<p class="smallT {{className}}" id="{{id}}">{{text}}</p>`;
     //storage stuff
     private readonly className: string;
     private readonly maxLen: number;

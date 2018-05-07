@@ -26,6 +26,7 @@ namespace EventData {
         schedule: boolean;
         title: string;
         cancelled: false;
+        desc?: string;
     }
 }
 

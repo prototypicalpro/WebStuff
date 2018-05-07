@@ -107,7 +107,7 @@ class EventGraphic extends UIUtil.UIItem {
                 if (schedNameIndex !== -1) {
                     let schedName = events[schedNameIndex].title;
                     //append schedule event at top
-                    ret.push(new EventGraphic.EventRow('evSmall', EventGraphic.allDayTime, '#00ff00', schedName ? schedName : 'No School'));
+                    ret.push(new EventGraphic.EventRow('evSmall', EventGraphic.allDayTime, '#00ff00', schedName ? schedName : 'No School', true));
                 }
                 else schedNameIndex = false;
             }
@@ -129,7 +129,9 @@ class EventGraphic extends UIUtil.UIItem {
                                                             end: TimeUtil.asSmallTime(events[i].endTime),
                                                         }),
                                                         lineColor,
-                                                        events[i].title));
+                                                        events[i].title,
+                                                        false,
+                                                        events[i].desc));
                 }
             }
             //return!
@@ -153,15 +155,24 @@ class EventGraphic extends UIUtil.UIItem {
                     <p class="evRight">{{name}}</p> 
                 </div>
             </div>
+            <div class="evSlide">
+                <div class="smallT evDesc">
+                    <p class="evDescHead">Description</p>
+                    <p class="evDescBody">{{desc}}</p>
+                </div>
+            </div>
         </div>`;
         //setting which controls how long each line is
         private static readonly charLineMax: number = 30;
+        //class which shows the event description
+        private static readonly descShowClass: string = "evSlideShow";
         //member varibles
-        protected readonly callback: () => void;
         private readonly strStore: string;
+        private descShown: boolean = false;
+        private descEl: HTMLElement;
         //constructor
-        constructor(modCl: string, time: string, lineColor: string, name: string) {
-            super(false, 50);
+        constructor(modCl: string, time: string, lineColor: string, name: string, isSchedule: boolean, desc?: string) {
+            super(false, 50, 20);
             //start by creating our HTML
             //add breakline tags to long titles
             let eventFix: string = '';
@@ -175,13 +186,18 @@ class EventGraphic extends UIUtil.UIItem {
                 name = name.slice(breakPoint + 1);
             }
             if (eventFix.length) name = eventFix + name;
+            //if it's a schedule event, we need to eventually figure out how to display the schedule
+            //eventaully
+            //TODO: above
+            if(isSchedule) desc = 'Developer is busy. Coming soon!'
             //construct event string!
             this.strStore = UIUtil.templateEngine(EventGraphic.EventRow.eventTemplate, {
                 id: this.id,
                 modCl: modCl,
                 time: time,
                 lineColor: lineColor,
-                name: name
+                name: name,
+                desc: desc ? desc : "No description provided"
             });
         }
         //onInit just returns the stored string
@@ -190,10 +206,27 @@ class EventGraphic extends UIUtil.UIItem {
         onInit() {
             return this.strStore;
         }
-        //buildJS and otherwise handled in superclass
+        //buildJS also grabs the description element
+        buildJS() {
+            super.buildJS();
+            //assume the button has grabed the wrapper div, so now grab the desc div in the wrapper
+            this.descEl = this.buttonStore.querySelector(".evSlide");
+        }
         //onFocus fetches the description
         onFocus() {
             //console.log("onFocus! " + this.id);
+        }
+        //click callback func
+        protected readonly callback: () => void = () => {
+            if(!this.descShown) this.descEl.classList.add(EventGraphic.EventRow.descShowClass);
+            else this.descEl.classList.remove(EventGraphic.EventRow.descShowClass);
+            this.descShown = !this.descShown;
+            //resize so IScroll fixes it's sh*t
+            const callback = (() => {
+                window.dispatchEvent(new Event('resize'))
+                this.descEl.removeEventListener('transitionend', callback, <any>{ passive : true, once : true });
+            }).bind(this);
+            this.descEl.addEventListener('transitionend', callback, { passive : true, once : true });
         }
     }
 }

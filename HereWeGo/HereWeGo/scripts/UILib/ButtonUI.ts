@@ -20,7 +20,7 @@ abstract class ButtonUI extends UIUtil.UIItem {
     private readonly maxXDelta: number;
     private readonly maxYDelta: number;
     //storage document element for the button
-    private buttonStore: HTMLElement;
+    protected buttonStore: HTMLElement;
     //storage bounding rect
     private rectStore: ClientRect;
     //storage touch id

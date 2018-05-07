@@ -69,6 +69,14 @@ p {
     margin: 0;
 }
 
+.smallT {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 600;
+    font-size: 3.5vw;
+    white-space: normal;
+    overflow-wrap: break-word;
+}
+
 /*
  * Background CSS
  * Displays the image and fancy gradient thingy
@@ -427,14 +435,10 @@ p {
 
 /* quote CSS */
 .quote {
-    margin-left: 4vw;
     color: gray;
-    font-weight: 600;
-    font-size: 3.5vw;
+    margin-left: 4vw;
     font-style: italic;
     width: 65vw;
-    white-space: normal;
-    overflow-wrap: break-word;
 }
 
 /*
@@ -446,17 +450,10 @@ p {
 .header {
     font-family: 'Open Sans', sans-serif;
     font-size: 5vw;
-    margin-left: 5vw;
+    margin-left: 4vw;
     margin-top: 1.6vh;
     margin-bottom: 1vh;
 }
-
-/* 
- * Schedule Graphic CSS
- * CSS to be used with a template generated later
- * by the javascript
- * Should display a nice schedule graphic once generated
- */
 
 /* Whole row CSS */
 .justRow {
@@ -519,12 +516,6 @@ p {
     vertical-align: top;
 }
 
-.evWrap {
-    margin-bottom: 1.25vh;
-    margin-left: 4.5vw;
-    margin-top: -0.75vh;
-}
-
 /* Regular Event Row CSS */
 .evRow {
     width: 100vw;
@@ -545,6 +536,37 @@ p {
     margin-bottom: 0.5vh;
     margin-left: 4.5vw;
 }
+
+/* event description popup CSS */
+.evDesc {
+    padding: 0 1vw 1vh 4vw;
+    overflow: hidden;
+    color: black;
+}
+
+.evDescHead {
+    margin: 1vh 0.6vh 0 0;
+}
+
+.evDescBody {
+    font-weight: 400;
+    color: #636363;
+}
+
+.evSlideShow {
+    display: block !important;
+    max-height: 100vh !important;
+    transition: max-height 150ms cubic-bezier(0.95, 0.05, 0.795, 0.035) !important;
+}
+
+.evSlide {
+    max-height: 0;
+    overflow: hidden;
+    background-color: #DCDCDC;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.2);
+    transition: max-height 400ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+
 
 /**
  * Button to show more events CSS

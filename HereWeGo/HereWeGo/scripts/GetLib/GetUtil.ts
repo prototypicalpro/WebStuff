@@ -23,9 +23,14 @@ namespace GetUtil {
     export const generateURL = (URL: string, params: any): string => {
         //generate url
         let keys = Object.keys(params);
-        if (keys.length === 0) return URL;
+        if (keys.length === 0) return encodeURI(URL);
         URL += '?'
-        for (let i = 0, len = keys.length; i < len; i++) URL += '&' + keys[i] + '=' + params[keys[i]];
+        for (let i = 0, len = keys.length; i < len; i++) {
+            let param = params[keys[i]];
+            if(!Array.isArray(param)) URL += '&' + keys[i] + '=' + param;
+            //iterate through array adding params of the same name
+            else for(let o = 0, len1 = param.length; o < len1; o++) URL += '&' + keys[i] + '=' + param[o];
+        }
         //always remember to sanitize folks!
         URL = encodeURI(URL);
         return URL;

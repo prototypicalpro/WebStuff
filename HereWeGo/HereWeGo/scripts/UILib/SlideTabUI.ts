@@ -56,6 +56,8 @@ class SlideTabUI extends UIUtil.UIItem {
             ease: 'cubic-bezier(0.1, 0.57, 0.1, 1)',
             //disable overflow scrolling
             overflowScroll: false,
+            //disable rewinding on resizing
+            rewindOnResize: false,
             //fancy indicators
             indicators: [{
                 element: document.querySelector('#menuLine'),

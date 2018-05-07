@@ -16,9 +16,10 @@ import DBManage = require('./DBLib/DBManage');
 import ErrorUtil = require('./ErrorUtil');
 import UIUtil = require('./UILib/UIUtil');
 
-const URL: string = 'https://script.google.com/a/koontzs.com/macros/s/AKfycbxyS4utDJEJ3bE2spSE4SIRlwj10M2Owbe7_XWrOFSobfniQjve/exec';
-
 class DataManage {
+    //url
+    public static readonly URL: string = 'https://script.google.com/a/koontzs.com/macros/s/AKfycbxyS4utDJEJ3bE2spSE4SIRlwj10M2Owbe7_XWrOFSobfniQjve/exec';
+    //private members
     private http: GetLib;
     private dataObj: Array<DataInterface>;
     private lastSyncTime: number;
@@ -27,9 +28,9 @@ class DataManage {
      * Stupid promise chaining functions
      */
 
-    private getData(): Promise<any> { return this.getS(URL, { syncTime: this.lastSyncTime, }); }
+    private getData(): Promise<any> { return this.getS(DataManage.URL, { syncTime: this.lastSyncTime, }); }
 
-    private getNewDataFunc(): Promise<any> { return this.getS(URL, {}); }
+    private getNewDataFunc(): Promise<any> { return this.getS(DataManage.URL, {}); }
 
     /*
      * Other utility functions

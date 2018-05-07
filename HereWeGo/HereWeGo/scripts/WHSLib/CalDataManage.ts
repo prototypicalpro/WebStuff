@@ -12,6 +12,8 @@ import DBManage = require('../DBLib/DBManage');
 import UIUtil = require('../UILib/UIUtil');
 import { EventInterface } from './Interfaces/EventData';
 import { RecvType, CalParams } from '../UILib/UIUtil';
+import GetLib = require('../GetLib/GetLib');
+import DataManage = require('../DataManage');
 
 //special enum for crappy code
 enum DBInfoEnum {
@@ -33,7 +35,7 @@ class CalDataManage implements DataInterface {
         {
             storeName: DBInfoEnum[DBInfoEnum.cal],
             keyPath: 'id',
-            keys: ['isAllDay', 'startTime', 'endTime', 'title', 'schedule'],
+            keys: ['isAllDay', 'startTime', 'endTime', 'schedule'],
         },
         {
             storeName: DBInfoEnum[DBInfoEnum.sched],
@@ -46,11 +48,17 @@ class CalDataManage implements DataInterface {
             keys: [],
         },
     ];
+    //storage http
+    private readonly http: GetLib;
+    //constructor
+    constructor(http: GetLib) {
+        this.http = http;
+    }
     //functions that use the above data to manipulate the cache
     //update data: remove the old, replace the new
     updateData(data: any): Promise<boolean> | false {
         //store our next steps
-        let nextFunc = (args: [IDBObjectStore, DBManage.DBInfoInterface]): Promise<boolean> => {
+        const nextFunc = (args: [IDBObjectStore, DBManage.DBInfoInterface]): Promise<boolean> => {
             //then do a buncha quuuueirereis to update the database entries
             //but put it all in promises just to be sure
             let ray: Array<Promise<any>> = [];
@@ -66,10 +74,10 @@ class CalDataManage implements DataInterface {
                     req.onerror = reject;
                 }));
             }
-            return Promise.all(ray).then(() => { return data.length > 0; });
+            return Promise.all(ray).then(() => data.length > 0);
         };
         //do things in parrellel!
-        let transactions: Array<IDBObjectStore> = this.dbInfo.map((dbInf) => { return this.db.transaction([dbInf.storeName], "readwrite").objectStore(dbInf.storeName); });
+        let transactions: Array<IDBObjectStore> = this.dbInfo.map(dbInf => this.db.transaction([dbInf.storeName], "readwrite").objectStore(dbInf.storeName));
         return Promise.all([
             new Promise((resolve, reject) => {
                 //decompress the calendar data
@@ -83,40 +91,49 @@ class CalDataManage implements DataInterface {
                     }
                     else resolve([transactions[DBInfoEnum.cal], this.dbInfo[DBInfoEnum.cal]]);
                 };
+            }).then((args) => {
+                return this.getDescriptions(data[this.dbInfo[DBInfoEnum.cal].storeName]).then((events) => {
+                    data[this.dbInfo[DBInfoEnum.cal].storeName] = events;
+                    return args;
+                });
             }).then(nextFunc),
             nextFunc([transactions[DBInfoEnum.sched], this.dbInfo[DBInfoEnum.sched]]),
             nextFunc([transactions[DBInfoEnum.time], this.dbInfo[DBInfoEnum.time]]),
-        ]).then((datums: Array<boolean>) => { return datums.indexOf(true) != -1; });
+        ]).then((datums: Array<boolean>) => datums.indexOf(true) !== -1);
     }
     //overwrite data: replace, database be damned
     overwriteData(data: any) {
         //inflate just calData
         data.cal = this.inflateCalCloudData(data.cal);
         //parellel!
-        return Promise.all(this.dbInfo.map(((dbInf: DBManage.DBInfoInterface) => {
-            //object store
-            let objectStore: IDBObjectStore;
-            //promises! yay!
-            return new Promise((resolve, reject) => {
-                objectStore = this.db.transaction([dbInf.storeName], "readwrite").objectStore(dbInf.storeName);
-                //clear object store
-                let req: IDBRequest = objectStore.clear();
-                req.onsuccess = resolve;
-                req.onerror = reject;
-            }).then(() => {
-                //fill it with the new datums
-                let ray: Array<Promise<any>> = [];
-                for (let i = 0, len = data[dbInf.storeName].length; i < len; i++) {
-                    ray.push(new Promise((resolve, reject) => {
-                        let req = objectStore.add(data[dbInf.storeName][i]);
-                        req.onsuccess = resolve;
-                        req.onerror = reject;
-                    }));
-                }
-                //and run them all
-                return Promise.all(ray);
-            });
-        }).bind(this)));
+        return this.getDescriptions(data.cal).then((descData) => {
+            data.cal = descData;
+            return Promise.all(this.dbInfo.map(((dbInf: DBManage.DBInfoInterface) => {
+                //object store
+                let objectStore: IDBObjectStore;
+                //promises! yay!
+                return new Promise((resolve, reject) => {
+                    objectStore = this.db.transaction([dbInf.storeName], "readwrite").objectStore(dbInf.storeName);
+                    //clear object store
+                    let req: IDBRequest = objectStore.clear();
+                    req.onsuccess = resolve;
+                    req.onerror = reject;
+                }).then(() => {
+                    //fill it with the new datums
+                    let ray: Array<Promise<any>> = [];
+                    for (let i = 0, len = data[dbInf.storeName].length; i < len; i++) {
+                        ray.push(new Promise((resolve, reject) => {
+                            let req = objectStore.add(data[dbInf.storeName][i]);
+                            req.onsuccess = resolve;
+                            req.onerror = reject;
+                        }));
+                    }
+                    //and run them all
+                    return Promise.all(ray);
+                });
+            }).bind(this)));
+        });
+        
     }
 
     //private utility function to uncompress data from the cloud
@@ -259,7 +276,7 @@ class CalDataManage implements DataInterface {
                         req2.onerror = reject;
                     };
                     req.onerror = reject;
-                    //yaaaaay caaaalbaaaacks
+                    //yaaaaay caaaallbaaaacks
                 });
             })).then((scheds: Array<[number, false | ScheduleUtil.Schedule]>) => {
                 //index schedule based on start time
@@ -267,6 +284,33 @@ class CalDataManage implements DataInterface {
                 for (let i = 0, len = scheds.length; i < len; i++) if (scheds[i] && scheds[i][1]) schedRet[scheds[i][0]] = scheds[i][1];
                 return { events: ret, scheds: schedRet };
             });
+        });
+    }
+    //utility function which fetches the description of a given event
+    private getDescriptions(events: Array<EventData.EventInterface>): Promise<Array<EventData.EventInterface>> {
+        if(events.length === 0) return Promise.resolve(events);
+        //create URL parameters from the events list
+        let params = { descIds: events.map(e => e.id), descStart: events[0].startTime, descEnd: events[0].startTime };
+        for(let i = 0, len = events.length; i < len; i++) {
+            //expand window of events to get by events we have
+            if(events[i].startTime < params.descStart) params.descStart = events[i].startTime;
+            else if(events[i].startTime > params.descEnd) params.descEnd = events[i].startTime;
+        }
+        //get them all (mwahahah)
+        return this.http.get(DataManage.URL, params).then((obj: any) => {
+            const data: Array<EventData.EventInterface> = obj.descData;
+            const keys = Object.keys(data);
+            //match the descriptions with thier events
+            for(let i = 0, len = keys.length; i < len; i++) {
+                //ensure string so we can use fast comparision
+                let key = keys[i];
+                if(key.toString) key = key.toString(); 
+                let found = events.find(event => event.id === keys[i]);
+                //also filter weird google endlines
+                if(found) found.desc = data[keys[i]].replace(/\n|\u2028/gmi, "<br>");
+                else console.log("ID " + keys[i] + " not found in desc");
+            }
+            return events;
         });
     }
 }

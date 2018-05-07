@@ -10,17 +10,17 @@ import ImageInterface = require('./Interfaces/ImageInterface');
 import { DBInfoInterface } from '../DBLib/DBManage';
 import ErrorUtil = require('../ErrorUtil');
 
-const THUMB_URL: string = 'https://drive.google.com/thumbnail'
-const IMG_IND_ID: string = '2';
-const IMG_DAY_ID: string = '3';
-const THUMB_REZ: number = 1.0/4.0;
-
 interface CloudData {
     index: number;
     data: Array<ImageInterface>;
 }
 
 class ImageDataManage implements DataInterface {
+    //settings
+    private static readonly thumbURL = 'https://drive.google.com/thumbnail';
+    private static readonly imgIndID = '2';
+    private static readonly imgDayID = '3';
+    private static readonly thumbRez = 1.0/4.0;
     //type
     readonly dataType = UIUtil.RecvType.IMAGE;
     //database stuff
@@ -64,11 +64,11 @@ class ImageDataManage implements DataInterface {
         //check index
         if(typeof data.index === 'number') {
             //refresh index
-            localStorage.setItem(IMG_DAY_ID, new Date().setHours(0,0,0,0).toString());
-            localStorage.setItem(IMG_IND_ID, data.index.toString());
+            localStorage.setItem(ImageDataManage.imgDayID, new Date().setHours(0,0,0,0).toString());
+            localStorage.setItem(ImageDataManage.imgIndID, data.index.toString());
             this.index = data.index;
         }
-        else if (typeof this.index != 'number') this.index = parseInt(localStorage.getItem(IMG_IND_ID));
+        else if (typeof this.index != 'number') this.index = parseInt(localStorage.getItem(ImageDataManage.imgIndID));
         //refresh data
         if (!Array.isArray(data.data) || data.data.length === 0) {
             if (this.cacheRefresh) return this.fillPicPromises(this.storeNum).then(() => this.cacheRefresh = false);
@@ -108,8 +108,8 @@ class ImageDataManage implements DataInterface {
     //overwriteData func
     overwriteData(data: CloudData): Promise<any> {
         //refresh index
-        localStorage.setItem(IMG_DAY_ID, new Date().setHours(0, 0, 0, 0).toString());
-        localStorage.setItem(IMG_IND_ID, data.index.toString());
+        localStorage.setItem(ImageDataManage.imgDayID, new Date().setHours(0, 0, 0, 0).toString());
+        localStorage.setItem(ImageDataManage.imgIndID, data.index.toString());
         this.index = data.index;
         //add iowait for any images making write calls to the database
         let thenme: Promise<any>;
@@ -133,19 +133,19 @@ class ImageDataManage implements DataInterface {
                 req2.onsuccess = resolve1;
             });
             return Promise.all(ray);
-        }).then(() => { return this.fillPicPromises(this.storeNum); })
+        }).then(() => this.fillPicPromises(this.storeNum))
     }
 
     getData(): Promise<Array<Promise<string>>> | [Promise<string>, Promise<string>] | Promise<[Promise<string>, Promise<string>]> | Promise<false>{
         if (!this.picPromise) {
             //get crap from localstorage
-            let lastDay: number = parseInt(localStorage.getItem(IMG_DAY_ID));
-            this.index = parseInt(localStorage.getItem(IMG_IND_ID));
+            let lastDay: number = parseInt(localStorage.getItem(ImageDataManage.imgDayID));
+            this.index = parseInt(localStorage.getItem(ImageDataManage.imgIndID));
             if (!lastDay || typeof this.index != 'number') throw ErrorUtil.code.NO_STORED;
             let today = new Date().setHours(0, 0, 0, 0);
             if (lastDay != today) {
-                localStorage.setItem(IMG_DAY_ID, today.toString());
-                localStorage.setItem(IMG_IND_ID, (this.index += this.daysBetweenDates(lastDay, today)).toString());
+                localStorage.setItem(ImageDataManage.imgDayID, today.toString());
+                localStorage.setItem(ImageDataManage.imgIndID, (this.index += this.daysBetweenDates(lastDay, today)).toString());
             }
             //make the promises for today, then return them
             //get the database entry for the stored images
@@ -169,7 +169,7 @@ class ImageDataManage implements DataInterface {
                 let tmp = this.index;
                 let objCount = evtCount.target.result;
                 while (tmp >= objCount) tmp -= objCount;
-                if(this.index != tmp) localStorage.setItem(IMG_IND_ID, (this.index = tmp).toString());
+                if(this.index != tmp) localStorage.setItem(ImageDataManage.imgIndID, (this.index = tmp).toString());
                 //count the number of items to wrap around and fetch at the start of the cursor
                 let temp = picNum + this.index;
                 let count = temp - objCount;
@@ -184,9 +184,9 @@ class ImageDataManage implements DataInterface {
                     if (cursor && i >= this.index || count > 0) {
                         let tempScope = cursor.value;
                         let tH = window.innerHeight;
-                        let tempPromise = this.getAndStoreImage(tempScope, "thumb", THUMB_URL, Math.floor(tH * THUMB_REZ),  tempScope.id, false);
+                        let tempPromise = this.getAndStoreImage(tempScope, "thumb", ImageDataManage.thumbURL, Math.floor(tH * ImageDataManage.thumbRez),  tempScope.id, false);
                         let tempP2;
-                        if(!this.cheapData) tempP2 = Promise.resolve(tempPromise).then(() => { return this.getAndStoreImage(tempScope, "image", THUMB_URL, tH, tempScope.id, true, true); });
+                        if(!this.cheapData) tempP2 = Promise.resolve(tempPromise).then(() => { return this.getAndStoreImage(tempScope, "image", ImageDataManage.thumbURL, tH, tempScope.id, true, true); });
                         else tempP2 = tempPromise;
                         //push such that they end up in order, even though we may wrap around
                         if (count > 0)  {

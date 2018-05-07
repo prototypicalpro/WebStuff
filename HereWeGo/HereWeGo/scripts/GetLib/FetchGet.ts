@@ -15,7 +15,6 @@ class FetchGet implements GetUtil.GetInterface {
     }
 
     get(URL: string, params: any): Promise<Object> {
-        console.log("Using fetch!");
         URL = GetUtil.generateURL(URL, params);
         //fire away
         return fetch(URL).catch((err) => {
