@@ -5,13 +5,6 @@ import NativeGet = require('./NativeGet');
 import ErrorUtil = require('../ErrorUtil');
 
 /**
- * List of all drivers useable in the app, in order of priority.
- * Comment the top one out if debugging on browser.
- */
-const DRIVER_LIST: Array<any> = [NativeGet, FetchGet, XMLGet];
-//const DRIVER_LIST: Array<any> = [FetchGet, XMLGet]; //comment this one if on mobile
-
-/**
  * HTML manager which simplifies fallback of alternate http clients,
  * overly complicated and abstract, but simple to use upfront.
  */
@@ -25,13 +18,33 @@ class GetLib implements GetUtil.GetInterface {
      * @throws FS_FAIL or HTTP_FAIL
      */
     initAPI(): Promise<any> {
+        //detect if simulator
+        const isSimulator = cordova.file.applicationDirectory === "http://localhost:8000/"
         //initialize filesystem
-        return new Promise((resolve, reject) => {
-            (<any>window).resolveLocalFileSystemURL(cordova.file.cacheDirectory, resolve, e => {
-                console.log(e);
-                return reject(ErrorUtil.code.FS_FAIL);
+        //detect if we're simulating in browser
+        var promise: Promise<DirectoryEntry>;
+        if(isSimulator) {
+            promise = new Promise((resolve, reject) => {
+                //request chrome filesystem
+                window.requestFileSystem(window.TEMPORARY, 0, resolve, e => {
+                    console.log(e);
+                    return reject(ErrorUtil.code.FS_FAIL);
+                });
+            }).then((fs: FileSystem) => fs.root);
+        }
+        else {
+            promise = new Promise((resolve, reject) => {
+                //request cordova filesystem
+                (<any>window).resolveLocalFileSystemURL(cordova.file.cacheDirectory, resolve, e => {
+                    console.log(e);
+                    return reject(ErrorUtil.code.FS_FAIL);
+                });
             });
-        }).then((fs: FileEntry) => {
+        }
+        return promise.then((fs: DirectoryEntry) => {
+            var DRIVER_LIST;
+            if(isSimulator) DRIVER_LIST = [FetchGet, XMLGet];
+            else DRIVER_LIST = [NativeGet, FetchGet, XMLGet];
             //initialize http by trying clients until one works
             for (let i = 0, len = DRIVER_LIST.length; i < len; i++) if (DRIVER_LIST[i].initAPI()) {
                 this.useClass = new DRIVER_LIST[i](fs);

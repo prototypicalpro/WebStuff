@@ -1,0 +1,30 @@
+{
+	"folders": [
+		{
+			"path": "HereWeGo"
+		}
+	],
+	"settings": {
+		"cordova.simulatorInExternalBrowser": true,
+		"workbench.iconTheme": "vscode-icons",
+		"files.exclude": {
+			"**/.git": true,
+			"**/.svn": true,
+			"**/.hg": true,
+			"**/CVS": true,
+			"**/.DS_Store": true,
+			"node_modules": true,
+			"plugins": true,
+			"platforms": true,
+			"merges": true
+		},
+	},
+	"extensions": {
+		"recommendations": [
+			"vsmobile.cordova-tools",
+			"eg2.vscode-npm-script",
+			"christian-kohler.path-intellisense",
+			"robertohuertasm.vscode-icons",
+		]
+	}
+}

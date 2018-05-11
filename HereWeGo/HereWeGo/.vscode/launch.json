@@ -57,7 +57,8 @@
             "simulatePort": 8000,
             "livereload": true,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}"
+            "cwd": "${workspaceRoot}",
+            "corsproxy": true,
         },
         {
             "name": "Simulate iOS in browser",
@@ -68,7 +69,8 @@
             "simulatePort": 8000,
             "livereload": true,
             "sourceMaps": true,
-            "cwd": "${workspaceRoot}"
+            "cwd": "${workspaceRoot}",
+            "corsproxy": true,
         },
     ]
 }

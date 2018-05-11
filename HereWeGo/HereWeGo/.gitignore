@@ -4,4 +4,8 @@
 [Pp]lugins/wp8.json
 [Pp]lugins/remote_ios.json
 /[Pp]latforms/
-/node_modules/*
+node_modules
+merges
+platforms
+plugins
+www/scripts

@@ -1,0 +1,7 @@
+install dependencies https://cordova.apache.org/docs/en/latest/guide/platforms/android/
+npm i -g cordova (as admin)
+install adb to path https://www.xda-developers.com/adb-fastboot-any-directory-windows-linux/
+cordova platform add android
+tsc
+Run Android on device
+Simulate IOS in browser (Not android as of yet)
