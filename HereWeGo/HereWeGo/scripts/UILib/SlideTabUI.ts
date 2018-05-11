@@ -40,7 +40,7 @@ class SlideTabUI extends UIUtil.UIItem {
         //get all the htmls in parellel
         //this chaining is gonna be beutiful
         //for every array of pages
-        HTMLMap.setSliderHTML(this.pages.map((page) => UIUtil.templateEngine(SlideTabUI.slideWrapperTemplate, {c : page.onInit(data)})).join('')); //one. freaking. line
+        HTMLMap.setSliderHTML(this.pages.map(page => UIUtil.templateEngine(SlideTabUI.slideWrapperTemplate, {c : page.onInit(data)})).join('')); //one. freaking. line
     }
     
     buildJS() {

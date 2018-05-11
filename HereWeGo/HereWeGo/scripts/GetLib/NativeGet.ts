@@ -1,13 +1,11 @@
-﻿/*
- * Native HTTP Client implementation
- * TODO: Add Error handling
- */
-
-import GetUtil = require('./GetUtil');
+﻿import GetUtil = require('./GetUtil');
 import ErrorUtil = require('../ErrorUtil');
 
+/**
+ * Native HTTP Client implementation via cordova-http.
+ */
 class NativeGet implements GetUtil.GetInterface {
-    //check to see whether cordova exists
+    /** See {@link GetUtil.GetInterface.initAPI} */
     static initAPI(): boolean { 
         //console.log(cordovaHTTP.get);
         return typeof cordovaHTTP != 'undefined'; 
@@ -19,7 +17,7 @@ class NativeGet implements GetUtil.GetInterface {
         this.fs = fs;
     }
 
-    //do the magic
+    /** See {@link GetUtil.GetInterface.get} */
     get(URL: string, params:any): Promise<Object> {
         console.log("Using native!");
         //fire away
@@ -34,7 +32,8 @@ class NativeGet implements GetUtil.GetInterface {
         });
     }
 
-    getAsBlob(URL: string, params: GetUtil.ParamInterface): Promise<string> {
+    /** See {@link GetUtil.GetInterface.getAsBlob} */
+    getAsBlob(URL: string, params: any): Promise<string> {
         //fire away
         let fname = this.fs.toURL() + params.id;
         if(params.isFullRez) fname += 'FR';

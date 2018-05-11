@@ -1,11 +1,11 @@
-﻿/*
- * Non-Native HTTP Client Implementation
- */
-
-import GetUtil = require('./GetUtil');
+﻿import GetUtil = require('./GetUtil');
 import ErrorUtil = require('../ErrorUtil');
 
+/**
+ * Non-Native HTTP Client Implementation.
+ */
 class FetchGet implements GetUtil.GetInterface {
+    /** See {@link GetUtil.GetInterface.initAPI} */
     static initAPI(): boolean { return typeof fetch !== "undefined"; }
 
     private fs: DirectoryEntry;
@@ -14,6 +14,7 @@ class FetchGet implements GetUtil.GetInterface {
         this.fs = fs;
     }
 
+    /** See {@link GetUtil.GetInterface.get} */
     get(URL: string, params: any): Promise<Object> {
         URL = GetUtil.generateURL(URL, params);
         //fire away
@@ -29,6 +30,7 @@ class FetchGet implements GetUtil.GetInterface {
         });
     }
 
+    /** See {@link GetUtil.GetInterface.getAsBlob} */
     getAsBlob(URL: string, params: any): Promise<string> {
         let fullRez = params.isFullRez;
         delete params.isFullRez;

@@ -1,11 +1,11 @@
-/*
- * Non-Native HTTP Client Implementation for Older webviews
- */
-
 import GetUtil = require('./GetUtil');
 import ErrorUtil = require('../ErrorUtil');
 
+/** 
+ * Non-Native HTTP Client Implementation for Older webviews using XHR.
+ */
 class FetchGet implements GetUtil.GetInterface {
+    /** See {@link GetUtil.GetInterface.initAPI} */
     static initAPI(): boolean { return typeof XMLHttpRequest !== "undefined"; }
 
     private fs: DirectoryEntry;
@@ -14,6 +14,7 @@ class FetchGet implements GetUtil.GetInterface {
         this.fs = fs;
     }
 
+    /** See {@link GetUtil.GetInterface.get} */
     get(URL: string, params: any): Promise<Object> {
         console.log("Using XML!");
         URL = GetUtil.generateURL(URL, params);
@@ -33,6 +34,7 @@ class FetchGet implements GetUtil.GetInterface {
         });
     }
 
+    /** See {@link GetUtil.GetInterface.getAsBlob} */
     getAsBlob(URL: string, params: any): Promise<string> {
         URL = GetUtil.generateURL(URL, params);
         //fire away

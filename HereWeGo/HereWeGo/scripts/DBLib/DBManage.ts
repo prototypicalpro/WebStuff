@@ -2,25 +2,30 @@
  * Class which should allow for better database management, since all files
  * in this project use indexedDB
  * Takes an array of object which define that part of the db, then somehow passes the database
- * pointer along to the other components
+ * pointer along to the other components.
  */
 
 namespace DBManage {
-    //database name constant
+    /** Database name constant, do not change */
     const dbName: string = 'nope';
-    //database verison constant, increment to erase
+    /** Database version constant, increment to clear storage on update */
     const dbVersion: number = 12;
-    //interface to define propwerties of the database to be constructed
+    /** Interface defining the properties of the databases to be contructed */
     export interface DBInfoInterface {
-        //name of the object store to use
+        /** name of the object store to use */
         storeName: string;
-        //array of keys to generate in that object store
+        /** array of keys to generate in that object store */
         keys: Array<string>;
-        //string for the keypath of the database
+        /** string for the keypath of the database */
         keyPath: string;
     }
     //and the lone function which does all the magic
-    export const constructDB = (args: Array<DBInfoInterface | Array<DBInfoInterface>>): Promise<IDBDatabase> => {
+    /**
+     * Fetch a pointer to indexed DB, or create our database based on the properties specified
+     * @param args Array of objects specifying the properties of the requested object stores
+     * @returns The database, or an array which contains a boolean and the database if the database has been upgraded
+     */
+    export const constructDB = (args: Array<DBInfoInterface | Array<DBInfoInterface>>): Promise<IDBDatabase | [IDBDatabase, boolean]> => {
         let isUpgraded: boolean;
         //flatten dbs
         let dbs: Array<DBInfoInterface> = args.concat.apply([], args).filter((dbInf) => { return dbInf; });

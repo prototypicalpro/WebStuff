@@ -112,7 +112,7 @@ class DataManage {
      */
 
     generateData(items: Array<UIUtil.UIItem>): Promise<Array<any>> {
-        return Promise.all(this.dataObj.map((obj, index) => { return obj.getData(items); }));
+        return Promise.all(this.dataObj.map(obj => obj.getData(items)));
     }
 
     //TODO: Apply data to specific item so we don't have to figure it out at launch

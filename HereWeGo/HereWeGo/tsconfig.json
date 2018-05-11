@@ -1,6 +1,7 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
+    "skipLibCheck": true,
     "noImplicitAny": false,
     "noEmitOnError": true,
     "removeComments": true,
@@ -9,7 +10,7 @@
     "outDir": "www",
     "module": "amd",
     "target": "es6",
-    "watch": true
+    //"watch": true
   },
   "exclude": ["platforms", "node_modules", "bower_components", "plugins", "merges", "res", "bin", "bld", "www", "build_scripts"]
 }

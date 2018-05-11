@@ -1,95 +1,141 @@
 ﻿/**
- * This file should serve to provide a template for a google cards-esq list of informational
- * things. The elements of HTML will be constructed in each module implementing this interface
- * then this interface will allow a manager class to then put those elements into the actual HTML
- *
- * I also might make those files add CSS, but probably not..?
- * Will also include some templating-engine-esq utility functions
+ * Provides useful functions and interfaces for the UI system.
+ * 
+ * I don't know how many events there are until the day of, and as a result I don't know how many event graphics 
+ * we need to construct until the app is opened. The solution is dynamically generate the HTML at the start based 
+ * on the data given to us. Industry experience (googling) has shown me that the fasted way to do this is to create 
+ * what is known as a templating engine (ex. {@link http://mustache.github.io/mustache.5.html})
+ * which uses string manipulation to create HTML pages and then renders it all at once. Of course I wanted fast and compact so
+ * I wrote my own found here: {@link UIUtil.templateEngine}
+ * 
+ * The rest of the UI component system is designed around using this templating engine to increase the reusability and
+ * modularity of the code written in each component. Everything in the UI is written in a class that extends {@link UIUtil.UIItem}.
+ * This class contains abstract methods for a {@link UIUtil.UIItem.onInit HTML builder function} which returns a string to put in the HTML, 
+ * {@link UIUtil.UIItem.buildJS Javascript builder function} which then binds listeners over the newly created elements,
+ * and multiple optional functions called on state changes (data update, time, etc.). These functiions are managed either by the 
+ * {@link onDeviceReady top level script} or a parent UIItem class (ex. {@link SlideTabUI}). 
+ * 
+ * Data (events, schedule, etc.) is given to the UIItem through a parameter in {@link UIUtil.UIItem.onInit} or {@link UIUtil.UIItem.onUpdate}. 
+ * This data must be generated from an instance of {@link DataManage}, and more detail on how this data is fetched and what it's contents are 
+ * can be found in {@link DataManage}. Each UIItem has an array of {@link UIUtil.RecvParams} objects in {@link UIUtil.UIItem.recvParams} 
+ * which specifies what kind of data is needed for the UIItem. This property must be a flat array of objects, so if a UIItem class has 
+ * children UIItems with individual recvParams (ex. {@link SlideTabUI}) it must create a flat list of all the parameters during 
+ * construction. This can easily be done using the {@link UIUtil.combineParams} function.
  */
 
 namespace UIUtil {
-    //enumeration for the type of recvParam
+    /** Numerical contant to specify which class should treat this object as a request */
     export const enum RecvType {
         CAL,
         QUOTE,
         IMAGE,
+        /** Numerical length of enumerations above (must adjust manually) */
         length = 3, //adjust for number of above items
     }
-    //base interface for an object which specifys how to inject
+    /**
+     * Interface defining the base class for a data request parameter, as outlined in {@link UIUtil}. Different parameter types
+     * will be defined as extending this interface and including all the extra properties they need (ex. {@link UIUtil.CalParams})
+     */
     export interface RecvParams {
+        /** Define Which class should we tell we need data */
         type: RecvType;
     }
-    //interfaces enumerating the properties each object must have in order to recieve the data
-    //only present due to weird database efficiency stuff
+    /**
+     * Calendar {@link UIUtil.RecvParams}. Only in this file due to convienence.
+     */
     export interface CalParams extends RecvParams {
-        //which days we want events for
-        //use a number, 0 being today, 1 being the next day, and so on
-        //to get a range, also fill dayend
+        /**
+         * Specify which days we want events for: use a number, 0 being today, 1 being the next day, and so on.
+         * To get a range, also fill {@link UIUtil.CalParams.dayCount}
+         */
         dayStart?: number;
+        /** Number of days after dayStart to fetch events for */
         dayCount?: number;
-        //constructing a schedule is expensive, so we'll assume that if we want a schedule we'll ony need a single one
+        /** 
+         * Which day to get a schedule for: use a number, 0 being today, 1 being the next day, and so on.
+         * Constructing a schedule is expensive, so we'll assume that if we want a schedule we'll only need a single one 
+         */
         schedDay?: number;
-        //also have a boolean on whether or not we care if the schedule is marked "special"
+        /** Boolean on whether or not we only care if the schedule is marked "special" */
         excludeNormal?: boolean;
-        //database runs this function for every event, so this should store all the data you need 
-        //to do the thing
     }
-    //Varibles to put in template, in form of { name: value }
-    //searches for strings in double curly beackets and replaces them (e.g. {{thing}})
-    //no spaces in there please
-    //this function will search every member of values, and fill the template
+    /**
+     * Template engine function. Follows {{item}} syntax, meaning if a string "this is {{thing}}" is templated
+     * against the values {"thing" : 7} the output will be "this is 7". Based off of regular expressions and stackoverflow.
+     * @param template the string to apply templating to
+     * @param values an object in format of {key: value} where '{{key}}' => value
+     * @returns the templated string
+     */
     export const templateEngine = (template: string, values: Object): string => {
         //get all teh keys, and map them to a RegEx for optimization
         let re = new RegExp(Object.keys(values)
             //give the strings the template syntax
-            .map((str) => { return '{{' + str + '}}'; })
+            .map(str => '{{' + str + '}}')
             //join them with the or operator
             .join('|'), 'g');
         //then in the replace, match the things to the things (filtering out the {{}} first)
-        return template.replace(re, function (matched) { return values[matched.replace(new RegExp(/{|}/, 'g'), '')]; });
+        return template.replace(re, matched => values[matched.replace(new RegExp(/{|}/, 'g'), '')]);
     };
-    //utility function to flatten the arrays of messes of recvparams
+    /**
+     * Utility function to 'flatmap' {@link UIUtil.UIItem.recvParams} arrays in nested children UIItems. RecvParams must
+     * be flattened for optimization purposes (also it's a pain to change it to something not like this).
+     * @param ray the array of UIItems to get the recvParams from
+     * @returns the flat array of RecvParams
+     */
     export const combineParams = (ray: Array<UIItem>): Array<RecvParams> => {
-        return [].concat.apply([], ray.map((item) => { return item.recvParams; }).filter((obj) => { return obj; }));
+        return [].concat.apply([], ray.map(item => item.recvParams).filter(obj => obj));
     };
-
-    //unique ID utility function, will just increment a number to ensure nothing is duplicated
-    var idCount: number = 0;
-    const getUniqueId = (): number => {
-        return idCount++;
-    }
-    //Interface to universalize UI Items (such as graphics)
-    //should be implemented by anything that returns a string of HTML
+    /**
+     * Class implemented by any UI element. For a detailed explanation on this UI system see {@link UIUtil}.
+     * If a UIItem is managing other children UIItems, it must also call each childrens
+     * onInit, buildJS, etc. For examples on how to do this see {@link ScrollPageUI} or {@link SlideTabUI}.
+     */
     export abstract class UIItem {
-        //automated unique ID generation
-        readonly id: string;
-        constructor() {
-            this.id = 'i' + getUniqueId();
+        /** Unique ID utility function for creation of divs with ids */
+        private static idCount = 0;
+        private static getUniqueId() {
+            return UIItem.idCount++;
         }
-        //get data, fill in html from children or class
+        readonly id: string;
+        /** A call to super() must be made in the implementing class */
+        constructor() {
+            this.id = 'i' + UIItem.getUniqueId();
+        }
+        /**
+         * Uses the event/schedule/whatever data to construct the HTML string, and return it to be dropped into the app. This function should be called
+         * before {@link UIUtil.UIItem.buildJS}.  
+         * @param data the {@link DataManage} generated data
+         * @returns an HTML string
+         */
         abstract onInit(data: Array<any>): void | string;
-        //build JS over the html from onInit
+        /**
+         * Build JS (event listeners, css, etc.) over the generated HTML. This function is split from {@link UIUtil.UIItem.onInit} to allow the main script
+         * to populate the page with the generated HTML beforehand, then running this function and allowing it to access the newly created elements using
+         * document queries.
+         */
         abstract buildJS(): void;
-        //update data, also give data to children, reconstructing HTML if needed
-        //only called if new data was fetched from the internet
+        /**
+         * Called when new data (usually over the internet) has been received. Implementing class should update the HTML to reflect this new data 
+         * using document queries.
+         * @param data the {@link DataManage} generated data
+         */
         onUpdate?(data: Array<any>): void;
-        //update live feedback depending on time (called every minuete unless app is off)
+        /**
+         * Called when a signifigant time change (one minuete as of writing) has occured.Implementing class should update the HTML to reflect this new time
+         * using document queries.
+         */
         onTimeChanged?(): void;
-        //fires when the item has come into focus on the page
-        //may or may not be implemented in the parent class, but will always fire based
-        //off of the state rather than document queries
-        //ex. fires when the menu is opened
+        /**
+         * Called when the item has come into focus on the page. 'into focus' implementation depends on UIItem's parent class, for example {@link SlideTabUI}
+         * calls onFocus when the item has finished sliding into view.
+         */
         onFocus?(): void;
-        //recv parameters, parsed from children at construction
+        /**
+         * Receive parameters, or objects which specify what kind of data (events, schedule, etc.) the UIItem needs to function. Determines the contents
+         * passed to the onInit and onUpdate functions, and is parsed by the {@link DataManage} class. More information on what is done with these parameters
+         * can be found in {@link DataManage}.
+         */
         recvParams?: Array<UIUtil.RecvParams>;
-    }
-
-    //didn't have a better place to put this :(
-    export interface ButtonParam {
-        text: string,
-        callback: () => void;
-        longPressCallback?: () => void;
-        icon?: string,
     }
 }
 

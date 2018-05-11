@@ -1,11 +1,13 @@
 /**
  * Experiment to increase launch times using a pre-cordova bootstrap
- * Will not work with the splashcreen, but we can fix that later
- * This file is designed to be compiled using WebPack, and will theoretically load cordova 
- * and requireJs afterwards automatically
- * Dunno how that's gonna work
+ * This file is the entry point: it loads all the bare minimum stuff to start rendering the front page,
+ * then starts up the rest of the code in application.ts
  * 
- * Ironic that it's most of my code anyway, but oh well
+ * In theory, the less things we have to parse at the start the better, which is why I susepct this method is faster
+ * than just starting at application.ts
+ * I have been unable to prove this theory
+ * 
+ * Important note: this script also adds window.quickLoad as an indicator of a succesful start
  */
 
 import HTMLMap = require('./HTMLMap');

@@ -66,7 +66,6 @@ function onDeviceReady(): void {
     if(cordova.platformId !== "ios") window.addEventListener("resize", resizeStatusBar);
     //oh ios, how you hurt me so
     else resizeStatusBar();
-
     StatusBar.overlaysWebView(true);
 
     let start: number = performance.now();
