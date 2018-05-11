@@ -25,9 +25,9 @@
   "cordova": {
     "platforms": [
       "browser",
-      "windows",
       "android",
-      "ios"
+      "ios",
+      "windows"
     ],
     "plugins": {
       "cordova-plugin-browsertab": {},
