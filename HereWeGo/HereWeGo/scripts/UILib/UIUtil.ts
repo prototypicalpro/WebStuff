@@ -13,7 +13,9 @@
  * This class contains abstract methods for a {@link UIUtil.UIItem.onInit HTML builder function} which returns a string to put in the HTML, 
  * {@link UIUtil.UIItem.buildJS Javascript builder function} which then binds listeners over the newly created elements,
  * and multiple optional functions called on state changes (data update, time, etc.). These functiions are managed either by the 
- * {@link onDeviceReady top level script} or a parent UIItem class (ex. {@link SlideTabUI}). 
+ * {@link onDeviceReady top level script} or a parent UIItem class (ex. {@link SlideTabUI}). All CSS is located in the index.css file, and classes in
+ * each component determine the effects applied to the HTML. I attempted to avoid inline styles for readability, but if needed they are a good 
+ * debugging tool.
  * 
  * Data (events, schedule, etc.) is given to the UIItem through a parameter in {@link UIUtil.UIItem.onInit} or {@link UIUtil.UIItem.onUpdate}. 
  * This data must be generated from an instance of {@link DataManage}, and more detail on how this data is fetched and what it's contents are 
@@ -62,9 +64,9 @@ namespace UIUtil {
     /**
      * Template engine function. Follows {{item}} syntax, meaning if a string "this is {{thing}}" is templated
      * against the values {"thing" : 7} the output will be "this is 7". Based off of regular expressions and stackoverflow.
-     * @param template the string to apply templating to
-     * @param values an object in format of {key: value} where '{{key}}' => value
-     * @returns the templated string
+     * @param template The string to apply templating to
+     * @param values An object in format of {key: value} where '{{key}}' => value
+     * @returns The templated string
      */
     export const templateEngine = (template: string, values: Object): string => {
         //get all teh keys, and map them to a RegEx for optimization
@@ -79,14 +81,15 @@ namespace UIUtil {
     /**
      * Utility function to 'flatmap' {@link UIUtil.UIItem.recvParams} arrays in nested children UIItems. RecvParams must
      * be flattened for optimization purposes (also it's a pain to change it to something not like this).
-     * @param ray the array of UIItems to get the recvParams from
-     * @returns the flat array of RecvParams
+     * @param ray The array of UIItems to get the recvParams from
+     * @returns The flat array of RecvParams
      */
     export const combineParams = (ray: Array<UIItem>): Array<RecvParams> => {
         return [].concat.apply([], ray.map(item => item.recvParams).filter(obj => obj));
     };
     /**
      * Class implemented by any UI element. For a detailed explanation on this UI system see {@link UIUtil}.
+     * 
      * If a UIItem is managing other children UIItems, it must also call each childrens
      * onInit, buildJS, etc. For examples on how to do this see {@link ScrollPageUI} or {@link SlideTabUI}.
      */
@@ -104,8 +107,8 @@ namespace UIUtil {
         /**
          * Uses the event/schedule/whatever data to construct the HTML string, and return it to be dropped into the app. This function should be called
          * before {@link UIUtil.UIItem.buildJS}.  
-         * @param data the {@link DataManage} generated data
-         * @returns an HTML string
+         * @param Data the {@link DataManage} generated data
+         * @returns An HTML string
          */
         abstract onInit(data: Array<any>): void | string;
         /**
@@ -117,7 +120,7 @@ namespace UIUtil {
         /**
          * Called when new data (usually over the internet) has been received. Implementing class should update the HTML to reflect this new data 
          * using document queries.
-         * @param data the {@link DataManage} generated data
+         * @param data The {@link DataManage} generated data
          */
         onUpdate?(data: Array<any>): void;
         /**

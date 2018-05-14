@@ -1,25 +1,27 @@
-﻿/**
- * Simple UI Item to implement a clickable button
- * Handles all the javascript to detect if a touch is on/off your button
- * and has short and long press actions
- * includes some fancy animations as well
+﻿import UIUtil = require('./UIUtil');
+
+/**
+ * Simple UI Item to implement a clickable button.
  * 
- * extending class MUST create an element selectable by '#(this.id)' where (this.id) is the id
- * of the object
- * ButtonUI will create a button around that element
+ * Handles all the javascript to detect if a touch is on/off your button
+ * and has short and long press actions. Uses touch events, clientX and clientY,
+ * and getBoundingClientRect to acomplish this. Only supports single touch.
+ * Also includes CSS animations.
+ * 
+ * Note: Extending class MUST create an element selectable by '#(this.id)' 
+ * where (this.id) is the id object given by {@link UIUtil.UIItem.id}.
+ * ButtonUI will use this selector to create a button around that element.
  */
-
-import UIUtil = require('./UIUtil');
-
 abstract class ButtonUI extends UIUtil.UIItem {
-    //perminant class members for animations
+    /** CSS class for animations */
     private static readonly touchClass: string = 'bTouch';
+    /** Time in milliseconds to consider a press a long press and run the long press action */
     private static readonly longPressTime: number = 500;
     //storage stuff
     private readonly disableAnim: boolean;
     private readonly maxXDelta: number;
     private readonly maxYDelta: number;
-    //storage document element for the button
+    /** Storage document element for the button */
     protected buttonStore: HTMLElement;
     //storage bounding rect
     private rectStore: ClientRect;
@@ -28,19 +30,29 @@ abstract class ButtonUI extends UIUtil.UIItem {
     private touchStart: number;
     private touchX: number;
     private touchY: number;
-    //callbacks
+    /** Press callback, designed to be overriden by the extending class */
     protected abstract callback: () => void;
+    /** 
+     * Long press callback, designed to be overriden by the extending class.
+     * Defaults to {@link ButtonUI.callback} if falsey.
+     */
     protected longPress?: () => void;
-    //make that thing
+    /**
+     * @param disableAnim Disable the button CSS animation (true disables)
+     * @param maxXDelta Maximum X distance the touch can travel in pixels before being discarded
+     * @param maxYDelta Maximum Y distance the touch can travel in pixels before being discarded
+     */
     constructor(disableAnim?: boolean, maxXDelta?: number, maxYDelta?: number) {
         super();
         this.disableAnim = disableAnim;
         this.maxXDelta = maxXDelta;
         this.maxYDelta = maxYDelta;
     }
-    //the callbacks
 
-    //handle all the selector stuff to make button work
+    /**
+     * Use the ID to get our button element and put it into {@link ButtonUI.buttonStore}, then
+     * bind event listeners to touch events.
+     */
     buildJS() {
         //add members
         this.buttonStore = document.querySelector('#' + this.id) as HTMLElement;
@@ -52,7 +64,6 @@ abstract class ButtonUI extends UIUtil.UIItem {
         this.buttonStore.addEventListener('touchcancel', this.onTouchCancel.bind(this), opts);
     }
 
-    //callback functions for button, handles all touch events then passes through as necessary
     private onTouchStart(e: TouchEvent) {
         //we got a touch!
         //start the touch and hold animation for the button, but only if it's the first touch
@@ -114,7 +125,11 @@ abstract class ButtonUI extends UIUtil.UIItem {
         this.touchStore = null;
     }
 
-    //utility touch search function
+    /**
+     * Utility TouchList search function, matches a touch to an identifier stored in {@link ButtonUI.touchStore}.
+     * @param touches The TouchList from the touch event
+     * @returns The matching touch or false
+     */
     private findTouch(touches: TouchList): Touch | false {
         //find our touch
         if(typeof this.touchStore !== 'number') return false;
