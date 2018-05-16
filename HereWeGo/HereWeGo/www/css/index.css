@@ -341,6 +341,7 @@ p {
 /* Sidemenu frame div */
 .SMFrame {
     position: fixed;
+    /* if you change width, change the constant present in MenuUI.ts*/
     width: 70vw;
     height: 100vh;
     z-index: 99;

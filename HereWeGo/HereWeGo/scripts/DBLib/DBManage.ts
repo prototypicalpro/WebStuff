@@ -1,8 +1,8 @@
 ﻿/**
  * Class which should allow for better database management, since all files
- * in this project use indexedDB
- * Takes an array of object which define that part of the db, then somehow passes the database
- * pointer along to the other components.
+ * in this project use indexedDB.
+ * Takes an array of {@link DBManage.DBInfoInterface} which define that part of the db, then passes the database
+ * pointer along to the other components. Used by {@link DataManage}.
  */
 
 namespace DBManage {
@@ -12,11 +12,11 @@ namespace DBManage {
     const dbVersion: number = 12;
     /** Interface defining the properties of the databases to be contructed */
     export interface DBInfoInterface {
-        /** name of the object store to use */
+        /** Name of the object store to use */
         storeName: string;
-        /** array of keys to generate in that object store */
+        /** Array of keys to generate in that object store */
         keys: Array<string>;
-        /** string for the keypath of the database */
+        /** String for the keypath (name of the column to index by) of the database */
         keyPath: string;
     }
     //and the lone function which does all the magic
@@ -28,7 +28,7 @@ namespace DBManage {
     export const constructDB = (args: Array<DBInfoInterface | Array<DBInfoInterface>>): Promise<IDBDatabase | [IDBDatabase, boolean]> => {
         let isUpgraded: boolean;
         //flatten dbs
-        let dbs: Array<DBInfoInterface> = args.concat.apply([], args).filter((dbInf) => { return dbInf; });
+        let dbs: Array<DBInfoInterface> = args.concat.apply([], args).filter(dbInf => dbInf);
         return new Promise((resolve, reject) => {
             //check to see if the database exists
             if (!window.indexedDB) return reject(false);

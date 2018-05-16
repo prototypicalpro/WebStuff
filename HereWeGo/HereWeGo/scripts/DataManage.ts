@@ -76,14 +76,14 @@ class DataManage {
     initData(): Promise<any> {
         //init all the things
         let ray: Array<Promise<any>> = [
-            new Promise((resolve, reject) => {
+            new Promise(resolve => {
                 //load last sync time from storage
                 let lastSync = localStorage.getItem('1');
                 if (!lastSync) return resolve(true);
                 this.lastSyncTime = parseInt(lastSync);
                 return resolve();
             }),
-            DBManage.constructDB(this.dataObj.map((data) => { return data.dbInfo; })).then((dbThings: IDBDatabase | Array<IDBDatabase | boolean>) => {
+            DBManage.constructDB(this.dataObj.map(data => data.dbInfo)).then((dbThings: IDBDatabase | Array<IDBDatabase | boolean>) => {
                 let db: IDBDatabase;
                 if (Array.isArray(dbThings)) db = <IDBDatabase>dbThings[0];
                 else db = <IDBDatabase>dbThings;

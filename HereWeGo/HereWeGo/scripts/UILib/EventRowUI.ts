@@ -4,7 +4,7 @@ import ButtonUI = require('./ButtonUI');
 //this is cancerous, but store a callback to close each event menu
 //so there's only one open at a time
 /**
- * Global event description close callback. Serves as a mutex for every {@link EventGraphic},
+ * Global event description close callback. Serves as a mutex for every {@link EventRowUI},
  * so that only one event description is visible at a given time.
  */
 var evClose: () => void = null;
@@ -16,7 +16,15 @@ var evClose: () => void = null;
 class EventRowUI extends ButtonUI {
     //event item template
     //100% certified(!) unreadable
-    /** Individual event HTML template */
+    /** 
+     * Individual event HTML template 
+     * @param id id: The div ID from {@link UIUtil.UIItem.id}
+     * @param modCl modCl: CSS classes for event row
+     * @param time time: HTML string time created from {@link EventGraphic.normalTime} or {@link EventGraphic.allDayTime}
+     * @param lineColor lineColor: Hex string color for line between time and event title
+     * @param name name: Name of event
+     * @param desc desc: Description of event
+     */
     private static readonly eventTemplate: string = `
     <div id="{{id}}">
         <div class="evRow {{modCl}}">

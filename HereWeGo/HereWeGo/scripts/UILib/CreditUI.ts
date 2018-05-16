@@ -11,8 +11,10 @@ class CreditUI extends UIUtil.UIItem {
     //and is generally pretty hacky.
     //It is recommended when adding yourself to this page you avoid messing with anything
     //that you think shouldn't be there.
+    //I will leave this unexplained so persons wishing to insert themselves must first understand it.
+    //Consider it a challenge of sorts.
     /**
-     * Our template for the credits page.
+     * Our template for the credits page. 
      */
     private static readonly template: string = `
         <div class="credImg"></div>

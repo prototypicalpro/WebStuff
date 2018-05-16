@@ -11,11 +11,22 @@ import EventRowUI = require('./EventRowUI');
  * See also: {@link EventRowUI}.
  */
 class EventGraphic extends UIUtil.UIItem {
-    /** Wrapper template */
+    /** 
+     * Wrapper template 
+     * @param id id: The ID of the div element
+     * @param stuff stuff: The div's content 
+     */
     private static readonly wrap: string = `<div id="{{id}}">{{stuff}}</div>`;
-    /** Heading template ("Thursday") */
+    /** 
+     * Heading template ("Thursday") 
+     * @param head head: The header text
+     */
     private static readonly headStr: string = `<p class="header">{{head}}</p>`;
-    /** Normal time template */
+    /** 
+     * Normal time template 
+     * @param start start: The string start time (ex. "3:45PM")
+     * @param end end: The string end time (ex. "3:45PM")
+     */
     private static readonly normalTime: string = `
         <p class="leftUp">{{start}}</p>
         <p class="leftLow">{{end}}</p>`;
