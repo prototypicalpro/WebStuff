@@ -207,10 +207,11 @@ function buildUI(): Promise<any> {
                 new ScheduleGraphic(10, true),
             ], true), "Events"), "right.png"),
         ]),
+        <any>new ScheduleGraphic(0),
         //TODO: second page doesn't actually work
         //probably css?
         //naw
-    ], ['Home', 'Schedule']);
+    ], ['Home', 'Schedule', 'Stuff']);
     //start up the early data stuff
     //give the top all the data it needs
     uiRay = [top, slide, menu, popup];

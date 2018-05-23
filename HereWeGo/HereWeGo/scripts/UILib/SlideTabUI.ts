@@ -19,7 +19,7 @@ import ScrollPageUI = require('./ScrollPageUI');
 class SlideTabUI extends UIUtil.UIItem {
     id: string;
     //wrapper template to make everything horizontally flatmapped
-    private static readonly slideWrapperTemplate: string = `<div class="js_slide content">{{c}}</div>`;
+    private static readonly slideWrapperTemplate: string = `<div class="js_slide">{{c}}</div>`;
     //stored pages, to be flatmapped and shiz
     private readonly pages: Array<ScrollPageUI>;
     //stored names for buttons later on

@@ -225,7 +225,7 @@ p {
 }
 
 #menuLine {
-    width: 50vw;
+    width: 33vw;
     height: 0.5vh;
     background-color: white
 }
@@ -298,7 +298,7 @@ p {
 /* Content div, contains all the elements we want to scroll through */
 .js_slides {
     /* Width must be adjusted to fit content */
-    width: 400vw;
+    width: 500vw;
     white-space: nowrap;
     overflow: hidden;
     flex-grow: 1;
@@ -313,7 +313,8 @@ p {
     overflow-y: hidden;
     /* Prevent text resize on orientation change, useful for web-apps */
 	-webkit-text-size-adjust: none;
-	text-size-adjust: none;
+    text-size-adjust: none;
+    float: left;
 }
 
 /*hardware hack*/

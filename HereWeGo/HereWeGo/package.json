@@ -4,9 +4,7 @@
   "private": true,
   "dependencies": {
     "cordova-android": "^7.0.0",
-    "cordova-browser": "^5.0.2",
     "cordova-http": "^0.3.0",
-    "cordova-ios": "^4.5.4",
     "cordova-plugin-browsertab": "^0.2.0",
     "cordova-plugin-compat": "^1.2.0",
     "cordova-plugin-file": "^6.0.1",
@@ -22,9 +20,7 @@
   },
   "cordova": {
     "platforms": [
-      "browser",
-      "android",
-      "ios"
+      "android"
     ],
     "plugins": {
       "cordova-plugin-browsertab": {},

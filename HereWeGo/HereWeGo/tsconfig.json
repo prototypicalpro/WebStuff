@@ -13,5 +13,5 @@
     "module": "amd",
     "target": "es6",
   },
-  "exclude": ["platforms", "node_modules", "bower_components", "plugins", "merges", "res", "bin", "bld", "www", "build_scripts", "docs"]
+  "exclude": ["platforms", "node_modules", "bower_components", "plugins", "merges", "res", "bin", "bld", "www", "build_scripts", "docs", "typedocgulp.js"]
 }
