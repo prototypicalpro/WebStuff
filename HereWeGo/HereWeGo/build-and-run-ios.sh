@@ -9,20 +9,24 @@ IOSVer=com.apple.CoreSimulator.SimRuntime.iOS-10-0 # IOS 10.0
 device=com.apple.CoreSimulator.SimDeviceType.iPhone-7 # IPhone 7
 
 echo "Building..."
-cordova build ios
+#sudo cordova build ios
 
 echo "Build Finished!"
-# Test if simulator already exists by testing "xcrun simctl list"
-xcrun simctl list | grep $simName &> /dev/null
-if [ $? != 0 ]
+# Test id "ios-simulator" package is installed
+type ios-simulator >/dev/null 2>&1 || { echo "Fetching required dependencies!"; sudo npm i -g ios-simulator; }
+# Test if simulator already exists
+if ! [[ $(ios-simulator -n "$simName") ]]
 then
     echo "Creating new Simulator!"
     xcrun simctl create $simName $device $IOSVer
 fi
+# Get it's ID
+simUID=$(ios-simulator -n "$simName")
+echo "Sim UID: " $simUID
 echo "Booting Simulator and Installing App!"
-xcrun simctl boot $simName
-open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app
-xcrun simctl install $simName ./platforms/ios/build/emulator/Wilson\ App\ Alpha.app
+xcrun simctl boot $simUID
+open -a Simulator --args -CurrentDeviceUDID $simUID
+xcrun simctl install $simUID ./platforms/ios/build/emulator/Wilson\ App\ Alpha.app
 echo "Launching..."
-xcrun simctl launch $simName com.pileofwires.wilsonapp
+xcrun simctl launch $simUID com.pileofwires.wilsonapp
 exit 0
