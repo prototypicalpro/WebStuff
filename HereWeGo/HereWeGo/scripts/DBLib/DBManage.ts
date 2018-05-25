@@ -9,7 +9,7 @@ namespace DBManage {
     /** Database name constant, do not change */
     const dbName: string = 'nope';
     /** Database version constant, increment to clear storage on update */
-    const dbVersion: number = 12;
+    const dbVersion: number = 13;
     /** Interface defining the properties of the databases to be contructed */
     export interface DBInfoInterface {
         /** Name of the object store to use */

@@ -10,7 +10,7 @@
     id: string;
     //wrapper template to create the IScroll stuff
     private static readonly scrollWrapperTemplate: string = `
-        <div id="{{id}}" class="scrollHack full">                    
+        <div id="{{id}}" class="full">                    
             <div class="scrollHack"> 
                 {{stuff}} 
             </div>

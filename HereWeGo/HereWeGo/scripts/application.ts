@@ -24,6 +24,7 @@ import TextButtonUI = require('./UILib/TextButtonUI');
 import PopupUI = require('./UILib/PopupUI');
 import CreditUI = require('./UILib/CreditUI');
 import { NoSchool } from './WHSLib/ScheduleUtil';
+import InlineUI = require('./UILib/InlineUI');
 
 var http: GetLib = new GetLib();
 var data: DataManage = new DataManage([new CalDataManage(http), new QuoteDataManage(), new ImageDataManage(http, 7)], http);
@@ -59,7 +60,7 @@ function onDeviceReady(): void {
     if ((<any>cordova).InAppBrowser) window.open = (<any>cordova).InAppBrowser.open;
 
     //browsertab
-    (<any>cordova).plugins.browsertab.isAvailable((result) => browserTabWorks = result);
+    (<any>cordova).plugins.browsertab.isAvailable(result => browserTabWorks = result);
 
     //statusbar?
     windowHeight = window.innerHeight;
@@ -91,7 +92,7 @@ function onDeviceReady(): void {
         if (err === ErrorUtil.code.HTTP_FAIL || err === ErrorUtil.code.FS_FAIL) setTimeout(toastError, 1000, "This phone is unsupported!");
         else if (err === ErrorUtil.code.NO_INTERNET || err === ErrorUtil.code.BAD_RESPONSE) setTimeout(toastError, 1000, "No Internet available!");
         else throw err;
-    }).then(() => { return top.thumbPromise; }).then(() => {
+    }).then(() => top.thumbPromise).then(() => {
         //hide splascreen if it's still there
         HTMLMap.endLoad();
         navigator.splashscreen.hide();
@@ -207,11 +208,23 @@ function buildUI(): Promise<any> {
                 new ScheduleGraphic(10, true),
             ], true), "Events"), "right.png"),
         ]),
-        <any>new ScheduleGraphic(0),
+        new ScrollPageUI([
+            new InlineUI(`<p class="benjamin"> <br> Thanks for supporting a computer science <br> student learning Javascript!
+                        Feedback from those <br> who gave it has been enormously helpful in <br> making the app useful to students,
+                        and I <br> cannot describe the gratification of knowing that <br> an app I made is in the pockets of students at <br> Wilson. 
+                        Thank you all for your continued use and <br> support! <br>
+                        <br> Alpha testing of the Wilson app will continue on <br> through summer, but coming next year
+                        the app <br> will be officially released and any further <br> maintenance will be handled by the school. This <br> means
+                        this alpha testing version will no longer be <br>updated, and you will need to uninstall this app <br> and install the
+                        released version (which will <br> hopefully be easy to find) to recieve further <br> updates.<br>
+                        <br>As a last hurrah, I have updated the background <br> photos. Please enjoy. <br>
+                        <br>Thanks again, <br>
+                        Noah <br> <br>`)
+        ]),
         //TODO: second page doesn't actually work
         //probably css?
         //naw
-    ], ['Home', 'Schedule', 'Stuff']);
+    ], ['Home', 'Schedule', '<b>Thanks!</b>']);
     //start up the early data stuff
     //give the top all the data it needs
     uiRay = [top, slide, menu, popup];

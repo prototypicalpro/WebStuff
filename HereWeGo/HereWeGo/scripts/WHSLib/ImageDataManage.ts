@@ -186,7 +186,7 @@ class ImageDataManage implements DataInterface {
                         let tH = window.innerHeight;
                         let tempPromise = this.getAndStoreImage(tempScope, "thumb", ImageDataManage.thumbURL, Math.floor(tH * ImageDataManage.thumbRez),  tempScope.id, false);
                         let tempP2;
-                        if(!this.cheapData) tempP2 = Promise.resolve(tempPromise).then(() => { return this.getAndStoreImage(tempScope, "image", ImageDataManage.thumbURL, tH, tempScope.id, true, true); });
+                        if(!this.cheapData) tempP2 = Promise.resolve(tempPromise).then(() => this.getAndStoreImage(tempScope, "image", ImageDataManage.thumbURL, tH, tempScope.id, true, true));
                         else tempP2 = tempPromise;
                         //push such that they end up in order, even though we may wrap around
                         if (count > 0)  {
