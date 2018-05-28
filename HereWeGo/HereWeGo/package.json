@@ -3,6 +3,7 @@
   "version": "0.2.0",
   "private": true,
   "dependencies": {
+    "clean-css": "^4.1.11",
     "cordova-android": "^7.0.0",
     "cordova-http": "^0.3.0",
     "cordova-plugin-browsertab": "^0.2.0",
