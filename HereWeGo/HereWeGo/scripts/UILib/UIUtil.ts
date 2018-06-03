@@ -88,6 +88,39 @@ namespace UIUtil {
         return [].concat.apply([], ray.map(item => item.recvParams).filter(obj => obj));
     };
     /**
+     * Utility function to add '<br/>' tags automatically to a string to limit line length. Breaks lines to the nearest
+     * word, split using spaces. If we find a word longer than the line length, do grammatically incorrect hyphenating.
+     * CSS word wrapping is annoying so I just did it in JS.
+     * @param text The string to add '<br/>' tags to
+     * @param charLineLen The maximum number of characters to have in a line, inclusive
+     * @returns A string broken with '<br/>' tags
+     */
+    export const breakText = (text: string, charLineLen: number): string => {
+        let textfix = '';
+        //add breaklines to quote so we don't overflow
+        let breakPoint = 0;
+        while (text.length - breakPoint - 1 > charLineLen) {
+            //work on the substring ending at the line length char
+            //starting at the line length char, and work backwards until we find a space
+            let nextBreakPoint = text.slice(breakPoint, breakPoint + charLineLen + 1).lastIndexOf(' ');
+            //if no space (word is longer than line length)
+            if(nextBreakPoint === -1) {
+                //hyphenate at line length
+                textfix += text.slice(breakPoint, breakPoint + charLineLen - 1) + '-<br/>';
+                breakPoint = breakPoint + charLineLen - 1;
+            }
+            //add a break tag to that space
+            else {
+                nextBreakPoint = breakPoint + nextBreakPoint
+                textfix += text.slice(breakPoint, nextBreakPoint) + `<br/>`;
+                breakPoint = nextBreakPoint + 1;
+            }
+        }
+        if (textfix.length) textfix += text.slice(breakPoint);
+        else textfix = text;
+        return textfix;
+    }
+    /**
      * Class implemented by any UI element. For a detailed explanation on this UI system see {@link UIUtil}.
      * 
      * If a UIItem is managing other children UIItems, it must also call each childrens

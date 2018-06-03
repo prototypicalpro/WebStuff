@@ -63,17 +63,7 @@ class EventRowUI extends ButtonUI {
         super(false, 50, 20);
         //start by creating our HTML
         //add breakline tags to long titles
-        let eventFix: string = '';
-        //add breaklines to quote so we don't overflow
-        while (name.length > EventRowUI.charLineMax) {
-            //work on the substring ending at the 64th char
-            //starting at the nth char, and work backwards until we find a space
-            let breakPoint = name.slice(0, EventRowUI.charLineMax).lastIndexOf(' ');
-            //add a break tag to that space
-            eventFix += name.slice(0, breakPoint) + `<br/>`;
-            name = name.slice(breakPoint + 1);
-        }
-        if (eventFix.length) name = eventFix + name;
+        name = UIUtil.breakText(name, EventRowUI.charLineMax);
         //if it's a schedule event, we need to eventually figure out how to display the schedule
         //eventaully
         //TODO: above

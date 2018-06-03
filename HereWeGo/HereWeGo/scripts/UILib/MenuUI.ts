@@ -22,7 +22,7 @@ class MenuUI extends UIUtil.UIItem {
      * slide, and #sideMenu the actual sidemenu. .SMHead contains the header image at the top of the menu.
      * Top children items are placed in .SMItems, and bottom children are placed in .SMItems SMBot.
      * .SMShadow covers the entire screen and is used for the shadow effect. 
-     * @param id ID: the div ID from {@link UIUtil.UIItem.id}
+     * @param id id: the div ID from {@link UIUtil.UIItem.id}
      * @param topItems topItems: the HTML strings for {@link MenuUI.topItems}
      * @param botItems botItems: the HTML string for {@link MenuUI.botItems}
      */
