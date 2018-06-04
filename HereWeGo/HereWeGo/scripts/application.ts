@@ -25,6 +25,7 @@ import PopupUI = require('./UILib/PopupUI');
 import CreditUI = require('./UILib/CreditUI');
 import { NoSchool } from './WHSLib/ScheduleUtil';
 import InlineUI = require('./UILib/InlineUI');
+import ResourceUI = require('./UILib/ResouceUI');
 
 var http: GetLib = new GetLib();
 var data: DataManage = new DataManage([new CalDataManage(http), new QuoteDataManage(), new ImageDataManage(http, 7)], http);
@@ -50,10 +51,12 @@ var getNewData = false;
 
 export function initialize(): void {
     document.addEventListener('deviceready', onDeviceReady, false);
+    console.timeStamp("Cordova Init");
     console.log("init func: " + performance.now());
 }
 
 function onDeviceReady(): void {
+    console.timeStamp("Cordova Device Ready");
     console.log("device ready: " + performance.now());
 
     //inappbrowser
@@ -98,6 +101,7 @@ function onDeviceReady(): void {
         navigator.splashscreen.hide();
         //also start callback for every min to update time
         setTimeout(updateTime, 60010);
+        console.timeStamp("Second Init");
         let end = performance.now();
         console.log("Second init took: " + (end - start));
     }).catch((err) => {
@@ -165,7 +169,7 @@ function buildUI(): Promise<any> {
                 callback: urlCallback('https://www.pps.net/Domain/162'),
             }
         ]),
-        (<Array<UIUtil.UIItem>>[new QuoteUI('quote', 36)]).concat(
+        (<Array<UIUtil.UIItem>>[new QuoteUI('quote', 35)]).concat(
             TextButtonUI.Factory('SMItem', 'SMItemText', [
                 {
                     text: 'Credits',
@@ -209,22 +213,45 @@ function buildUI(): Promise<any> {
             ], true), "Events"), "right.png"),
         ]),
         new ScrollPageUI([
-            new InlineUI(`<p class="benjamin"> <br> Thanks for supporting a computer science <br> student learning Javascript!
-                        Feedback from those <br> who gave it has been enormously helpful in <br> making the app useful to students,
-                        and I <br> cannot describe the gratification of knowing that <br> an app I made is in the pockets of students at <br> Wilson. 
-                        Thank you all for your continued use and <br> support! <br>
-                        <br> Alpha testing of the Wilson app will continue on <br> through summer, but coming next year
-                        the app <br> will be officially released and any further <br> maintenance will be handled by the school. This <br> means
-                        this alpha testing version will no longer be <br>updated, and you will need to uninstall this app <br> and install the
-                        released version (which will <br> hopefully be easy to find) to recieve further <br> updates.<br>
-                        <br>As a last hurrah, I have updated the background <br> photos. Please enjoy. <br>
-                        <br>Thanks again, <br>
-                        Noah <br> <br>`)
+            new ResourceUI([
+                {
+                    text: "What are the upcoming graduation deadlines?",
+                    url: "https://niceme.me",
+                },
+                {
+                    text: "What are the graduation requirements?",
+                    url: "https://www.pps.net/Page/1642",
+                },
+                {
+                    text: "Where can I find information on AP classes?",
+                    url: "https://www.pps.net/domain/761",
+                }, 
+                {
+                    text: "What classes are available to forecast for?",
+                    url: "https://www.pps.net/domain/764",
+                },
+                {
+                    text: "Which classes recieve college credit?",
+                    url: "https://www.pps.net/domain/763",
+                },
+                {
+                    text: "Who is my counselor?",
+                    url: "https://www.pps.net/domain/2728",
+                },
+                {
+                    text: "Where do I get info on Rights and Responsibilities?",
+                    url: "https://www.pps.net/Page/1065",
+                },
+                {
+                    text: "How do I reset my password for synergy? Chromebook access?",
+                    url: "https://www.pps.net/Page/10644",
+                },
+            ], urlCallback)
         ]),
         //TODO: second page doesn't actually work
         //probably css?
         //naw
-    ], ['Home', 'Schedule', '<b>Thanks!</b>']);
+    ], ['Home', 'Schedule', 'Resources']);
     //start up the early data stuff
     //give the top all the data it needs
     uiRay = [top, slide, menu, popup];

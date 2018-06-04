@@ -21,8 +21,8 @@
     private readonly icon: string;
     
     //do yo thang
-    constructor(wrapClass: string, textClass: string, text: string, callback: () => void, icon?: string, longPressCallback?: () => void, disableAnim?: boolean) {
-        super(disableAnim);
+    constructor(wrapClass: string, textClass: string, text: string, callback: () => void, icon?: string, longPressCallback?: () => void, disableAnim?: boolean, maxXDelta?: number, maxYDelta?: number) {
+        super(disableAnim, maxXDelta, maxYDelta);
         this.callback = callback;
         this.longPress = longPressCallback;
         this.wrapClass = wrapClass;
@@ -31,8 +31,8 @@
         this.icon = icon;
     }
     //make a whole buncha that thing
-    static Factory(wrapClass: string, textClass: string, params: Array<{text: string, callback: () => void, longPressCallback?: () => void, icon?: string}>, disableAnim?: boolean): Array<TextButtonUI> {
-        return params.map(param => new TextButtonUI(wrapClass, textClass, param.text, param.callback, param.icon, param.longPressCallback, disableAnim));
+    static Factory(wrapClass: string, textClass: string, params: Array<{text: string, callback: () => void, longPressCallback?: () => void, icon?: string}>, disableAnim?: boolean, maxXDelta?: number, maxYDelta?: number): Array<TextButtonUI> {
+        return params.map(param => new TextButtonUI(wrapClass, textClass, param.text, param.callback, param.icon, param.longPressCallback, disableAnim, maxXDelta, maxYDelta));
     }
     //init dat HTML
     onInit(): string {

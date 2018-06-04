@@ -1,29 +1,35 @@
-﻿/**
- * Schedule graphic template
- * All the HTML is in here b/c that way it loads fasterish
- * I'll have to do some dynamic lazy loading nonsense to make it that way tho
- */
-
-import UIUtil = require('./UIUtil');
+﻿import UIUtil = require('./UIUtil');
 import ErrorUtil = require('../ErrorUtil');
 import ScheduleUtil = require('../WHSLib/ScheduleUtil');
 import ColorUtil = require('./ColorUtil');
 import TimeFormatUtil = require('../TimeFormatUtil');
 import { PeriodType } from '../WHSLib/ScheduleUtil';
 
+/**
+ * Schedule graphic UI Element.
+ * 
+ * Displays a generic school schedule with times, period names, and highlights the current period.
+ */
+
 class ScheduleGraphic extends UIUtil.UIItem {
-    //last green period store
-    private lastIndex: number;
     //stored date
     //HTML Template
     //It's gonna be ugly, that's just how it is
-    private static readonly wrap: string = `<div id="{{id}}">{{stuff}}</div>`;
     //schedule table template
-    private static readonly tableTemplate: string = `
-        <p class="header">{{head}}</p>   
-        {{sched}}`;
-
-    //period item template
+    /** 
+     * Heading template ("Thursday") 
+     * @param head head: The header text
+     */
+    private static readonly headStr: string = `<p class="header">{{head}}</p>`;
+    /**
+     * Single time row template (two times, one name)
+     * @param backColor backColor: The CSS background color for the row
+     * @param id id: The ID to create the row with
+     * @param upTime upTime: The upper (start) time in the row
+     * @param lowTime lowTime: The lower (end) time in the row
+     * @param lineColor lineColor: The CSS color to use for the dividing line between time and name
+     * @param name name: The name to display on the row
+     */
     private static readonly itemTemplate: string = `
          <div class="justRow" style="background-color:{{backColor}};" id="{{id}}">
             <div class="leftCell">
@@ -37,23 +43,19 @@ class ScheduleGraphic extends UIUtil.UIItem {
                     <p class="rText">{{name}}</p>
                 </div>
             </div>
-        </div>`
-
-    private static readonly inlineEventWrapper: string = `
-    <div class="evWrap">
-        {{events}}
-    </div>`;
-
-    //event item template for inline with the schedule
-    private static readonly inlineEventTemplate: string = `<p class="evText">{{name}}</p>`;
-
+        </div>`;
     //cached access to the wrapper div
     private schedElem: HTMLElement;
-
     //cahced schedule object
     private sched: ScheduleUtil.Schedule;
-
-    //constructor with schedule
+    //last green period store
+    private lastIndex: number;
+    //update params to get
+    recvParams: Array<UIUtil.RecvParams>;
+    /**
+     * @param day Date to fetch events for, 0 being today, 1 being tommorrow, and so on. See {@link UIUtil.CalParams.dayStart}.
+     * @param excludeNormal If true, only display schedule if schedule is marked 'special' by backend (see {@link CalDataManage})
+     */
     constructor(day: number, excludeNormal?: boolean) {
         super();
         this.recvParams = [
@@ -65,25 +67,24 @@ class ScheduleGraphic extends UIUtil.UIItem {
             },
         ];
     }
-
-    //update params to get
-    recvParams: Array<UIUtil.RecvParams>;
-    //gethtml
+    /**
+     * Build HTMl based on the schedule given.
+     * @param data The {@link DataManage} generated data, containing {@link CalDataManage} data
+     * @returns The Schedule graphic HTML
+     */
     onInit(data: Array<any>): string {
         let day = new Date();
         day.setHours(0, 0, 0, 0);
         this.sched = data[UIUtil.RecvType.CAL]["scheds"][day.setDate(day.getDate() + (<UIUtil.CalParams>this.recvParams[0]).schedDay)];
-        return UIUtil.templateEngine(ScheduleGraphic.wrap, {
+        return UIUtil.templateEngine(ScheduleGraphic.wrapTemplate, {
             id: this.id,
             stuff: this.sched ? this.makeSchedule(this.sched, new Date()) : '',
         });
     }
-
-    //buildJS grabs the element we made for later
+    /** Store {@link ScheduleGraphic.schedElem} */
     buildJS() { 
         this.schedElem = document.querySelector("#" + this.id);
     }
-
     //utility makeScheduleHTML
     private makeSchedule(sched: ScheduleUtil.Schedule, day: Date): string {
         //if there's no schedule, rip
@@ -109,22 +110,19 @@ class ScheduleGraphic extends UIUtil.UIItem {
                 });
             }
         }
-        return UIUtil.templateEngine(ScheduleGraphic.tableTemplate, {
-            head: sched.getName() + ' Schedule',
-            sched: schedStr,
-        });
+        return UIUtil.templateEngine(ScheduleGraphic.headStr, { head: sched.getName() + ' Schedule' }) + schedStr;
     }
-    
-    //onUpdate function
-    //handles the updates
-    //just rebuilds the entire thing for now
+    /**
+     * Use {@link ScheduleGraphic.schedElem} to swap out old schedule graphic for new
+     * @param data The {@link DataManage} generated data, containing {@link CalDataManage} data
+     */
     onUpdate(data: Array<any>): void {
         let day = new Date();
         day.setHours(0, 0, 0, 0);
         this.sched = data[UIUtil.RecvType.CAL]["scheds"][day.setDate(day.getDate() + (<UIUtil.CalParams>this.recvParams[0]).schedDay)];
         this.schedElem.innerHTML = this.sched ? this.makeSchedule(this.sched, new Date()) : '';
     }
-
+    /** Check and see if period changes, and if so change the color of the correct row to display current period */
     onTimeChanged(): void {
         if(this.sched && (this.recvParams[0] as UIUtil.CalParams).schedDay === 0) {
             //if nothing has changed, don't change anything
@@ -143,7 +141,6 @@ class ScheduleGraphic extends UIUtil.UIItem {
             }
             this.lastIndex = currentIndex;
         }
-        
     }
 }
 

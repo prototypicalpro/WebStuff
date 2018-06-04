@@ -250,7 +250,7 @@ class CalDataManage implements DataInterface {
                 //get the appropriete event
                 let find: EventData.EventInterface;
                 let searchDay = day.setDate(nowDay + schedNum);
-                if (!ret[searchDay] || !(find = ret[searchDay].find((ev) => { return ev.schedule; }))) return false;
+                if (!ret[searchDay] || !(find = ret[searchDay].find(ev => ev.schedule))) return false;
                 //and search the database for that key
                 //double nested database search 
                 return new Promise((resolve, reject) => {

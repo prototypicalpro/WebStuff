@@ -1,14 +1,17 @@
-/**
- * Takes a list of UIItems and creates a 
- * Simple scrolling full page thing using IScroll
- */
-
  import UIUtil = require('./UIUtil');
  import IScroll = require('../iscroll-lite');
 
+
+/**
+ * Takes a list of UIItems and creates a simple scrolling page using {@link IScroll http://iscrolljs.com/}.
+ */
  class ScrollPageUI extends UIUtil.UIItem {
     id: string;
-    //wrapper template to create the IScroll stuff
+    /**
+     * Scroll wrapper template
+     * @param id id: The ID of the div element
+     * @param stuff stuff: The scrollable content HTML
+     */
     private static readonly scrollWrapperTemplate: string = `
         <div id="{{id}}" class="full">                    
             <div class="scrollHack"> 
@@ -23,7 +26,10 @@
     //stored IScroll object
     private iscroll: any;
     private scrollBody: HTMLElement;
-    //fill
+    /**
+     * @param items Array of UIItems for content
+     * @param endWithBreakline If true, add <p><br/></p> to the end of the content for a simple bottom margin
+     */
     constructor(items: Array<UIUtil.UIItem>, endWithBreakline?: boolean) {
         super();
         this.items = items;
@@ -32,7 +38,7 @@
     }
     //build our page using the template and the html from all of our items
     onInit(data: Array<any>): string {
-        let str = UIUtil.templateEngine(ScrollPageUI.scrollWrapperTemplate, {id : this.id, stuff : this.items.map((item) => item.onInit(data)).join('') + (this.endWithBreakline ? "<p><br></p>" : "")});
+        let str = UIUtil.templateEngine(ScrollPageUI.scrollWrapperTemplate, { id : this.id, stuff : this.items.map(item => item.onInit(data)).join('') + (this.endWithBreakline ? "<p><br></p>" : "")});
         if(this.endWithBreakline) str += "<p><br></p>";
         return str;
     }

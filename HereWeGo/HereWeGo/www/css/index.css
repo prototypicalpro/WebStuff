@@ -3,48 +3,41 @@
  */
 @font-face {
     font-family: 'Open Sans';
-    src: url('../fonts/OpenSans-Regular.eot');
-    src: url('../fonts/OpenSans-Regular.eot?#iefix') format('embedded-opentype'), url('../fonts/OpenSans-Regular.woff') format('woff'), url('../fonts/OpenSans-Regular.ttf') format('truetype'), url('../fonts/OpenSans-Regular.svg#OpenSans-Regular') format('svg');
+    src: url('../fonts/OpenSans-Regular.ttf') format('truetype'), url('../fonts/OpenSans-Regular.svg#OpenSans-Regular') format('svg');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Open Sans';
-    src: url('../fonts/OpenSans-SemiBold.eot');
-    src: url('../fonts/OpenSans-SemiBold.eot?#iefix') format('embedded-opentype'), url('../fonts/OpenSans-SemiBold.woff') format('woff'), url('../fonts/OpenSans-SemiBold.ttf') format('truetype'), url('../fonts/OpenSans-SemiBold.svg#OpenSans-SemiBold') format('svg');
+    src: url('../fonts/OpenSans-SemiBold.ttf') format('truetype'), url('../fonts/OpenSans-SemiBold.svg#OpenSans-SemiBold') format('svg');
     font-weight: 600;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Montserrat';
-    src: url('../fonts/Montserrat-ExtraLight.eot');
-    src: url('../fonts/Montserrat-ExtraLight.eot?#iefix') format('embedded-opentype'), url('../fonts/Montserrat-ExtraLight.woff') format('woff'), url('../fonts/Montserrat-ExtraLight.ttf') format('truetype'), url('../fonts/Montserrat-ExtraLight.svg#Montserrat-ExtraLight') format('svg');
+    src: url('../fonts/Montserrat-ExtraLight.ttf') format('truetype'), url('../fonts/Montserrat-ExtraLight.svg#Montserrat-ExtraLight') format('svg');
     font-weight: 200;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'BenjaminFont';
-    src: url('../fonts/geometricslabserif703boldbt.eot') format('embedded-opentype'), 
-            url('../fonts/geometricslabserif703boldbt.woff') format('woff'), 
-            url('../fonts/geometricslabserif703boldbt.ttf') format('truetype'), 
+    src:    url('../fonts/geometricslabserif703boldbt.ttf') format('truetype'), 
             url('../fonts/geometricslabserif703boldbt.svg#geometricslabserif703boldbt5942f8f8b47f4') format('svg');
 }
 
 @font-face {
     font-family: 'Montserrat';
-    src: url('../fonts/Montserrat-Regular.eot');
-    src: url('../fonts/Montserrat-Regular.eot?#iefix') format('embedded-opentype'), url('../fonts/Montserrat-Regular.woff') format('woff'), url('../fonts/Montserrat-Regular.ttf') format('truetype'), url('../fonts/Montserrat-Regular.svg#Montserrat-Regular') format('svg');
+    src: url('../fonts/Montserrat-Regular.ttf') format('truetype'), url('../fonts/Montserrat-Regular.svg#Montserrat-Regular') format('svg');
     font-weight: 400;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Montserrat';
-    src: url('../fonts/Montserrat-SemiBold.eot');
-    src: url('../fonts/Montserrat-SemiBold.eot?#iefix') format('embedded-opentype'), url('../fonts/Montserrat-SemiBold.woff') format('woff'), url('../fonts/Montserrat-SemiBold.ttf') format('truetype'), url('../fonts/Montserrat-SemiBold.svg#Montserrat-SemiBold') format('svg');
+    src: url('../fonts/Montserrat-SemiBold.ttf') format('truetype'), url('../fonts/Montserrat-SemiBold.svg#Montserrat-SemiBold') format('svg');
     font-weight: 600;
     font-style: normal;
 }
@@ -74,7 +67,6 @@ p {
     font-weight: 600;
     font-size: 3.5vw;
     white-space: normal;
-    overflow-wrap: break-word;
 }
 
 /*
@@ -129,13 +121,14 @@ p {
 #textWrap {
     font-family: 'Montserrat', sans-serif;
     position: absolute;
-    top: 75.5vh;
+    /* Note: 5vw is left ofsett, and 6.5vh is menu bar height */
+    bottom: calc(5vw + 6.5vh);
     left: 5vw;
 }
 
 /* Period Text (Period 3) */
 .periodText {
-    font-size: 8vh;
+    font-size: 13.5vw;
     font-weight: 600;
     color: white;
     margin-bottom: 0.5vh;
@@ -320,6 +313,7 @@ p {
 	-webkit-transform: translateZ(0);
     transform: translateZ(0);
     position: absolute;
+    width: 100vw;
 }
 
 .full {
@@ -587,6 +581,27 @@ p {
 .bTouch {
     transition: background-color 1s linear;
     background-color: lightgrey;
+}
+
+/**
+ * Resource page CSS
+ */
+
+.resHead {
+    padding: 0;
+    margin-left: 4vw;
+    min-height: 8.5vh;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+}
+
+.resRow {
+    min-height: 7.5vh;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    border-top: 1px solid lightgray;
 }
 
 /**

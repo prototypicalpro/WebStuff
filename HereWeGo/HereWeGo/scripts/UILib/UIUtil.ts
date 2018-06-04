@@ -58,7 +58,7 @@ namespace UIUtil {
          * Constructing a schedule is expensive, so we'll assume that if we want a schedule we'll only need a single one 
          */
         schedDay?: number;
-        /** Boolean on whether or not we only care if the schedule is marked "special" */
+        /** Boolean on whether or not we only care if the schedule is marked "special" (see {@link CalDataManage}) */
         excludeNormal?: boolean;
     }
     /**
@@ -127,6 +127,12 @@ namespace UIUtil {
      * onInit, buildJS, etc. For examples on how to do this see {@link ScrollPageUI} or {@link SlideTabUI}.
      */
     export abstract class UIItem {
+        /** 
+         * Generic wrapper div template for use in an extending class
+         * @param id id: The ID of the div element
+         * @param stuff stuff: The div's content 
+         */
+        protected static readonly wrapTemplate: string = `<div id="{{id}}">{{stuff}}</div>`;
         /** Unique ID utility function for creation of divs with ids */
         private static idCount = 0;
         private static getUniqueId() {

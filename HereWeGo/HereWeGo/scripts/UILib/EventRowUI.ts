@@ -45,7 +45,7 @@ class EventRowUI extends ButtonUI {
         </div>
     </div>`;
     /** How many characters are allowed in a single line of an event title before word wrap triggers */
-    private static readonly charLineMax: number = 30;
+    private static readonly charLineMax: number = 29;
     /** CSS class to show the event's description */
     private static readonly descShowClass: string = "evSlideShow";
     //member varibles

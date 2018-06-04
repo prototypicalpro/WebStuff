@@ -12,12 +12,6 @@ import EventRowUI = require('./EventRowUI');
  */
 class EventGraphic extends UIUtil.UIItem {
     /** 
-     * Wrapper template 
-     * @param id id: The ID of the div element
-     * @param stuff stuff: The div's content 
-     */
-    private static readonly wrap: string = `<div id="{{id}}">{{stuff}}</div>`;
-    /** 
      * Heading template ("Thursday") 
      * @param head head: The header text
      */
@@ -71,7 +65,7 @@ class EventGraphic extends UIUtil.UIItem {
         day.setDate(day.getDate() + (<UIUtil.CalParams>this.recvParams[0]).dayStart);
         //contruct our array of event rows
         this.eventRowRay = EventGraphic.buildEventHTML(data[UIUtil.RecvType.CAL]["events"], day.setHours(0, 0, 0, 0), this.dispSched);
-        return UIUtil.templateEngine(EventGraphic.wrap, {
+        return UIUtil.templateEngine(EventGraphic.wrapTemplate, {
             id: this.id,
             //header HTML + row HTML
             stuff: UIUtil.templateEngine(EventGraphic.headStr, { head: this.header }) + this.eventRowRay.map(b => b.onInit(null)).join('')
