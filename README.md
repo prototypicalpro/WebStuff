@@ -9,7 +9,9 @@ Welcome to the Wilson App github repository! This app is coded using a typescrip
 
 This tutorial assumes you have a basic understanding of [Git](https://git-scm.com/), [Typescript](https://www.typescriptlang.org/), and that you are using Visual Studio Code as your IDE.
 1. Install programs: [Visual Studio Code](https://code.visualstudio.com/), [Node.JS (Current)](https://nodejs.org/en/), [JDK (x64)](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), [Android Studio](https://developer.android.com/studio/). If you would like to develop for iOS, you also must install [Xcode](https://itunes.apple.com/us/app/xcode/id497799835?mt=12) and [Xcode Command Line Tools](http://railsapps.github.io/xcode-command-line-tools.html) (You must own a Mac to develop for iOS).
-2. Install JS dependencies: In an administrator command window, run `npm i -g cordova typedoc ios-simulator` (use `sudo` for OSX).
+2. (OSX Only) Set up npm globally: https://github.com/glenpike/npm-g_nosudo/blob/master/npm-g-nosudo.sh
+2. Install JS dependencies: In an administrator command window, run `npm i -g cordova typescript typedoc`.
+2. (OSX Only) Install more JS dependencies: In an administrator command window, run `npm i -g --unsafe-perm=true ios-simulator ios-deploy`.
 3. Setup Android: Follow [this tutorial](https://cordova.apache.org/docs/en/latest/guide/platforms/android/#installing-the-requirements) to the end of "Installing the Requirements". As of writing the targeted Android version is 4.4 (API level 19).
 4. Clone this repository and open `HereWeGo/Wilson App.code-workspace` using VSCode. Install all recommended extensions for the workspace (can be found in the extensions window by searching "@recommended" and looking under "Workspace Recommendations" if the workspace is open).
 5. Using the terminal in VSCode, run `npm update`, `cordova platform add android`, and `cordova platform add ios`.
