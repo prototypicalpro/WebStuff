@@ -16,7 +16,7 @@ class QuoteDataManage implements DataInterface {
     readonly dbInfo: DBManage.DBInfoInterface = {
         storeName: 'quote',
         keyPath: 'key',
-        keys: ['quote', 'author'],
+        keys: [],
     }
     //single data key, cuz we only need one
     private readonly key: number = 0;

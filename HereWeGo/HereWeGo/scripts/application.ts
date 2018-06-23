@@ -248,9 +248,6 @@ function buildUI(): Promise<any> {
                 },
             ], urlCallback)
         ]),
-        //TODO: second page doesn't actually work
-        //probably css?
-        //naw
     ], ['Home', 'Schedule', 'Resources']);
     //start up the early data stuff
     //give the top all the data it needs
@@ -265,14 +262,12 @@ function buildUI(): Promise<any> {
 }
 
 function onPause(): void {
-    // TODO: This application has been suspended. Save application state here.
     //kill updateTime
     clearTimeout(timeCallbackID);
     timeCallbackID = 0;
 }
 
 function onResume(): void {
-    // TODO: This application has been reactivated. Restore application state here.
     //restart updateTime
     if(!timeCallbackID) updateTime();
 }
@@ -288,7 +283,7 @@ function updateTime(): void {
     //get the time to the next min
     let time = new Date(day).setHours(day.getHours(), day.getMinutes() + 1) + 10;
     //if day has changed, get new data from the cloud and refresh the ui items
-    if(lastUpdateTime && lastUpdateTime.getDate() != day.getDate()) data.refreshData().then(data.generateData.bind(data, uiRay)).then((dataRay) => { 
+    if(lastUpdateTime && lastUpdateTime.getDate() != day.getDate()) data.refreshData().then(data.generateData.bind(data, uiRay)).then(dataRay => { 
             for(let i = 0, len = uiRay.length; i < len; i++) uiRay[i].onUpdate(dataRay);
             timeCallbackID = setTimeout(updateTime, time - day.getTime());
         });

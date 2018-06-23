@@ -7,9 +7,9 @@
 
 namespace DBManage {
     /** Database name constant, do not change */
-    const dbName: string = 'nope';
+    const dbName: string = 'MainDB';
     /** Database version constant, increment to clear storage on update */
-    const dbVersion: number = 13;
+    const dbVersion: number = 14;
     /** Interface defining the properties of the databases to be contructed */
     export interface DBInfoInterface {
         /** Name of the object store to use */
@@ -39,10 +39,10 @@ namespace DBManage {
             req.onerror = reject;
             //and if the database doesn't exist yet, build it!
             req.onupgradeneeded = (evt: any) => {
+                //needs an upgrade
+                isUpgraded = true;
                 //clear localStorage
                 localStorage.clear();
-                //neds an upgrade
-                isUpgraded = true;
                 //delete every object store, so we're starting fresh
                 for (let i = 0, len = dbs.length; i < len; i++) {
                     try { evt.currentTarget.result.deleteObjectStore(dbs[i].storeName); }

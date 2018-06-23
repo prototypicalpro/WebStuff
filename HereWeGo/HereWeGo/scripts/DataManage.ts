@@ -18,7 +18,7 @@ import UIUtil = require('./UILib/UIUtil');
 
 class DataManage {
     //url
-    public static readonly URL: string = 'https://script.google.com/a/koontzs.com/macros/s/AKfycbxyS4utDJEJ3bE2spSE4SIRlwj10M2Owbe7_XWrOFSobfniQjve/exec';
+    public static readonly URL: string = 'https://script.google.com/macros/s/AKfycbxyS4utDJEJ3bE2spSE4SIRlwj10M2Owbe7_XWrOFSobfniQjve/exec';
     //private members
     private http: GetLib;
     private dataObj: Array<DataInterface>;
