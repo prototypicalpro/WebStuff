@@ -294,13 +294,14 @@ p {
     white-space: nowrap;
     display: flex;
     flex-flow: row nowrap;
-    height: 100%;
+    flex-grow: 1;
 }
 
 /* wrap div, CSS for each content item */
 .js_slide {
     flex-shrink: 0;
     width: 100vw;
+    display: flex;
     overflow-y: hidden;
     /* Prevent text resize on orientation change, useful for web-apps */
 	-webkit-text-size-adjust: none;
@@ -317,7 +318,7 @@ p {
 }
 
 .full {
-    height: 100%;
+    flex-grow: 1;
     width: 100vw;
     background-color: white;
 }
