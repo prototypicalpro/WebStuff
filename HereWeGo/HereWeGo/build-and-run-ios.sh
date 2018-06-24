@@ -9,7 +9,7 @@ IOSVer=com.apple.CoreSimulator.SimRuntime.iOS-10-0 # IOS 10.0
 device=com.apple.CoreSimulator.SimDeviceType.iPhone-7 # IPhone 7
 
 echo "Building..."
-#sudo cordova build ios
+cordova build ios
 
 echo "Build Finished!"
 # Test id "ios-simulator" package is installed
@@ -20,13 +20,13 @@ then
     echo "Creating new Simulator!"
     xcrun simctl create $simName $device $IOSVer
 fi
-# Get it's ID
+# Get its ID
 simUID=$(ios-simulator -n "$simName")
 echo "Sim UID: " $simUID
 echo "Booting Simulator and Installing App!"
 xcrun simctl boot $simUID
 open -a Simulator --args -CurrentDeviceUDID $simUID
-xcrun simctl install $simUID ./platforms/ios/build/emulator/Wilson\ App\ Alpha.app
+xcrun simctl install $simUID ./platforms/ios/build/emulator/Wilson\ App.app
 echo "Launching..."
-xcrun simctl launch $simUID com.pileofwires.wilsonapp
+xcrun simctl launch $simUID org.wilsoncs.wilsonapp
 exit 0
