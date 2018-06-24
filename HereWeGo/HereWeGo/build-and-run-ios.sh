@@ -1,12 +1,14 @@
 #!/bin/sh
 # Name we use to identify our simulator
 simName="IOSSim"
+#simName="IOSPhatPad"
 # Version of IOS to use on the simulator
 # Valid versions can be seen by running "xcrun simctl list" in terminal
 IOSVer=com.apple.CoreSimulator.SimRuntime.iOS-10-0 # IOS 10.0
 # Device to simulate the app on
 # Valid device types are found by running "xcrun simctl list" in terminal
 device=com.apple.CoreSimulator.SimDeviceType.iPhone-7 # IPhone 7
+#device=com.apple.CoreSimulator.SimDeviceType.iPad-Pro--12-9-inch---2nd-generation- # IPad Pro 2nd Gen
 
 echo "Building..."
 cordova build ios

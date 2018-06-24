@@ -146,7 +146,7 @@ function buildUI(): Promise<any> {
             {
                 text: 'Map',
                 icon: 'map.png',
-                callback: urlCallback('https://docs.google.com/viewerng/viewer?url=https://www.pps.net//cms/lib/OR01913224/Centricity/Domain/760/Wilson_Building_Map.pdf'),
+                callback: urlCallback('https://docs.google.com/viewerng/viewer?url=https://www.pps.net//cms/lib/OR01913224/Centricity/Domain/760/wilson_map.pdf'),
             },
             {
                 text: 'Student VUE',

@@ -5,3 +5,5 @@ cordova platform add android
 tsc
 Run Android on device
 Simulate IOS in browser (Not android as of yet)
+
+NODE MUST BE INSTALLED VIA HOMEBREW
