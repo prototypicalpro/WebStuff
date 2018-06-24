@@ -9,3 +9,6 @@ merges
 platforms
 plugins
 www/scripts
+WilsonCS.keystore
+build.json
+.vscode/simulate/
