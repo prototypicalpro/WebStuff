@@ -1,9 +1,4 @@
-﻿/**
- * Class to handle the links to background images
- * from the cloud
- */
-
-import DataInterface = require('./Interfaces/DataInterface');
+﻿import DataInterface = require('./Interfaces/DataInterface');
 import UIUtil = require('../UILib/UIUtil');
 import GetLib = require('../GetLib/GetLib');
 import ImageInterface = require('./Interfaces/ImageInterface');
@@ -15,15 +10,28 @@ interface CloudData {
     data: Array<ImageInterface>;
 }
 
+/**
+ * Class to parse and store background images from the cloud.
+ * 
+ * Images URLs are determined from the cloud google apps script, this class simply downloads
+ * them and catalogs them for retrieval when the app starts. Stores images in the local cached
+ * using the cordova file plugin and retreives them using a file path stored in the database.
+ * 
+ * Pretty complicated due to the synchronization required to manage the images database entries.
+ */
 class ImageDataManage implements DataInterface {
     //settings
+    /** URL to fetch thumbnails of the images from, so we don't have to shrink the images ourselves */
     private static readonly thumbURL = 'https://drive.google.com/thumbnail';
+    /** localstorage key for the index of the current image */
     private static readonly imgIndID = '2';
+    /** localstorage key for the last day the index was incremented */
     private static readonly imgDayID = '3';
+    /** what fraction of the resolution to use for the thumnail */
     private static readonly thumbRez = 1.0/4.0;
     //type
     readonly dataType = UIUtil.RecvType.IMAGE;
-    //database stuff
+    /** single table, images */
     readonly dbInfo: DBInfoInterface = {
         //store images
         storeName: 'images',
@@ -49,7 +57,11 @@ class ImageDataManage implements DataInterface {
     private index: number = 0;
     //the constructor
     private readonly cheapData: boolean;
-    //do file plugin stuff here since that stuff can run in the background (I think)
+    /**
+     * @param http {@link GetLib} instance for fetching images from google drive
+     * @param cacheDays how many days to cach images in advance 
+     * @param cheapData if true, only fetch thumbnail when retriving data
+     */
     constructor(http: GetLib, cacheDays: number, cheapData?: boolean) {
         this.http = http;
         this.storeNum = cacheDays;
@@ -57,7 +69,11 @@ class ImageDataManage implements DataInterface {
     }
     //set DB func
     setDB(db: IDBDatabase) { this.db = db; }
-    //update data func
+    /**
+     * Update image index based on time, update the image metadata in the database, then fetch all the images that aren't downloaded yet
+     * @param data the internet data
+     * @returns whether or not the data needed updating
+     */
     updateData(data: CloudData): Promise<boolean> | false {
         //check if emptey array
         if(<any>data === []) return false;
@@ -105,7 +121,10 @@ class ImageDataManage implements DataInterface {
             if (this.cacheRefresh || data.data.length > 0) return this.fillPicPromises(this.storeNum).then(() => this.cacheRefresh = false);
         }).then(() => { return data.data.length > 0; });
     }
-    //overwriteData func
+    /**
+     * Same as updateData, but delete the database before updating.
+     * @param data the internet data
+     */
     overwriteData(data: CloudData): Promise<any> {
         //refresh index
         localStorage.setItem(ImageDataManage.imgDayID, new Date().setHours(0, 0, 0, 0).toString());
@@ -136,7 +155,11 @@ class ImageDataManage implements DataInterface {
         }).then(() => this.fillPicPromises(this.storeNum))
     }
 
-    getData(): Promise<Array<Promise<string>>> | [Promise<string>, Promise<string>] | Promise<[Promise<string>, Promise<string>]> | Promise<false>{
+    /**
+     * Query the database for today's image filepath, then fetch the image from the filesystem.
+     * @returns an array of a thumbnail and image url, nested in a questionable number of promises
+     */
+    getData(): Promise<Array<Promise<string>>> | [Promise<string>, Promise<string>] | Promise<[Promise<string>, Promise<string>]> | Promise<false> {
         if (!this.picPromise) {
             //get crap from localstorage
             let lastDay: number = parseInt(localStorage.getItem(ImageDataManage.imgDayID));

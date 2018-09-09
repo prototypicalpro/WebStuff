@@ -1,14 +1,4 @@
-﻿/**
- * A sliding tab system for the bottom content UI
- * takes a buncha HTML strings created from individual UIItems, horizontally flatmaps them,
- * and then displays them in android-style moving tab thingys
- * IDK how I'm going to handle touch and stuff yet
- * LOL NVM FUCK TOUCH. LIBRARY HERE WE COME
- * 
- * onFocus is called when the slide is done sliding on the screen
- */
-
-import UIUtil = require('./UIUtil');
+﻿import UIUtil = require('./UIUtil');
 import HTMLMap = require('../HTMLMap');
 import lory = require('../lory');
 import TextButtonUI = require('./TextButtonUI');
@@ -16,9 +6,22 @@ import TimeFormatUtil = require('../TimeFormatUtil');
 import IScroll = require('../iscroll-lite');
 import ScrollPageUI = require('./ScrollPageUI');
 
+/**
+ * UI class which controls the sliding function of the home screen. Also all UI elements within those pages,
+ * which means almost everything in the app.
+ * 
+ * Uses a modified version of the slider library lory (http://meandmax.github.io/lory/) to control sliding between pages,
+ * and the {@link UIUtil.UIItem} system to dynamically build the pages at runtime.
+ * 
+ * Note: onFocus of children elements is called when the slide finishes transitioning.
+ */
+
 class SlideTabUI extends UIUtil.UIItem {
     id: string;
-    //wrapper template to make everything horizontally flatmapped
+    /**
+     * Wrapper template for the containing div
+     * @param c the content to fill the div with
+     */
     private static readonly slideWrapperTemplate: string = `<div class="js_slide">{{c}}</div>`;
     //stored pages, to be flatmapped and shiz
     private readonly pages: Array<ScrollPageUI>;
@@ -28,7 +31,11 @@ class SlideTabUI extends UIUtil.UIItem {
     private dayUpdate: boolean;
     //storeage lory object
     private storly: any;
-    //fill them varlibles
+    /**
+     * Fill the slider UI with content for contruction in onInit.
+     * @param pages The ScrollPageUI elements, each representing it's own page
+     * @param names The name of each page to display at the bottom of the screen
+     */
     constructor(pages: Array<ScrollPageUI>, names: Array<string>) {
         super();
         this.pages = pages;
@@ -42,7 +49,9 @@ class SlideTabUI extends UIUtil.UIItem {
         //for every array of pages
         HTMLMap.slideAdd.innerHTML = this.pages.map(page => UIUtil.templateEngine(SlideTabUI.slideWrapperTemplate, {c : page.onInit(data)})).join(''); //one. freaking. line
     }
-    
+    /**
+     * Start up lory, the menu buttons and the bottom of the screen, and the text in the top menu bar on the second page.
+     */
     buildJS() {
         //start up lory
         let thing = document.querySelector('body');

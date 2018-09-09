@@ -1,10 +1,4 @@
-﻿/* 
- * API for storing and parsing the Calendar Data in a database
- * so that it actually performs well
- * By default will use an indexedDB
- */
-
-import EventData = require('./Interfaces/EventData');
+﻿import EventData = require('./Interfaces/EventData');
 import ScheduleData = require('./Interfaces/ScheduleData');
 import ScheduleUtil = require('./ScheduleUtil');
 import DataInterface = require('./Interfaces/DataInterface');
@@ -22,6 +16,34 @@ enum DBInfoEnum {
     time,
 };
 
+/** Interface roughly decribing the data returned from this class, for documentation purposes */
+interface EventDataRet {
+    /** events, indexed by the start time of the event (will not include events asociated with a schedule) */
+    events: {
+        [startTime: number]: EventData.EventInterface,
+    };
+    /** schedules, indexed by start time (begining of day) */
+    scheds: {
+        [startTime: number]: ScheduleUtil.Schedule,
+    };
+}
+
+/**
+ * Class which parses and stores calendar events and school schedules.
+ * 
+ * This is almost certainly the most complicated peice of code in this project. I built it that way
+ * because I learned early on that the fewer database operations you do, the faster your storage mechanism
+ * will run. As such, parameters from individual {@link UIUtil.UIItem} classes are first combined and then
+ * the database is queried, which results in a lot of date and time math and hinky booleans to cut a few
+ * operations here and there. Data from the cloud is "compressed" into an array instead of an object, and
+ * will need to be decoded before it can be used with the {@link CalDataManage.inflateCalCloudData} function.
+ * I also split schedules into two parts (times and period names), which means
+ * in order to determine the schedule you need to query the events, then the period names, then the time
+ * associated with that. In hindsight, this was very dumb and there should at least be some sort of caching
+ * involved, but I'll let you figure that out.
+ * 
+ * Data returned from this class is structured as shown in the interface {@link EventDataRet}.
+ */
 class CalDataManage implements DataInterface {
     readonly dataType: UIUtil.RecvType = UIUtil.RecvType.CAL;
     //we can also do this
@@ -30,7 +52,7 @@ class CalDataManage implements DataInterface {
     //db info
     readonly dataKey: string = 'calSyncData';
     //database info
-    //three databi: calendar events, schedule types, and schedule times
+    /** three databases: events, schedule names, schedule times */
     readonly dbInfo: Array<DBManage.DBInfoInterface> = [
         {
             storeName: DBInfoEnum[DBInfoEnum.cal],
@@ -54,8 +76,11 @@ class CalDataManage implements DataInterface {
     constructor(http: GetLib) {
         this.http = http;
     }
-    //functions that use the above data to manipulate the cache
-    //update data: remove the old, replace the new
+    /**
+     * Delete any events that are cancelled, remove events that end before today, then add and replace events based on data.
+     * @param data the data from the cloud
+     * @returns if the data got updated or not
+     */
     updateData(data: any): Promise<boolean> | false {
         //store our next steps
         const nextFunc = (args: [IDBObjectStore, DBManage.DBInfoInterface]): Promise<boolean> => {
@@ -96,7 +121,7 @@ class CalDataManage implements DataInterface {
             nextFunc([transactions[DBInfoEnum.time], this.dbInfo[DBInfoEnum.time]]),
         ]).then((datums: Array<boolean>) => datums.indexOf(true) !== -1);
     }
-    //overwrite data: replace, database be damned
+
     overwriteData(data: any) {
         //inflate just calData
         data.cal = this.inflateCalCloudData(data.cal);
@@ -127,7 +152,12 @@ class CalDataManage implements DataInterface {
         }).bind(this)));
     }
 
-    //private utility function to uncompress data from the cloud
+    /**
+     * Take the data from the cloud and "decompress" it (convert it from an array to an object). Used to save a few characters
+     * when sending the data over the internet.
+     * @param data the compressed data arrays
+     * @returns the event data objects
+     */
     protected inflateCalCloudData(data: Array<Array<any>>): Array<EventData.CancelledEventInterface | EventData.EventInterface> {
         return data.map((item: Array<any>) => {
             if(!item[0]) return {
@@ -150,8 +180,12 @@ class CalDataManage implements DataInterface {
      * Data functions
      */
 
-    //only one data function, takes the days needed and returns the events and schedules for each
-    getData(items: Array<UIUtil.UIItem>): Promise<any> | false {
+     /**
+      * Read recv params, do a bunch of date math to get a time range of events to fetch,
+      * then query the database for the events and schedules as necessar.
+      * @returns the fetched data, or false if no data is availible or invalid parameters are revieved
+      */
+    getData(items: Array<UIUtil.UIItem>): Promise<EventDataRet> | false {
         //create a range of events to fetch, then an array of schedules to fetch
         let evRange = [null, null];
         let schedList: Array<number> = [];

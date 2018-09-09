@@ -1,10 +1,7 @@
-﻿/*
- * Namespace to simplify acsess to HTML elements in app
- * If you create an element in index and need to acess it in javascript,
- * make sure it is refrenced from here
- * Should make everything a little less spaghetti
+﻿/**
+ * An attempt to centralize all document queries used at launch (such as the menu, the backgroud image, so on).
+ * A bad idea but may increase performance in the long run.
  */
-
 namespace HTMLMap {
     export const backImg: HTMLImageElement = document.querySelector('#img') as HTMLImageElement;
     export const backThumb: HTMLImageElement = document.querySelector('#lowRes') as HTMLImageElement;
@@ -23,12 +20,14 @@ namespace HTMLMap {
     export const menuButton: HTMLElement = document.querySelector("#menuButton") as HTMLElement;
     export const pageDiv: HTMLElement = document.querySelector("#page") as HTMLElement;
 
+    /** Show the gif for fetching new internet data */
     export const startLoad = (): void => {
         backImg.classList.add("loadCover");
         loadingGif.classList.add("loadGif");
         setTimeout(() => requestAnimationFrame(navigator.splashscreen.hide), 300);
     };
 
+    /** remove the gif for fetching new internet data */
     export const endLoad = (): void => {
         backImg.classList.remove("loadCover");
         loadingGif.classList.remove("loadGif");

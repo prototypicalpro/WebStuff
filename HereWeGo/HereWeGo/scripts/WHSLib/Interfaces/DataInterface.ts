@@ -1,31 +1,36 @@
-﻿/* 
- * Interface to make the parsing, storage, and management of cloud sync data iterable
- * I figured I wanted the backend to be kinda modular, so here we go
- */
-
-import { DBInfoInterface } from '../../DBLib/DBManage';
+﻿import { DBInfoInterface } from '../../DBLib/DBManage';
 import UIUtil = require('../../UILib/UIUtil');
 
+/**
+ * Interface for parsing a component of the data fetched by {@link DataManage}.
+ * 
+ * Classes that implement this will generally be pretty complicated due to the
+ * amount of raw IndexedDB required to catalog and retrieve the data. Good Luck.
+ */
+
 interface DataInterface {
-    //type of recv for internal UIItem stuff
-    //each data item should be a unique type, else stuff breaks
+    /** Numerical constant specifying the type of data this class is meant to parse */
     readonly dataType: UIUtil.RecvType;
-    //database info for the superclass to manage
+    /** Object specifying the structure of the database requested by the implementing class */
     readonly dbInfo: DBInfoInterface | Array<DBInfoInterface>;
-    //the key for the sync data this object will use (e.g. "calSyncData")
-    //should be constant
+    /** String key to be used by {@link DataManage} when spliting data between classes. Needs to be implemented here and in the cloud. */
     readonly dataKey: string;
-    //function called at begining to give the data objects a pointer to the database
+    /** function called after contruction to pass DB over to the implementing class */
     setDB(db: IDBDatabase): void;
-    //update function, takes recieved data (using the key above) and updates the stored data
-    //returns whether or not the data was updated
+    /**
+     * Takes data from the internet and updates the local stored data to reflect changes.
+     * Data format varies depending on implementation.
+     * @param data The cloud data object
+     * @returns whether or not the stored data needed updating
+     */
     updateData(data: any): Promise<boolean> | false;
-    //overwrite function, deletes any existing data and replaces it with the passed data
+    /** Delete stored data and replace it with the data from the internet */
     overwriteData(data: any): Promise<any>;
-    //get the data to be served to the UIItems
-    //what data to fetch is stored in the recvparams in each UIItem
-    //it is up to the data management class to parse the appropriete recvparam component
-    //be sure to document what you're returning in an interface or something
+    /**
+     * Generates data for an array of uiitems based on properties stored in the {@link UIUtil.RecvParams} element.
+     * @param objs the array of ui elements to read properties from
+     * @returns data which can then be passed to {@link UIUtil.UIItem.onInit} or {@link UIUtil.UIItem.onUpdate}, given the UIItem in question was passed to getData.
+     */
     getData(objs: Array<UIUtil.UIItem>): Promise<any> | any;
 }
 

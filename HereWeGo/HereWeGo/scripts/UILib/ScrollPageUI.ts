@@ -3,7 +3,7 @@
 
 
 /**
- * Takes a list of UIItems and creates a simple scrolling page using {@link IScroll http://iscrolljs.com/}.
+ * Takes a list of UIItems and creates a simple scrolling page using http://iscrolljs.com/.
  */
  class ScrollPageUI extends UIUtil.UIItem {
     id: string;

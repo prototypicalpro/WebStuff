@@ -1,12 +1,11 @@
-﻿/*
- * API for storing a quote of the day using indexedDB
- * fairly simple
- */
-
-import DataInterface = require('./Interfaces/DataInterface');
+﻿import DataInterface = require('./Interfaces/DataInterface');
 import UIUtil = require('../UILib/UIUtil');
 import DBManage = require('../DBLib/DBManage');
+import QuoteDataInterface = require("./Interfaces/QuoteDataInterface");
 
+/**
+ * Simple class to store quote data for {@link QuoteUI}, or any other class that would like a quote of the day.
+ */
 class QuoteDataManage implements DataInterface {
     //data type
     readonly dataType = UIUtil.RecvType.QUOTE;
@@ -45,7 +44,7 @@ class QuoteDataManage implements DataInterface {
     }
 
     //get data returns the quoteData obj
-    getData(): Promise<any> {
+    getData(): Promise<QuoteDataInterface> {
         //and UI magic!
         return new Promise((resolve, reject) => {
             let req = this.db.transaction([this.dbInfo.storeName], 'readonly').objectStore(this.dbInfo.storeName).get(this.key);

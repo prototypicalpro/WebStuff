@@ -1,8 +1,4 @@
-﻿// For an introduction to the Blank template, see the following documentation:
-// http://go.microsoft.com/fwlink/?LinkID=397705
-// To debug code on page load in cordova-simulate or on Android devices/emulators: launch your app, set breakpoints, 
-// and then run "window.location.reload()" in the JavaScript Console.
-import HTMLMap = require('./HTMLMap');
+﻿import HTMLMap = require('./HTMLMap');
 import TimeFormatUtil = require('./TimeFormatUtil');
 import DataManage = require('./DataManage');
 import GetLib = require('./GetLib/GetLib');
@@ -51,12 +47,12 @@ var getNewData = false;
 
 export function initialize(): void {
     document.addEventListener('deviceready', onDeviceReady, false);
-    console.timeStamp("Cordova Init");
+    //console.timeStamp("Cordova Init");
     console.log("init func: " + performance.now());
 }
 
 function onDeviceReady(): void {
-    console.timeStamp("Cordova Device Ready");
+    //console.timeStamp("Cordova Device Ready");
     console.log("device ready: " + performance.now());
 
     //inappbrowser
@@ -101,7 +97,7 @@ function onDeviceReady(): void {
         navigator.splashscreen.hide();
         //also start callback for every min to update time
         setTimeout(updateTime, 60010);
-        console.timeStamp("Second Init");
+        //console.timeStamp("Second Init");
         let end = performance.now();
         console.log("Second init took: " + (end - start));
     }).catch((err) => {
@@ -214,10 +210,6 @@ function buildUI(): Promise<any> {
         ]),
         new ScrollPageUI([
             new ResourceUI([
-                {
-                    text: "What are the upcoming graduation deadlines?",
-                    url: "https://niceme.me",
-                },
                 {
                     text: "What are the graduation requirements?",
                     url: "https://www.pps.net/Page/1642",

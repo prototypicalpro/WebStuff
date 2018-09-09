@@ -1,9 +1,7 @@
-﻿/*
- * Library which makes schedule data semi-accesible
+﻿import ScheduleData = require('./Interfaces/ScheduleData');
+/**
+ * A collection of utility classes defining a object structure for schedule data
  */
-
-import ScheduleData = require('./Interfaces/ScheduleData');
-
 namespace ScheduleUtil {
     export enum PeriodType {
         passing = -3,
@@ -15,7 +13,9 @@ namespace ScheduleUtil {
         after_end = -1
     }
 
-    //classes to simplify information acess
+    /**
+     * Class parsing and exposing an internet fetched start/end time and metadata for a class period.
+     */
     export class Period {
         startTime: number;
         endTime: number;
@@ -24,7 +24,14 @@ namespace ScheduleUtil {
         private type: PeriodType;
         private name: string;
 
-        //takes start and end times in form of '9:36 am' or '12:45 pm'
+        /**
+         * @param startStr start time in format of (h)h:mm a ex. "12:45 am"
+         * @param endStr end time in format of (h)h:mm a ex. "3:45 pm"
+         * @param type numerical period type representation
+         * @param name name of the period
+         * @param startTime override the startStr with this number time
+         * @param endTime override the endStr with this number time
+         */
         constructor(startStr: string, endStr: string, type: PeriodType, name: string, startTime?: number, endTime?: number) {
             this.startStr = startStr;
             this.endStr = endStr;
@@ -59,13 +66,19 @@ namespace ScheduleUtil {
         }
     }
 
-    //class which takes an array of periods, fills in the gaps, and then
-    //makes the data semi-accesible
+    /**
+     * Class which takes data retrieved from functions in {@link CalDataManage}, and converts it into
+     * a list of periods which can be retrieved based on time.
+     */
     export class Schedule {
         private periods: Period[] = [];
         private prettyName: string;
 
-        constructor(schedule: ScheduleData.SchedCloudData | string, time: ScheduleData.TimeCloudData = null) {
+        /**
+         * @param schedule The schedule cloud data or string name of the schedule
+         * @param time The time cloud data associated with the schedule
+         */
+        constructor(schedule: ScheduleData.SchedCloudData | string, time: ScheduleData.TimeCloudData) {
             if (typeof schedule === "string" || !time) this.prettyName = <string>schedule;
             //construct period array
             else {
@@ -85,10 +98,11 @@ namespace ScheduleUtil {
 
         getName(): string { return this.prettyName; }
 
-        //I don't know if this is the best way, but it's my way
-        //returns a negative number corresponding to a PeriodType if school hasn't started,
-        //otherwise returns the index of the current period to be used in getPeriod()
-        //[object, index]
+        /**
+         * Returns the current period index and period object given a time. 
+         * @param time the time that you want to lookup the period of
+         * @returns the index for {@link ScheduleUtil.Schedule.getPeriod}, and period object 
+         */
         getCurrentPeriodAndIndex(time: Date): [number, Period] {
             let today = new Date(time).setHours(0, 0, 0, 0);
             //check if school has started
@@ -120,8 +134,8 @@ namespace ScheduleUtil {
         }
     }
 
-    //schedule constant
-    export const NoSchool = new Schedule("No School");
+    /** No School schedule to be used instead of creating a new one */
+    export const NoSchool = new Schedule("No School", null);
 }
 
 export = ScheduleUtil;

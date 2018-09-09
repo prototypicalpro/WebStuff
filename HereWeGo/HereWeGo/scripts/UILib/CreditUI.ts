@@ -3,8 +3,6 @@ import IScroll = require('../iscroll-lite');
 
 /**
  * Popup to display credits to all the people who helped create this wonderful project!
- * 
- * ...and the ones who didn't too (hi Benjamin).
  */
 class CreditUI extends UIUtil.UIItem {
     //Note: this contains a lot of inline styles as well lot of styles in index.css
