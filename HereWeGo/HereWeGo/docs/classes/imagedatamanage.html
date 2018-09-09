@@ -1,0 +1,823 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>ImageDataManage | HereWeGo</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">HereWeGo</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="imagedatamanage.html">ImageDataManage</a>
+				</li>
+			</ul>
+			<h1>Class ImageDataManage</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Class to parse and store background images from the cloud.</p>
+					</div>
+					<p>Images URLs are determined from the cloud google apps script, this class simply downloads
+						them and catalogs them for retrieval when the app starts. Stores images in the local cached
+					using the cordova file plugin and retreives them using a file path stored in the database.</p>
+					<p>Pretty complicated due to the synchronization required to manage the images database entries.</p>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">ImageDataManage</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel">
+				<h3>Implements</h3>
+				<ul class="tsd-hierarchy">
+					<li><a href="../interfaces/datainterface.html" class="tsd-signature-type">DataInterface</a></li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="imagedatamanage.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="imagedatamanage.html#cacherefresh" class="tsd-kind-icon">cache<wbr>Refresh</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="imagedatamanage.html#cheapdata" class="tsd-kind-icon">cheap<wbr>Data</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="imagedatamanage.html#datakey" class="tsd-kind-icon">data<wbr>Key</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="imagedatamanage.html#datatype" class="tsd-kind-icon">data<wbr>Type</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="imagedatamanage.html#db" class="tsd-kind-icon">db</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="imagedatamanage.html#http" class="tsd-kind-icon">http</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="imagedatamanage.html#index" class="tsd-kind-icon">index</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="imagedatamanage.html#picpromise" class="tsd-kind-icon">pic<wbr>Promise</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="imagedatamanage.html#storenum" class="tsd-kind-icon">store<wbr>Num</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="imagedatamanage.html#imgdayid" class="tsd-kind-icon">img<wbr>DayID</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="imagedatamanage.html#imgindid" class="tsd-kind-icon">img<wbr>IndID</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="imagedatamanage.html#thumbrez" class="tsd-kind-icon">thumb<wbr>Rez</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static"><a href="imagedatamanage.html#thumburl" class="tsd-kind-icon">thumbURL</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="imagedatamanage.html#daysbetweendates" class="tsd-kind-icon">days<wbr>Between<wbr>Dates</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="imagedatamanage.html#fillpicpromises" class="tsd-kind-icon">fill<wbr>Pic<wbr>Promises</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="imagedatamanage.html#getandstoreimage" class="tsd-kind-icon">get<wbr>And<wbr>Store<wbr>Image</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="imagedatamanage.html#getdata" class="tsd-kind-icon">get<wbr>Data</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="imagedatamanage.html#getuntilblobsuccess" class="tsd-kind-icon">get<wbr>Until<wbr>Blob<wbr>Success</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="imagedatamanage.html#overwritedata" class="tsd-kind-icon">overwrite<wbr>Data</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="imagedatamanage.html#setdb" class="tsd-kind-icon">setDB</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="imagedatamanage.html#updatedata" class="tsd-kind-icon">update<wbr>Data</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="imagedatamanage.html#verifyurl" class="tsd-kind-icon">verify<wbr>Url</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Object literals</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-object-literal tsd-parent-kind-class"><a href="imagedatamanage.html#dbinfo" class="tsd-kind-icon">db<wbr>Info</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Image<wbr>Data<wbr>Manage<span class="tsd-signature-symbol">(</span>http<span class="tsd-signature-symbol">: </span><a href="getlib.html" class="tsd-signature-type">GetLib</a>, cacheDays<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, cheapData<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="imagedatamanage.html" class="tsd-signature-type">ImageDataManage</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L59">WHSLib/ImageDataManage.ts:59</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>http: <a href="getlib.html" class="tsd-signature-type">GetLib</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>instance for fetching images from google drive</p>
+										</div>
+									</div>
+								</li>
+								<li>
+									<h5>cacheDays: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>how many days to cach images in advance</p>
+										</div>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> cheapData: <span class="tsd-signature-type">boolean</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>if true, only fetch thumbnail when retriving data</p>
+										</div>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="imagedatamanage.html" class="tsd-signature-type">ImageDataManage</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="cacherefresh" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> cache<wbr>Refresh</h3>
+					<div class="tsd-signature tsd-kind-icon">cache<wbr>Refresh<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L52">WHSLib/ImageDataManage.ts:52</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="cheapdata" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> cheap<wbr>Data</h3>
+					<div class="tsd-signature tsd-kind-icon">cheap<wbr>Data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L59">WHSLib/ImageDataManage.ts:59</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="datakey" class="tsd-anchor"></a>
+					<h3>data<wbr>Key</h3>
+					<div class="tsd-signature tsd-kind-icon">data<wbr>Key<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"imgData"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;imgData&quot;</span></div>
+					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/datainterface.html">DataInterface</a>.<a href="../interfaces/datainterface.html#datakey">dataKey</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L45">WHSLib/ImageDataManage.ts:45</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="datatype" class="tsd-anchor"></a>
+					<h3>data<wbr>Type</h3>
+					<div class="tsd-signature tsd-kind-icon">data<wbr>Type<span class="tsd-signature-symbol">:</span> <a href="../enums/uiutil.recvtype.html#image" class="tsd-signature-type">IMAGE</a><span class="tsd-signature-symbol"> =&nbsp;UIUtil.RecvType.IMAGE</span></div>
+					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/datainterface.html">DataInterface</a>.<a href="../interfaces/datainterface.html#datatype">dataType</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L33">WHSLib/ImageDataManage.ts:33</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="db" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> db</h3>
+					<div class="tsd-signature tsd-kind-icon">db<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">IDBDatabase</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L50">WHSLib/ImageDataManage.ts:50</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="http" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> http</h3>
+					<div class="tsd-signature tsd-kind-icon">http<span class="tsd-signature-symbol">:</span> <a href="getlib.html" class="tsd-signature-type">GetLib</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L48">WHSLib/ImageDataManage.ts:48</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="index" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> index</h3>
+					<div class="tsd-signature tsd-kind-icon">index<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;0</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L57">WHSLib/ImageDataManage.ts:57</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="picpromise" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> pic<wbr>Promise</h3>
+					<div class="tsd-signature tsd-kind-icon">pic<wbr>Promise<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L54">WHSLib/ImageDataManage.ts:54</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="storenum" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> store<wbr>Num</h3>
+					<div class="tsd-signature tsd-kind-icon">store<wbr>Num<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L56">WHSLib/ImageDataManage.ts:56</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="imgdayid" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> img<wbr>DayID</h3>
+					<div class="tsd-signature tsd-kind-icon">img<wbr>DayID<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"3"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;3&quot;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L29">WHSLib/ImageDataManage.ts:29</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>localstorage key for the last day the index was incremented</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="imgindid" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> img<wbr>IndID</h3>
+					<div class="tsd-signature tsd-kind-icon">img<wbr>IndID<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"2"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;2&quot;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L27">WHSLib/ImageDataManage.ts:27</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>localstorage key for the index of the current image</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="thumbrez" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> thumb<wbr>Rez</h3>
+					<div class="tsd-signature tsd-kind-icon">thumb<wbr>Rez<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;1.0/4.0</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L31">WHSLib/ImageDataManage.ts:31</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>what fraction of the resolution to use for the thumnail</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
+					<a name="thumburl" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagPrivate">Private</span> thumbURL</h3>
+					<div class="tsd-signature tsd-kind-icon">thumbURL<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"https://drive.google.com/thumbnail"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;https://drive.google.com/thumbnail&quot;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L25">WHSLib/ImageDataManage.ts:25</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>URL to fetch thumbnails of the images from, so we don&#39;t have to shrink the images ourselves</p>
+						</div>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="daysbetweendates" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> days<wbr>Between<wbr>Dates</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">days<wbr>Between<wbr>Dates<span class="tsd-signature-symbol">(</span>day1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, day2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L280">WHSLib/ImageDataManage.ts:280</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>day1: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>day2: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="fillpicpromises" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> fill<wbr>Pic<wbr>Promises</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">fill<wbr>Pic<wbr>Promises<span class="tsd-signature-symbol">(</span>picNum<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L180">WHSLib/ImageDataManage.ts:180</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>picNum: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="getandstoreimage" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>And<wbr>Store<wbr>Image</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>And<wbr>Store<wbr>Image<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><a href="../interfaces/imageinterface.html" class="tsd-signature-type">ImageInterface</a>, key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, height<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, isFullRez<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, loadThenSave<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L228">WHSLib/ImageDataManage.ts:228</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>data: <a href="../interfaces/imageinterface.html" class="tsd-signature-type">ImageInterface</a></h5>
+								</li>
+								<li>
+									<h5>key: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>url: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>height: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>id: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>isFullRez: <span class="tsd-signature-type">boolean</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> loadThenSave: <span class="tsd-signature-type">boolean</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getdata" class="tsd-anchor"></a>
+					<h3>get<wbr>Data</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Data<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L162">WHSLib/ImageDataManage.ts:162</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Query the database for today&#39;s image filepath, then fetch the image from the filesystem.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span>
+								<span class="tsd-signature-symbol"> | </span>
+								<span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">]</span>
+								<span class="tsd-signature-symbol"> | </span>
+								<span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span>
+								<span class="tsd-signature-symbol"> | </span>
+								<span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol">&gt;</span>
+							</h4>
+							<p>an array of a thumbnail and image url, nested in a questionable number of promises</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="getuntilblobsuccess" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Until<wbr>Blob<wbr>Success</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Until<wbr>Blob<wbr>Success<span class="tsd-signature-symbol">(</span>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, params<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L272">WHSLib/ImageDataManage.ts:272</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>url: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>params: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="overwritedata" class="tsd-anchor"></a>
+					<h3>overwrite<wbr>Data</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">overwrite<wbr>Data<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><a href="../interfaces/clouddata.html" class="tsd-signature-type">CloudData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L128">WHSLib/ImageDataManage.ts:128</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Same as updateData, but delete the database before updating.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>data: <a href="../interfaces/clouddata.html" class="tsd-signature-type">CloudData</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the internet data</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="setdb" class="tsd-anchor"></a>
+					<h3>setDB</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">setDB<span class="tsd-signature-symbol">(</span>db<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IDBDatabase</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/datainterface.html">DataInterface</a>.<a href="../interfaces/datainterface.html#setdb">setDB</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L71">WHSLib/ImageDataManage.ts:71</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>db: <span class="tsd-signature-type">IDBDatabase</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="updatedata" class="tsd-anchor"></a>
+					<h3>update<wbr>Data</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">update<wbr>Data<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><a href="../interfaces/clouddata.html" class="tsd-signature-type">CloudData</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L77">WHSLib/ImageDataManage.ts:77</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Update image index based on time, update the image metadata in the database, then fetch all the images that aren&#39;t downloaded yet</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>data: <a href="../interfaces/clouddata.html" class="tsd-signature-type">CloudData</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the internet data</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span>
+								<span class="tsd-signature-symbol"> | </span>
+								<span class="tsd-signature-type">false</span>
+							</h4>
+							<p>whether or not the data needed updating</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="verifyurl" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> verify<wbr>Url</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">verify<wbr>Url<span class="tsd-signature-symbol">(</span>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L262">WHSLib/ImageDataManage.ts:262</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>url: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Object literals</h2>
+				<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-class">
+					<a name="dbinfo" class="tsd-anchor"></a>
+					<h3>db<wbr>Info</h3>
+					<div class="tsd-signature tsd-kind-icon">db<wbr>Info<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/datainterface.html">DataInterface</a>.<a href="../interfaces/datainterface.html#dbinfo">dbInfo</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L35">WHSLib/ImageDataManage.ts:35</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>single table, images</p>
+						</div>
+					</div>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="dbinfo.keypath" class="tsd-anchor"></a>
+						<h3>key<wbr>Path</h3>
+						<div class="tsd-signature tsd-kind-icon">key<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;id&quot;</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L42">WHSLib/ImageDataManage.ts:42</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="dbinfo.keys" class="tsd-anchor"></a>
+						<h3>keys</h3>
+						<div class="tsd-signature tsd-kind-icon">keys<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L40">WHSLib/ImageDataManage.ts:40</a></li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="dbinfo.storename" class="tsd-anchor"></a>
+						<h3>store<wbr>Name</h3>
+						<div class="tsd-signature tsd-kind-icon">store<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;images&quot;</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/db-dropDatabase/WebStuff/blob/ac409a1/HereWeGo/HereWeGo/scripts/WHSLib/ImageDataManage.ts#L37">WHSLib/ImageDataManage.ts:37</a></li>
+							</ul>
+						</aside>
+					</section>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class">
+						<a href="imagedatamanage.html" class="tsd-kind-icon">Image<wbr>Data<wbr>Manage</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="imagedatamanage.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="imagedatamanage.html#cacherefresh" class="tsd-kind-icon">cache<wbr>Refresh</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="imagedatamanage.html#cheapdata" class="tsd-kind-icon">cheap<wbr>Data</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="imagedatamanage.html#datakey" class="tsd-kind-icon">data<wbr>Key</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="imagedatamanage.html#datatype" class="tsd-kind-icon">data<wbr>Type</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="imagedatamanage.html#db" class="tsd-kind-icon">db</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="imagedatamanage.html#http" class="tsd-kind-icon">http</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="imagedatamanage.html#index" class="tsd-kind-icon">index</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="imagedatamanage.html#picpromise" class="tsd-kind-icon">pic<wbr>Promise</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="imagedatamanage.html#storenum" class="tsd-kind-icon">store<wbr>Num</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="imagedatamanage.html#imgdayid" class="tsd-kind-icon">img<wbr>DayID</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="imagedatamanage.html#imgindid" class="tsd-kind-icon">img<wbr>IndID</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="imagedatamanage.html#thumbrez" class="tsd-kind-icon">thumb<wbr>Rez</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-static">
+								<a href="imagedatamanage.html#thumburl" class="tsd-kind-icon">thumbURL</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="imagedatamanage.html#daysbetweendates" class="tsd-kind-icon">days<wbr>Between<wbr>Dates</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="imagedatamanage.html#fillpicpromises" class="tsd-kind-icon">fill<wbr>Pic<wbr>Promises</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="imagedatamanage.html#getandstoreimage" class="tsd-kind-icon">get<wbr>And<wbr>Store<wbr>Image</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="imagedatamanage.html#getdata" class="tsd-kind-icon">get<wbr>Data</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="imagedatamanage.html#getuntilblobsuccess" class="tsd-kind-icon">get<wbr>Until<wbr>Blob<wbr>Success</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="imagedatamanage.html#overwritedata" class="tsd-kind-icon">overwrite<wbr>Data</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="imagedatamanage.html#setdb" class="tsd-kind-icon">setDB</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="imagedatamanage.html#updatedata" class="tsd-kind-icon">update<wbr>Data</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="imagedatamanage.html#verifyurl" class="tsd-kind-icon">verify<wbr>Url</a>
+							</li>
+							<li class=" tsd-kind-object-literal tsd-parent-kind-class">
+								<a href="imagedatamanage.html#dbinfo" class="tsd-kind-icon">db<wbr>Info</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
