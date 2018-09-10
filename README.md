@@ -45,7 +45,7 @@ This tutorial assumes you have a basic understanding of [Git](https://git-scm.co
 2. In VSCode, use `Ctrl+Shift+B` (`Command+Shift+B` on OSX) to start the Typescript build if you haven't already.
 3. Run `cordova build ios` in the integrated terminal.
 4. Double click on `./HereWeGo/HereWeGo/platforms/ios/Wilson App.xcodeproj` to open the IOS project in XCode.
-5. If this is the first build: In Project Editor->General->Signing section, select a personal team in the "Team" drop down menu.
+5. If this is your first build: In Project Editor->General->Signing section, select a personal team in the "Team" drop down menu.
 6. Connect your IOS device, and use the device list menu (top left) to select your device. Press the play button to build the app.
 7. If the above step throws a "Could not launch error": In your IOS device, navigate to Settings->General->Device Management, tap the email associated with the Apple ID you attached to XCode, and tap "Trust \<your email here\>". Click the play button in XCode one more time to try again.
 8. Debugging an IOS device is messy. You can attempt following the [tutorial for Safari debugging an IOS Simulator](http://adaptivejs.mobify.com/v2.0/docs/debug-on-ios-devices-and-the-ios-simulator/) replacing the simulator with the device (I have had mixed results using this method). Or you use a proxy and the Chrome developer tools, as detailed [here](https://medium.com/@auchenberg/hello-remotedebug-ios-webkit-adapter-debug-safari-and-ios-webviews-from-anywhere-2a8553df7465).
@@ -64,4 +64,15 @@ This tutorial assumes you have a basic understanding of [Git](https://git-scm.co
 4. Run `cordova build android --release` in the integrated terminal.
 5. In the [developer console](https://play.google.com/apps/publish/?account=6167190952551910645#AppDashboardPlace:p=org.wilsoncs.wilsonapp&appid=4975381534210192245), navigate to Release Management->App releases, click "MANAGE" next to the "Production" header, then click "CREATE RELEASE".
 6. Upload the built APK file in `./HereWeGo/HereWeGo/platforms/android/app/build/outputs/apk/release/app-release.apk` using the "BROWSE FILES" button. The Release name will be filled in automatically when the upload is finished. Write some descriptive and relevant release notes while you wait.
-7. 
+7. Click "REVIEW" and then "START ROLLOUT". The updated version will be released to the play store and installed on devices usually by the next day.
+
+### Apple App Store
+
+*These steps only work on a OSX machine. Warning: Apple makes everything harder than it should be, expect troubleshooting.*
+
+1. You will need to be granted access to the `ios_distribution.cer` an instance of XCode which is connected to the WilsonCS Apple ID. Please speak with Mr. Bartlo or the student managing this project for access to these resources.
+2. Ensure the version in `config.xml` has been increased appropriately to reflect the new release. You may also need to clear the old cached data by modifying [DBManage](./HereWeGo/HereWeGo/scripts/DBLib/DBManage.ts).
+3. If this is your first time building: Double click on `ios_distribution.cer` and add it to your keychain. In XCode under Project Editor->General->Signing section, select "Christopher Bartlo" in the "Team" drop down menu.
+4. In the XCode top menus click Product->Archive.
+5. Once the archiving is finished, click "Upload to App Store".
+6. TODO: More steps?
