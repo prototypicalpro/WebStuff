@@ -74,5 +74,9 @@ This tutorial assumes you have a basic understanding of [Git](https://git-scm.co
 2. Ensure the version in `config.xml` has been increased appropriately to reflect the new release. You may also need to clear the old cached data by modifying [DBManage](./HereWeGo/HereWeGo/scripts/DBLib/DBManage.ts).
 3. If this is your first time building: Double click on `ios_distribution.cer` and add it to your keychain. In XCode under Project Editor->General->Signing section, select "Christopher Bartlo" in the "Team" drop down menu.
 4. In the XCode top menus click Product->Archive.
-5. Once the archiving is finished, click "Upload to App Store".
-6. TODO: More steps?
+5. Once the archiving is finished, click "Upload to App Store". Keep the default options. This step will take awhile.
+6. Head over to the [App Store Management Page](https://appstoreconnect.apple.com/WebObjects/iTunesConnect.woa/ra/ng/app/1403076813]), and log in with the WilsonCS AppleID.
+7. Click on the "+ VERSION OR PLATFORM" below the versions, then click "iOS".
+8. Click the plus button next to "Build", and select the version you uploaded using XCode. Change the version below "General App Information" to reflect the build version, and fill in change notes under "Version Information".
+9. Click "Save" and then "Submit for Review".
+10. The app will now be reviewed by Apple for app store eligibility. The status of this process will display next to the version in the dashboard. This process generally takes 1-2 days, and expect to be rejected once or twice during development.
