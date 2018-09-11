@@ -152,7 +152,7 @@ function buildUI(): Promise<any> {
             {
                 text: 'Daily Bulletin',
                 icon: 'list.png',
-                callback: urlCallback('https://script.google.com/a/koontzs.com/macros/s/AKfycbxyS4utDJEJ3bE2spSE4SIRlwj10M2Owbe7_XWrOFSobfniQjve/exec?bul="glorified bookmark"'),
+                callback: urlCallback(DataManage.URL + '?bul=glorifiedbookmark'),
             },
             {
                 text: 'Naviance',
