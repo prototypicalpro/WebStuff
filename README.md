@@ -1,8 +1,4 @@
-# TroGo (Wilson App Alpha)
-
-[Slideshow Project Overview](https://drive.google.com/open?id=1aMAVzhKJyau7Vcu4zmMJIr0zfJ9p8sFoSFUgTzjiidc)
-
-Welcome to the Wilson App github repository! This app is coded using a typescript cordova project in visual studio.
+# TroGo (Wilson App)
 
 ## Web App
 
